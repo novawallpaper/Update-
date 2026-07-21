@@ -1,12 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>Public Opinion Poll</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
+
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Inter:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@500;600&display=swap" rel="stylesheet">
 
 <link rel="stylesheet" href="style.css">
@@ -19,10 +21,13 @@
 
 <div class="brand">
 <span class="brand-mark">◆</span>
-<span class="brand-text">public votes</span>
+<span class="brand-text">Public Votes</span>
 </div>
 
-<button id="themeToggle" class="theme-toggle">
+<button
+id="themeToggle"
+class="theme-toggle"
+aria-label="Toggle Theme">
 ☀
 </button>
 
@@ -46,18 +51,18 @@ Should DHARMENDRA PRADHAN Continue as Education Minister?
 
 <div class="vote-buttons">
 
-<button id="yesBtn"
-class="vote-btn vote-btn--yes"
-data-vote="yes">
+<button
+id="yesBtn"
+class="vote-btn vote-btn--yes">
 
 <span>✓</span>
 <span>Yes</span>
 
 </button>
 
-<button id="noBtn"
-class="vote-btn vote-btn--no"
-data-vote="no">
+<button
+id="noBtn"
+class="vote-btn vote-btn--no">
 
 <span>✕</span>
 <span>No</span>
@@ -66,7 +71,10 @@ data-vote="no">
 
 </div>
 
-<p id="statusMessage" class="status-message"></p>
+<p
+id="statusMessage"
+class="status-message">
+</p>
 
 </section>
 
@@ -84,7 +92,11 @@ data-vote="no">
 
 <div class="result-stat">
 
-<span id="totalVotes" class="result-value">0</span>
+<span
+id="totalVotes"
+class="result-value">
+0
+</span>
 
 <span class="result-label">
 Total Votes
@@ -94,7 +106,11 @@ Total Votes
 
 <div class="result-stat result-stat--yes">
 
-<span id="yesVotes" class="result-value">0</span>
+<span
+id="yesVotes"
+class="result-value">
+0
+</span>
 
 <span class="result-label">
 Yes Votes
@@ -104,7 +120,11 @@ Yes Votes
 
 <div class="result-stat result-stat--no">
 
-<span id="noVotes" class="result-value">0</span>
+<span
+id="noVotes"
+class="result-value">
+0
+</span>
 
 <span class="result-label">
 No Votes
@@ -120,13 +140,16 @@ No Votes
 
 <span>Yes</span>
 
-<span id="yesPercentLabel">0%</span>
+<span id="yesPercentLabel">
+0%
+</span>
 
 </div>
 
 <div class="bar-track">
 
-<div id="yesBar"
+<div
+id="yesBar"
 class="bar-fill bar-fill--yes"
 style="width:0%">
 </div>
@@ -141,13 +164,16 @@ style="width:0%">
 
 <span>No</span>
 
-<span id="noPercentLabel">0%</span>
+<span id="noPercentLabel">
+0%
+</span>
 
 </div>
 
 <div class="bar-track">
 
-<div id="noBar"
+<div
+id="noBar"
 class="bar-fill bar-fill--no"
 style="width:0%">
 </div>
@@ -168,6 +194,8 @@ style="width:0%">
 
 </footer>
 
-<script src="script.js"></script>
+<!-- Firebase Script -->
+<script type="module" src="script.js"></script>
+
 </body>
 </html>
