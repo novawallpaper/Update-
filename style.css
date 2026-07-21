@@ -1,0 +1,315 @@
+/* ===========================
+   GLOBAL
+=========================== */
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+}
+
+body{
+font-family:'Inter',sans-serif;
+background:linear-gradient(135deg,#eef2ff,#dbeafe);
+color:#222;
+min-height:100vh;
+line-height:1.6;
+}
+
+/* ===========================
+   HEADER
+=========================== */
+
+.topbar{
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:18px 25px;
+background:#fff;
+box-shadow:0 2px 12px rgba(0,0,0,.08);
+position:sticky;
+top:0;
+z-index:1000;
+}
+
+.brand{
+display:flex;
+align-items:center;
+gap:10px;
+font-size:22px;
+font-weight:700;
+color:#2563eb;
+}
+
+.brand-mark{
+font-size:28px;
+}
+
+.theme-toggle{
+border:none;
+background:#f3f4f6;
+padding:10px 15px;
+border-radius:10px;
+cursor:pointer;
+font-size:18px;
+transition:.3s;
+}
+
+.theme-toggle:hover{
+background:#2563eb;
+color:#fff;
+}
+
+/* ===========================
+   MAIN
+=========================== */
+
+.page{
+max-width:950px;
+margin:40px auto;
+padding:20px;
+display:grid;
+gap:30px;
+}
+
+.poll-card,
+.results-card{
+background:#fff;
+padding:30px;
+border-radius:20px;
+box-shadow:0 10px 25px rgba(0,0,0,.08);
+}
+
+.eyebrow{
+font-size:14px;
+font-weight:600;
+color:#2563eb;
+margin-bottom:12px;
+text-transform:uppercase;
+}
+
+.question-en{
+font-family:'Fraunces',serif;
+font-size:34px;
+margin-bottom:15px;
+}
+
+.question-hi{
+font-family:'Noto Sans Devanagari',sans-serif;
+font-size:24px;
+margin-bottom:30px;
+color:#444;
+}
+
+/* ===========================
+   VOTING BUTTONS
+=========================== */
+
+.vote-buttons{
+display:flex;
+gap:20px;
+flex-wrap:wrap;
+}
+
+.vote-btn{
+flex:1;
+display:flex;
+justify-content:center;
+align-items:center;
+gap:10px;
+padding:18px;
+border:none;
+border-radius:15px;
+font-size:22px;
+font-weight:700;
+cursor:pointer;
+transition:.3s;
+}
+
+.vote-btn:hover{
+transform:translateY(-4px);
+box-shadow:0 8px 20px rgba(0,0,0,.15);
+}
+
+.vote-btn--yes{
+background:#16a34a;
+color:#fff;
+}
+
+.vote-btn--yes:hover{
+background:#15803d;
+}
+
+.vote-btn--no{
+background:#dc2626;
+color:#fff;
+}
+
+.vote-btn--no:hover{
+background:#b91c1c;
+}
+
+.status-message{
+margin-top:20px;
+text-align:center;
+font-size:18px;
+font-weight:600;
+color:#2563eb;
+}
+
+/* ===========================
+   RESULTS
+=========================== */
+
+.results-header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:20px;
+}
+
+.live-dot{
+width:12px;
+height:12px;
+background:#22c55e;
+border-radius:50%;
+animation:blink 1s infinite;
+}
+
+@keyframes blink{
+50%{
+opacity:.3;
+}
+}
+
+.results-grid{
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:15px;
+margin-bottom:25px;
+}
+
+.result-stat{
+background:#f8fafc;
+padding:20px;
+border-radius:15px;
+text-align:center;
+transition:.3s;
+}
+
+.result-stat:hover{
+transform:translateY(-3px);
+}
+
+.result-value{
+display:block;
+font-size:34px;
+font-weight:700;
+margin-bottom:5px;
+}
+
+.result-label{
+color:#555;
+font-size:15px;
+}
+
+.result-stat--yes{
+border-top:5px solid #16a34a;
+}
+
+.result-stat--no{
+border-top:5px solid #dc2626;
+}
+
+.bar-row{
+margin-bottom:18px;
+}
+
+.bar-label{
+display:flex;
+justify-content:space-between;
+margin-bottom:6px;
+font-weight:600;
+}
+
+.bar-track{
+height:16px;
+background:#e5e7eb;
+border-radius:30px;
+overflow:hidden;
+}
+
+.bar-fill{
+height:100%;
+transition:.5s;
+}
+
+.bar-fill--yes{
+background:#16a34a;
+}
+
+.bar-fill--no{
+background:#dc2626;
+}
+
+/* ===========================
+   FOOTER
+=========================== */
+
+.page-footer{
+text-align:center;
+padding:30px;
+color:#666;
+}
+
+/* ===========================
+   DARK MODE
+=========================== */
+
+body.dark{
+background:#111827;
+color:#fff;
+}
+
+body.dark .poll-card,
+body.dark .results-card,
+body.dark .topbar{
+background:#1f2937;
+color:#fff;
+}
+
+body.dark .result-stat{
+background:#374151;
+}
+
+/* ===========================
+   MOBILE
+=========================== */
+
+@media(max-width:768px){
+
+.page{
+padding:15px;
+}
+
+.question-en{
+font-size:24px;
+}
+
+.question-hi{
+font-size:20px;
+}
+
+.vote-buttons{
+flex-direction:column;
+}
+
+.results-grid{
+grid-template-columns:1fr;
+}
+
+.result-value{
+font-size:28px;
+}
+
+}
