@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Public Opinion Poll</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Inter:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@500;600&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<header class="topbar">
+
+<div class="brand">
+<span class="brand-mark">◆</span>
+<span class="brand-text">Civic Pulse</span>
+</div>
+
+<button id="themeToggle" class="theme-toggle">
+☀
+</button>
+
+</header>
+
+<main class="page">
+
+<section class="poll-card">
+
+<p class="eyebrow">
+Live Public Poll · Ministry of Education
+</p>
+
+<h1 class="question-en">
+Should DHARMENDRA PRADHAN Continue as Education Minister?
+</h1>
+
+<h2 class="question-hi">
+क्या धर्मेन्द्र प्रधान को शिक्षा मंत्री बने रहना चाहिए?
+</h2>
+
+<div class="vote-buttons">
+
+<button id="yesBtn"
+class="vote-btn vote-btn--yes"
+data-vote="yes">
+
+<span>✓</span>
+<span>Yes</span>
+
+</button>
+
+<button id="noBtn"
+class="vote-btn vote-btn--no"
+data-vote="no">
+
+<span>✕</span>
+<span>No</span>
+
+</button>
+
+</div>
+
+<p id="statusMessage" class="status-message"></p>
+
+</section>
+
+<section class="results-card">
+
+<div class="results-header">
+
+<h3>Live Results</h3>
+
+<span class="live-dot"></span>
+
+</div>
+
+<div class="results-grid">
+
+<div class="result-stat">
+
+<span id="totalVotes" class="result-value">0</span>
+
+<span class="result-label">
+Total Votes
+</span>
+
+</div>
+
+<div class="result-stat result-stat--yes">
+
+<span id="yesVotes" class="result-value">0</span>
+
+<span class="result-label">
+Yes Votes
+</span>
+
+</div>
+
+<div class="result-stat result-stat--no">
+
+<span id="noVotes" class="result-value">0</span>
+
+<span class="result-label">
+No Votes
+</span>
+
+</div>
+
+</div>
+
+<div class="bar-row">
+
+<div class="bar-label">
+
+<span>Yes</span>
+
+<span id="yesPercentLabel">0%</span>
+
+</div>
+
+<div class="bar-track">
+
+<div id="yesBar"
+class="bar-fill bar-fill--yes"
+style="width:0%">
+</div>
+
+</div>
+
+</div>
+
+<div class="bar-row">
+
+<div class="bar-label">
+
+<span>No</span>
+
+<span id="noPercentLabel">0%</span>
+
+</div>
+
+<div class="bar-track">
+
+<div id="noBar"
+class="bar-fill bar-fill--no"
+style="width:0%">
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+</main>
+
+<footer class="page-footer">
+
+<p>
+© 2026 Civic Pulse
+</p>
+
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
