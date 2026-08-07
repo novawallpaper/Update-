@@ -1,828 +1,767 @@
-// ======================================================
-// depthnova Gardens — Farm House & Garden Decoration
-// Plant Nursery + Online Plant Store
-// Pure vanilla JS, no backend required.
-// ======================================================
+/* =========================================================
+   Mitti Manor — app logic
+   Keys/config live in config.js
+   ========================================================= */
 
-// ------------------------------------------------------
-// PART 0 — BUSINESS CONFIG
-// ------------------------------------------------------
-const WHATSAPP_NUMBER = "919311649629"; // country code + number, digits only
-const DELIVERY_CHARGE = 49;             // flat delivery charge (INR)
-const FREE_DELIVERY_ABOVE = 499;        // free delivery threshold (INR)
-const RAZORPAY_KEY_ID = "rzp_test_TC8rdQlrs9bLOu"; // replace with your live key when ready
-
-// ------------------------------------------------------
-// PART 1 — CATEGORY DEFINITIONS
-// ------------------------------------------------------
-const categories = [
-    { key: "indoor",      label: "Indoor Plants",     icon: "fa-house" },
-    { key: "outdoor",     label: "Outdoor Plants",    icon: "fa-tree" },
-    { key: "flower",      label: "Flower Plants",     icon: "fa-spa" },
-    { key: "fruit",       label: "Fruit Plants",      icon: "fa-apple-whole" },
-    { key: "bonsai",      label: "Bonsai",            icon: "fa-seedling" },
-    { key: "decorative",  label: "Decorative Plants", icon: "fa-gem" },
-    { key: "pots",        label: "Pots",              icon: "fa-box" },
-    { key: "fertilizers", label: "Fertilizers",       icon: "fa-flask" },
-    { key: "tools",       label: "Gardening Tools",   icon: "fa-screwdriver-wrench" }
+const CATEGORIES = [
+  { key: "Indoor", title: "Indoor Plants", img: "https://loremflickr.com/600/800/houseplant,indoor/all?lock=201" },
+  { key: "Outdoor", title: "Outdoor Plants", img: "https://loremflickr.com/600/800/gardenplant,garden/all?lock=202" },
+  { key: "Flowering", title: "Flowering Plants", img: "https://loremflickr.com/600/800/flowerplant,flower/all?lock=203" },
+  { key: "Succulents", title: "Succulents & Cacti", img: "https://loremflickr.com/600/800/succulent,cactus/all?lock=204" },
+  { key: "AirPurifying", title: "Air-Purifying Plants", img: "https://loremflickr.com/600/800/leafplant,plant/all?lock=205" },
+  { key: "Medicinal", title: "Medicinal & Herbal", img: "https://loremflickr.com/600/800/herbplant,herb/all?lock=206" },
+  { key: "Bonsai", title: "Bonsai", img: "https://loremflickr.com/600/800/bonsai,tree/all?lock=207" },
+  { key: "Fruit", title: "Fruit Plants", img: "https://loremflickr.com/600/800/fruitplant,fruit/all?lock=208" },
 ];
 
-function categoryLabel(key) {
-    const c = categories.find(c => c.key === key);
-    return c ? c.label : key;
-}
-
-// ------------------------------------------------------
-// PART 2 — SERVICES DATA
-// ------------------------------------------------------
-const servicesData = [
-    { name: "Farm House Decoration", icon: "fa-house-chimney", desc: "Complete themed decor for farm houses and weekend homes." },
-    { name: "Garden Design",         icon: "fa-drafting-compass", desc: "Custom garden layouts designed around your space and light." },
-    { name: "Landscaping",           icon: "fa-mountain-sun", desc: "Full landscape transformation — lawns, beds, pathways and more." },
-    { name: "Lawn Development",      icon: "fa-leaf", desc: "New lawn laying, turfing and ongoing lawn care." },
-    { name: "Vertical Garden",       icon: "fa-layer-group", desc: "Space-saving living walls for balconies, patios and offices." },
-    { name: "Water Fountain",        icon: "fa-water", desc: "Decorative water fountains designed and installed on-site." },
-    { name: "Artificial Grass",      icon: "fa-grip-lines", desc: "All-weather artificial turf for lawns, terraces and rooftops." },
-    { name: "Irrigation System",     icon: "fa-faucet-drip", desc: "Drip and sprinkler irrigation systems for efficient watering." },
-    { name: "Plant Installation",    icon: "fa-seedling", desc: "On-site plant selection, planting and placement by our team." }
-];
-
-// ------------------------------------------------------
-// PART 3 — PRODUCT CATALOG
-// ------------------------------------------------------
-const productData = [
-    { id: 1, name: "Money Plant (Golden Pothos)", category: "indoor", price: 249, mrp: 349, rating: 4.6, reviews: 812, bestseller: true,
-      desc: "An easy-to-grow trailing vine known for its air-purifying qualities. Thrives in low light and needs watering only once a week — perfect for beginners and busy homes." },
-    { id: 2, name: "Snake Plant (Sansevieria)", category: "indoor", price: 349, mrp: 499, rating: 4.7, reviews: 654, bestseller: false,
-      desc: "One of the toughest indoor plants around. Tolerates neglect, low light and irregular watering while releasing oxygen through the night." },
-    { id: 3, name: "Areca Palm", category: "indoor", price: 899, mrp: 1199, rating: 4.5, reviews: 231, bestseller: false,
-      desc: "A lush, feathery palm that instantly softens any corner. Great as a natural room divider or statement piece near windows." },
-    { id: 4, name: "Peace Lily", category: "indoor", price: 449, mrp: 599, rating: 4.6, reviews: 398, bestseller: false,
-      desc: "Elegant white blooms paired with glossy dark green leaves. Actively filters indoor air and thrives in medium to low light." },
-
-    { id: 5, name: "Bougainvillea (Mixed Colour)", category: "outdoor", price: 299, mrp: 399, rating: 4.5, reviews: 276, bestseller: false,
-      desc: "A vigorous flowering climber that covers boundary walls and gates in vibrant colour almost all year round." },
-    { id: 6, name: "Hibiscus Plant", category: "outdoor", price: 249, mrp: 349, rating: 4.4, reviews: 189, bestseller: false,
-      desc: "A classic garden shrub producing large, showy blooms through the warmer months. Loves full sun." },
-    { id: 7, name: "Croton Plant", category: "outdoor", price: 349, mrp: 449, rating: 4.3, reviews: 142, bestseller: false,
-      desc: "Bold, multi-coloured foliage that adds year-round colour to outdoor beds and borders without needing flowers." },
-    { id: 8, name: "Curry Leaf Plant", category: "outdoor", price: 199, mrp: 279, rating: 4.7, reviews: 503, bestseller: false,
-      desc: "A kitchen-garden essential — fresh curry leaves whenever you need them, straight from your own garden." },
-
-    { id: 9, name: "Rose Plant (Mixed Colours)", category: "flower", price: 279, mrp: 399, rating: 4.6, reviews: 421, bestseller: true,
-      desc: "Fragrant, repeat-flowering rose bushes available in mixed colours. A timeless addition to any garden bed." },
-    { id: 10, name: "Marigold Plant", category: "flower", price: 99, mrp: 149, rating: 4.5, reviews: 367, bestseller: false,
-      desc: "Bright, festive blooms that flower quickly and repeatedly — ideal for borders, pots and quick garden colour." },
-    { id: 11, name: "Jasmine (Mogra) Plant", category: "flower", price: 329, mrp: 449, rating: 4.7, reviews: 298, bestseller: false,
-      desc: "Deliciously fragrant night-blooming flowers. A traditional favourite for Indian gardens and courtyards." },
-    { id: 12, name: "Petunia Plant", category: "flower", price: 149, mrp: 219, rating: 4.3, reviews: 118, bestseller: false,
-      desc: "Compact, trailing flowers perfect for hanging baskets, window boxes and colourful balcony displays." },
-
-    { id: 13, name: "Dwarf Mango Plant (Grafted)", category: "fruit", price: 599, mrp: 799, rating: 4.5, reviews: 214, bestseller: true,
-      desc: "A grafted dwarf mango variety suited to home gardens and large pots, fruiting within 2–3 years." },
-    { id: 14, name: "Guava Plant (Grafted)", category: "fruit", price: 449, mrp: 599, rating: 4.4, reviews: 176, bestseller: false,
-      desc: "Sweet, disease-resistant grafted guava that fruits early and performs well in containers or open ground." },
-    { id: 15, name: "Lemon Plant (Grafted)", category: "fruit", price: 349, mrp: 449, rating: 4.6, reviews: 245, bestseller: false,
-      desc: "A reliable, near year-round fruiting lemon variety — great for both kitchen gardens and pots." },
-    { id: 16, name: "Papaya Plant (Dwarf)", category: "fruit", price: 199, mrp: 279, rating: 4.2, reviews: 97, bestseller: false,
-      desc: "Fast-growing dwarf papaya that fruits within the first year, well suited to smaller garden spaces." },
-
-    { id: 17, name: "Ficus Bonsai", category: "bonsai", price: 1499, mrp: 1999, rating: 4.6, reviews: 88, bestseller: false,
-      desc: "A beginner-friendly bonsai with a naturally sturdy trunk and glossy leaves, ideal for indoor display." },
-    { id: 18, name: "Banyan Bonsai", category: "bonsai", price: 2199, mrp: 2799, rating: 4.8, reviews: 54, bestseller: false,
-      desc: "A striking specimen featuring aerial roots and a broad canopy — a real conversation-starter centrepiece." },
-    { id: 19, name: "Jade Bonsai", category: "bonsai", price: 999, mrp: 1299, rating: 4.5, reviews: 132, bestseller: false,
-      desc: "A succulent-style bonsai that stores water in thick leaves, making it very forgiving and low maintenance." },
-
-    { id: 20, name: "Areca Palm Decorative Planter Set", category: "decorative", price: 1299, mrp: 1699, rating: 4.5, reviews: 76, bestseller: false,
-      desc: "A ready-to-place Areca palm in a premium designer planter — instant décor for entryways and lobbies." },
-    { id: 21, name: "Artificial Boxwood Topiary Ball", category: "decorative", price: 799, mrp: 999, rating: 4.3, reviews: 61, bestseller: false,
-      desc: "Zero-maintenance faux greenery that keeps its shape and colour all year, perfect for entrance décor." },
-    { id: 22, name: "Hanging Macrame Planter (with Plant)", category: "decorative", price: 449, mrp: 599, rating: 4.4, reviews: 149, bestseller: false,
-      desc: "Boho-style handwoven macrame planter, pre-planted and ready to hang on your balcony or patio." },
-
-    { id: 23, name: "Ceramic Textured Pot (10 inch)", category: "pots", price: 349, mrp: 449, rating: 4.5, reviews: 203, bestseller: false,
-      desc: "A premium textured ceramic pot with drainage hole, finished to complement both indoor and outdoor plants." },
-    { id: 24, name: "Terracotta Pot Set (3 pcs)", category: "pots", price: 299, mrp: 399, rating: 4.4, reviews: 267, bestseller: false,
-      desc: "Classic breathable terracotta pots in three sizes — great root aeration for healthier plants." },
-    { id: 25, name: "Self-Watering Plastic Pot", category: "pots", price: 249, mrp: 329, rating: 4.2, reviews: 158, bestseller: false,
-      desc: "Built-in water reservoir keeps soil consistently moist, reducing watering frequency for busy plant parents." },
-
-    { id: 26, name: "Organic Vermicompost (5kg)", category: "fertilizers", price: 199, mrp: 249, rating: 4.6, reviews: 342, bestseller: false,
-      desc: "100% organic, odourless compost that improves soil structure and feeds plants naturally." },
-    { id: 27, name: "NPK 19:19:19 Fertilizer (1kg)", category: "fertilizers", price: 249, mrp: 329, rating: 4.4, reviews: 187, bestseller: false,
-      desc: "A balanced water-soluble fertilizer for steady, all-round growth across flowering and foliage plants." },
-    { id: 28, name: "Bio Neem Pest Spray (500ml)", category: "fertilizers", price: 199, mrp: 259, rating: 4.5, reviews: 221, bestseller: false,
-      desc: "A gentle, plant-safe neem-based spray that keeps common pests away without harsh chemicals." },
-
-    { id: 29, name: "Gardening Tool Set (5 pcs)", category: "tools", price: 499, mrp: 699, rating: 4.6, reviews: 289, bestseller: true,
-      desc: "A durable 5-piece hand tool kit — trowel, fork, pruner, cultivator and gloves — everything a home gardener needs." },
-    { id: 30, name: "Watering Can (2L)", category: "tools", price: 299, mrp: 399, rating: 4.3, reviews: 165, bestseller: false,
-      desc: "A lightweight 2-litre watering can with a fine-rose spout for gentle, even watering of seedlings and pots." }
-];
-
-productData.forEach(p => {
-    p.image = `https://picsum.photos/seed/depthnova-plant-${p.id}/600/600`;
-    p.off = Math.round(((p.mrp - p.price) / p.mrp) * 100);
-});
-
-// ------------------------------------------------------
-// PART 4 — REVIEWS + GALLERY DATA
-// ------------------------------------------------------
-const reviewsData = [
-    { name: "Ananya Sharma", rating: 5, avatar: "https://i.pravatar.cc/150?img=47",
-      text: "The team transformed our farm house lawn completely. Every plant they recommended is thriving even after the summer heat." },
-    { name: "Rohan Mehta", rating: 5, avatar: "https://i.pravatar.cc/150?img=12",
-      text: "Ordered a set of indoor plants — arrived healthy, well-packed, and exactly as shown. Will order again." },
-    { name: "Priya Nair", rating: 4, avatar: "https://i.pravatar.cc/150?img=32",
-      text: "Vertical garden installation for our balcony looks stunning. Quick site visit and quote on WhatsApp itself." },
-    { name: "Vikram Singh", rating: 5, avatar: "https://i.pravatar.cc/150?img=51",
-      text: "Subscribed to the Premium plant care plan — our garden has never looked healthier. Highly recommended." },
-    { name: "Kavita Rao", rating: 5, avatar: "https://i.pravatar.cc/150?img=45",
-      text: "Beautiful water fountain installed within the timeline promised. Great craftsmanship and clean finish." },
-    { name: "Arjun Kapoor", rating: 4, avatar: "https://i.pravatar.cc/150?img=14",
-      text: "Landscaping for our farm house driveway and lawn came out better than we imagined. Very professional crew." }
-];
-
-const galleryImages = [
-    { seed: "gallery-farmhouse-1", wide: true },
-    { seed: "gallery-lawn-2", wide: false },
-    { seed: "gallery-fountain-3", wide: false },
-    { seed: "gallery-vertical-4", wide: false },
-    { seed: "gallery-pathway-5", wide: false },
-    { seed: "gallery-garden-6", wide: true }
-];
-
-// ------------------------------------------------------
-// PART 5 — APP STATE
-// ------------------------------------------------------
-let cartItems = [];       // [{ id, qty }]
-let wishlistIds = [];     // [id, id, ...]
-let currentShopCategory = "all";
-let selectedPlan = "basic";
-let modalProductId = null;
-let modalQty = 1;
-let uploadedQuoteImageName = "";
-
-const toastEl = document.getElementById("app-toast");
-const searchInput = document.getElementById("search-input");
-
-// ------------------------------------------------------
-// PART 6 — INIT
-// ------------------------------------------------------
-document.addEventListener("DOMContentLoaded", () => {
-    renderShopCategoryBar();
-    renderShopProducts();
-    renderHomePopular();
-    renderServicesGrid("home-services-grid");
-    renderServicesGrid("more-services-grid");
-    renderReviews("home-review-scroll");
-    renderReviews("more-review-scroll");
-    renderGallery();
-    renderCart();
-    selectPlan("basic");
-
-    if (searchInput) {
-        searchInput.addEventListener("input", function () {
-            renderShopProducts(this.value.trim().toLowerCase());
-        });
-    }
-
-    const productModal = document.getElementById("product-modal");
-    if (productModal) {
-        productModal.addEventListener("click", (e) => {
-            if (e.target === productModal) closeProductModal();
-        });
-    }
-});
-
-// ------------------------------------------------------
-// PART 7 — NAVIGATION
-// ------------------------------------------------------
-function switchTab(tabName, element) {
-    document.querySelectorAll(".nav-item").forEach(item => item.classList.remove("active"));
-    document.querySelectorAll(".screen-content").forEach(screen => screen.classList.remove("active"));
-    if (element) element.classList.add("active");
-    const screen = document.getElementById("screen-" + tabName);
-    if (screen) screen.classList.add("active");
-    const activeScreen = document.querySelector(".screen-content.active");
-    if (activeScreen) activeScreen.scrollTop = 0;
-}
-
-function scrollMoreTo(elementId) {
-    switchTab("more", document.getElementById("nav-more"));
-    setTimeout(() => {
-        const el = document.getElementById(elementId);
-        if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-    }, 60);
-}
-
-function openHomeCategoryInfo(serviceName) {
-    openQuoteSheet();
-    const select = document.getElementById("q-project-type");
-    if (select) {
-        for (const opt of select.options) {
-            if (opt.value === serviceName) { select.value = serviceName; break; }
-        }
-    }
-}
-
-// ------------------------------------------------------
-// PART 8 — SHOP: CATEGORY BAR + PRODUCT GRID
-// ------------------------------------------------------
-function renderShopCategoryBar() {
-    const bar = document.getElementById("shop-cat-bar");
-    if (!bar) return;
-    let html = `
-      <div class="shop-cat-pill active" data-cat="all" onclick="switchShopCategory('all', this)">
-        <div class="shop-cat-pill-icon"><i class="fa-solid fa-border-all"></i></div>
-        <span>All</span>
-      </div>`;
-    categories.forEach(c => {
-        html += `
-      <div class="shop-cat-pill" data-cat="${c.key}" onclick="switchShopCategory('${c.key}', this)">
-        <div class="shop-cat-pill-icon"><i class="fa-solid ${c.icon}"></i></div>
-        <span>${c.label}</span>
-      </div>`;
-    });
-    bar.innerHTML = html;
-}
-
-function switchShopCategory(catKey, element) {
-    currentShopCategory = catKey;
-    document.querySelectorAll(".shop-cat-pill").forEach(p => p.classList.remove("active"));
-    if (element) element.classList.add("active");
-    renderShopProducts(searchInput ? searchInput.value.trim().toLowerCase() : "");
-}
-
-function renderShopProducts(searchQuery = "") {
-    const grid = document.getElementById("shop-product-grid");
-    if (!grid) return;
-    let list = [...productData];
-
-    if (currentShopCategory !== "all") {
-        list = list.filter(p => p.category === currentShopCategory);
-    }
-    if (searchQuery) {
-        list = list.filter(p =>
-            p.name.toLowerCase().includes(searchQuery) ||
-            categoryLabel(p.category).toLowerCase().includes(searchQuery)
-        );
-    }
-
-    if (list.length === 0) {
-        grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><i class="fa-solid fa-magnifying-glass"></i><p>No products found. Try a different search.</p></div>`;
-        return;
-    }
-
-    grid.innerHTML = list.map(p => productCardHtml(p)).join("");
-}
-
-function renderHomePopular() {
-    const grid = document.getElementById("home-popular-grid");
-    if (!grid) return;
-    const list = productData.filter(p => p.bestseller).slice(0, 4);
-    grid.innerHTML = list.map(p => productCardHtml(p)).join("");
-}
-
-function productCardHtml(p) {
-    const wished = wishlistIds.includes(p.id);
-    return `
-    <div class="product-card">
-      <div class="product-img-wrap" style="background-image:url('${p.image}')" onclick="openProductModal(${p.id})">
-        <div class="card-top">
-          ${p.bestseller ? `<span class="bestseller-badge"><i class="fa-solid fa-star"></i> BESTSELLER</span>` : `<span></span>`}
-          <div class="product-wish-btn ${wished ? "wished" : ""}" onclick="toggleWishlist(event, ${p.id})">
-            <i class="fa-solid fa-heart"></i>
-          </div>
-        </div>
-      </div>
-      <div class="product-info">
-        <h4 onclick="openProductModal(${p.id})">${p.name}</h4>
-        <div class="product-rating"><i class="fa-solid fa-star"></i> ${p.rating.toFixed(1)} <span>(${p.reviews})</span></div>
-        <div class="product-price-row">
-          <span class="product-price">₹${p.price}</span>
-          <span class="product-mrp">₹${p.mrp}</span>
-          <span class="product-off">${p.off}% OFF</span>
-        </div>
-        <div class="product-btn-row">
-          <button class="product-btn-cart" onclick="event.stopPropagation(); addToCart(${p.id}, 1);"><i class="fa-solid fa-cart-plus"></i> Add</button>
-          <button class="product-btn-buy" onclick="event.stopPropagation(); buyNow(${p.id});">Buy Now</button>
-        </div>
-      </div>
-    </div>`;
-}
-
-// ------------------------------------------------------
-// PART 9 — PRODUCT DETAIL MODAL
-// ------------------------------------------------------
-function openProductModal(id) {
-    const p = productData.find(x => x.id === id);
-    if (!p) return;
-    modalProductId = id;
-    modalQty = 1;
-
-    const modal = document.getElementById("product-modal");
-    const modalBg = document.getElementById("modal-preview-bg");
-    modalBg.style.backgroundImage = `url('${p.image}')`;
-    modalBg.style.backgroundSize = "cover";
-    modalBg.style.backgroundPosition = "center";
-
-    document.getElementById("modal-product-title").innerText = p.name;
-    document.getElementById("modal-product-cat").innerText = categoryLabel(p.category);
-    document.getElementById("modal-product-rating").innerHTML = `<i class="fa-solid fa-star"></i> ${p.rating.toFixed(1)} <span>(${p.reviews} ratings)</span>`;
-    document.getElementById("modal-product-price").innerText = `₹${p.price}`;
-    document.getElementById("modal-product-mrp").innerText = `₹${p.mrp}`;
-    document.getElementById("modal-product-off").innerText = `${p.off}% OFF`;
-    document.getElementById("modal-product-desc").innerText = p.desc;
-    document.getElementById("modal-product-qty").innerText = modalQty;
-
-    const favBtn = document.getElementById("modal-fav-btn");
-    favBtn.classList.toggle("favorited", wishlistIds.includes(id));
-
-    modal.classList.add("active");
-}
-
-function closeProductModal() {
-    document.getElementById("product-modal").classList.remove("active");
-}
-
-function changeModalQty(delta) {
-    modalQty = Math.max(1, modalQty + delta);
-    document.getElementById("modal-product-qty").innerText = modalQty;
-}
-
-function addModalToCart() {
-    if (!modalProductId) return;
-    addToCart(modalProductId, modalQty);
-    closeProductModal();
-}
-
-function buyModalNow() {
-    if (!modalProductId) return;
-    addToCart(modalProductId, modalQty);
-    closeProductModal();
-    openCheckoutSheet();
-}
-
-function toggleFavoriteModal() {
-    if (!modalProductId) return;
-    toggleWishlistById(modalProductId);
-    const favBtn = document.getElementById("modal-fav-btn");
-    favBtn.classList.toggle("favorited", wishlistIds.includes(modalProductId));
-}
-
-// ------------------------------------------------------
-// PART 10 — WISHLIST
-// ------------------------------------------------------
-function toggleWishlist(event, id) {
-    event.stopPropagation();
-    toggleWishlistById(id);
-    renderShopProducts(searchInput ? searchInput.value.trim().toLowerCase() : "");
-    renderHomePopular();
-}
-
-function toggleWishlistById(id) {
-    const idx = wishlistIds.indexOf(id);
-    if (idx > -1) {
-        wishlistIds.splice(idx, 1);
-        showToast("Removed from Wishlist");
-    } else {
-        wishlistIds.push(id);
-        showToast("Added to Wishlist ❤️");
-    }
-}
-
-function openWishlistSheet() {
-    const grid = document.getElementById("wishlist-grid");
-    const empty = document.getElementById("wishlist-empty-state");
-    const list = productData.filter(p => wishlistIds.includes(p.id));
-
-    if (list.length === 0) {
-        grid.innerHTML = "";
-        grid.style.display = "none";
-        empty.style.display = "block";
-    } else {
-        grid.style.display = "grid";
-        empty.style.display = "none";
-        grid.innerHTML = list.map(p => productCardHtml(p)).join("");
-    }
-    document.getElementById("wishlist-sheet-overlay").classList.add("active");
-}
-
-// ------------------------------------------------------
-// PART 11 — CART
-// ------------------------------------------------------
-function addToCart(id, qty = 1) {
-    const existing = cartItems.find(c => c.id === id);
-    if (existing) {
-        existing.qty += qty;
-    } else {
-        cartItems.push({ id, qty });
-    }
-    renderCart();
-    showToast("Added to Cart 🛒");
-}
-
-function buyNow(id) {
-    addToCart(id, 1);
-    openCheckoutSheet();
-}
-
-function updateCartQty(id, delta) {
-    const item = cartItems.find(c => c.id === id);
-    if (!item) return;
-    item.qty += delta;
-    if (item.qty <= 0) {
-        cartItems = cartItems.filter(c => c.id !== id);
-    }
-    renderCart();
-}
-
-function removeFromCart(id) {
-    cartItems = cartItems.filter(c => c.id !== id);
-    renderCart();
-    showToast("Item removed from cart");
-}
-
-function getCartTotals() {
-    let subtotal = 0;
-    cartItems.forEach(c => {
-        const p = productData.find(x => x.id === c.id);
-        if (p) subtotal += p.price * c.qty;
-    });
-    const delivery = subtotal === 0 || subtotal >= FREE_DELIVERY_ABOVE ? 0 : DELIVERY_CHARGE;
-    const grandTotal = subtotal + delivery;
-    return { subtotal, delivery, grandTotal };
-}
-
-function renderCart() {
-    const list = document.getElementById("cart-items-list");
-    const emptyState = document.getElementById("cart-empty-state");
-    const summaryCard = document.getElementById("cart-summary-card");
-
-    updateCartBadge();
-
-    if (!list) return;
-
-    if (cartItems.length === 0) {
-        list.innerHTML = "";
-        emptyState.style.display = "block";
-        summaryCard.style.display = "none";
-        return;
-    }
-
-    emptyState.style.display = "none";
-    summaryCard.style.display = "block";
-
-    list.innerHTML = cartItems.map(c => {
-        const p = productData.find(x => x.id === c.id);
-        if (!p) return "";
-        return `
-        <div class="cart-item-row">
-          <div class="cart-item-img" style="background-image:url('${p.image}')"></div>
-          <div class="cart-item-info">
-            <h4>${p.name}</h4>
-            <div class="cart-item-price">₹${p.price * c.qty}</div>
-            <div class="cart-item-controls">
-              <div class="qty-stepper">
-                <button onclick="updateCartQty(${p.id}, -1)">−</button>
-                <span>${c.qty}</span>
-                <button onclick="updateCartQty(${p.id}, 1)">+</button>
-              </div>
-              <div class="cart-remove-btn" onclick="removeFromCart(${p.id})"><i class="fa-solid fa-trash"></i></div>
-            </div>
-          </div>
-        </div>`;
-    }).join("");
-
-    const { subtotal, delivery, grandTotal } = getCartTotals();
-    document.getElementById("cart-subtotal").innerText = `₹${subtotal}`;
-    document.getElementById("cart-delivery").innerText = delivery === 0 ? "FREE" : `₹${delivery}`;
-    document.getElementById("cart-grand-total").innerText = `₹${grandTotal}`;
-}
-
-function updateCartBadge() {
-    const totalQty = cartItems.reduce((sum, c) => sum + c.qty, 0);
-    const badge = document.getElementById("cart-badge-home");
-    if (badge) badge.innerText = totalQty;
-}
-
-// ------------------------------------------------------
-// PART 12 — SHEETS (open/close helpers)
-// ------------------------------------------------------
-function closeSheet(id) {
-    document.getElementById(id).classList.remove("active");
-}
-
-function openCheckoutSheet() {
-    if (cartItems.length === 0) {
-        showToast("Your cart is empty");
-        return;
-    }
-    document.getElementById("checkout-sheet-overlay").classList.add("active");
-}
-
-function openQuoteSheet() {
-    document.getElementById("quote-sheet-overlay").classList.add("active");
-}
-
-// ------------------------------------------------------
-// PART 13 — CHECKOUT → WHATSAPP
-// ------------------------------------------------------
-function placeOrder() {
-    const name = document.getElementById("co-name").value.trim();
-    const mobile = document.getElementById("co-mobile").value.trim();
-    const email = document.getElementById("co-email").value.trim();
-    const address = document.getElementById("co-address").value.trim();
-    const state = document.getElementById("co-state").value.trim();
-    const city = document.getElementById("co-city").value.trim();
-    const pincode = document.getElementById("co-pincode").value.trim();
-    const landmark = document.getElementById("co-landmark").value.trim();
-
-    if (!name || !mobile || !address || !state || !city || !pincode) {
-        showToast("Please fill all required fields (*)");
-        return;
-    }
-    if (!/^\d{10}$/.test(mobile)) {
-        showToast("Please enter a valid 10-digit mobile number");
-        return;
-    }
-
-    const { subtotal, delivery, grandTotal } = getCartTotals();
-
-    let productLines = cartItems.map(c => {
-        const p = productData.find(x => x.id === c.id);
-        return p ? `• ${p.name} x${c.qty} = ₹${p.price * c.qty}` : "";
-    }).join("\n");
-
-    const message =
-`🌿 *New Order — depthnova Gardens*
-
-*Customer Details*
-Name: ${name}
-Mobile: ${mobile}
-Email: ${email || "-"}
-
-*Delivery Address*
-${address}
-${landmark ? "Landmark: " + landmark : ""}
-${city}, ${state} - ${pincode}
-
-*Order Items*
-${productLines}
-
-Subtotal: ₹${subtotal}
-Delivery: ${delivery === 0 ? "FREE" : "₹" + delivery}
-*Grand Total: ₹${grandTotal}*
-
-Please confirm my order. Thank you!`;
-
-    openWhatsAppMessage(message);
-
-    cartItems = [];
-    renderCart();
-    closeSheet("checkout-sheet-overlay");
-    showToast("Order sent on WhatsApp! We'll confirm shortly.");
-}
-
-// Optional: pay online instead of / in addition to WhatsApp confirmation
-function payOnlineRazorpay() {
-    if (typeof Razorpay === "undefined") {
-        showToast("Payment SDK not loaded. Check your connection.");
-        return;
-    }
-    const { grandTotal } = getCartTotals();
-    if (grandTotal <= 0) {
-        showToast("Your cart is empty");
-        return;
-    }
-    const options = {
-        key: RAZORPAY_KEY_ID,
-        amount: grandTotal * 100,
-        currency: "INR",
-        name: "depthnova Gardens",
-        description: "Plant Store Order Payment",
-        prefill: {
-            name: document.getElementById("co-name").value.trim(),
-            contact: document.getElementById("co-mobile").value.trim(),
-            email: document.getElementById("co-email").value.trim()
-        },
-        theme: { color: "#1a8f4c" },
-        handler: function () {
-            showToast("Payment Successful! Confirming your order...");
-            placeOrder();
-        },
-        modal: {
-            ondismiss: function () { showToast("Payment Cancelled"); }
-        }
-    };
-    const rzp = new Razorpay(options);
-    rzp.on("payment.failed", function () { showToast("Payment Failed. Please try again."); });
-    rzp.open();
-}
-
-// ------------------------------------------------------
-// PART 14 — INSTANT QUOTE → WHATSAPP
-// ------------------------------------------------------
-function handleQuoteImageUpload(event) {
-    const file = event.target.files[0];
-    const box = document.getElementById("q-upload-box");
-    if (!file) return;
-    uploadedQuoteImageName = file.name;
-    const reader = new FileReader();
-    reader.onload = function (e) {
-        box.classList.add("has-image");
-        box.innerHTML = `<img src="${e.target.result}" alt="Uploaded site photo" />`;
-    };
-    reader.readAsDataURL(file);
-}
-
-function submitQuote() {
-    const name = document.getElementById("q-name").value.trim();
-    const mobile = document.getElementById("q-mobile").value.trim();
-    const city = document.getElementById("q-city").value.trim();
-    const projectType = document.getElementById("q-project-type").value;
-    const area = document.getElementById("q-area").value.trim();
-    const budget = document.getElementById("q-budget").value.trim();
-    const notes = document.getElementById("q-notes").value.trim();
-
-    if (!name || !mobile || !city || !projectType || !area) {
-        showToast("Please fill all required fields (*)");
-        return;
-    }
-    if (!/^\d{10}$/.test(mobile)) {
-        showToast("Please enter a valid 10-digit mobile number");
-        return;
-    }
-
-    const message =
-`🌱 *Instant Quote Request — depthnova Gardens*
-
-Name: ${name}
-Mobile: ${mobile}
-City: ${city}
-Project Type: ${projectType}
-Area Size: ${area}
-Budget: ${budget || "Not specified"}
-${uploadedQuoteImageName ? "Site Photo: " + uploadedQuoteImageName + " (I'll share the photo here on WhatsApp)" : ""}
-
-Notes: ${notes || "-"}
-
-Please share a quote for my project. Thank you!`;
-
-    openWhatsAppMessage(message);
-    closeSheet("quote-sheet-overlay");
-    showToast("Request sent on WhatsApp!");
-}
-
-// ------------------------------------------------------
-// PART 15 — SUBSCRIPTION PLANS
-// ------------------------------------------------------
-function selectPlan(planId) {
-    selectedPlan = planId;
-    document.getElementById("plan-basic").classList.toggle("selected", planId === "basic");
-    document.getElementById("plan-premium").classList.toggle("selected", planId === "premium");
-    document.querySelectorAll(".plan-radio i").forEach(i => i.style.display = "none");
-    const activePlan = document.getElementById("plan-" + planId);
-    if (activePlan) activePlan.querySelector(".plan-radio i").style.display = "block";
-}
-
-function subscribePlan() {
-    const planName = selectedPlan === "premium"
-        ? "Premium Plan (Weekly maintenance, health check, pest inspection, watering inspection, fertilizer guidance, cleaning & small issue fixing)"
-        : "Basic Plan (One visit every 7 days)";
-    const message = `🪴 *Plant Care Subscription Request — depthnova Gardens*\n\nI'd like to subscribe to the:\n${planName}\n\nPlease share the pricing and next steps.`;
-    openWhatsAppMessage(message);
-    showToast("Subscription request sent on WhatsApp!");
-}
-
-// ------------------------------------------------------
-// PART 16 — REVIEWS + GALLERY RENDER
-// ------------------------------------------------------
-function renderReviews(containerId) {
-    const el = document.getElementById(containerId);
-    if (!el) return;
-    el.innerHTML = reviewsData.map(r => `
-      <div class="review-card">
-        <div class="review-top">
-          <div class="review-avatar" style="background-image:url('${r.avatar}')"></div>
-          <div>
-            <div class="review-name">${r.name}</div>
-            <div class="review-stars">${"★".repeat(r.rating)}${"☆".repeat(5 - r.rating)}</div>
-          </div>
-        </div>
-        <p class="review-text">${r.text}</p>
-      </div>
-    `).join("");
-}
-
-function renderGallery() {
-    const el = document.getElementById("gallery-grid");
-    if (!el) return;
-    el.innerHTML = galleryImages.map(g => `
-      <div class="gallery-tile ${g.wide ? "wide" : ""}" style="background-image:url('https://picsum.photos/seed/${g.seed}/700/500')"></div>
-    `).join("");
-}
-
-// ------------------------------------------------------
-// PART 17 — SERVICES RENDER
-// ------------------------------------------------------
-function renderServicesGrid(containerId) {
-    const el = document.getElementById(containerId);
-    if (!el) return;
-    el.innerHTML = servicesData.map(s => `
-      <div class="service-tile" onclick="openHomeCategoryInfo('${s.name}')">
-        <div class="service-tile-icon"><i class="fa-solid ${s.icon}"></i></div>
-        <p>${s.name}</p>
-      </div>
-    `).join("");
-}
-
-// ------------------------------------------------------
-// PART 18 — CONTACT ACTIONS
-// ------------------------------------------------------
-function contactWhatsApp() {
-    openWhatsAppMessage("Hi depthnova Gardens, I'd like to know more about your services.");
-}
-
-function contactCall() {
-    window.location.href = `tel:+${WHATSAPP_NUMBER}`;
-}
-
-function contactEmail() {
-    window.location.href = "mailto:depthnovacustomersupport@gmail.com";
-}
-
-function openWhatsAppMessage(message) {
-    const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
-    window.open(url, "_blank");
-}
-
-// ------------------------------------------------------
-// PART 19 — POLICY SHEETS (About / Privacy / Terms)
-// ------------------------------------------------------
-const policyContent = {
-    about: {
-        title: "About Us",
-        body: `
-        <p><strong>depthnova Gardens</strong> is a farm house & garden decoration studio and online plant nursery, helping homes, farm houses and offices turn empty spaces into thriving green environments.</p>
-        <h4>What We Do</h4>
-        <p>We design and build complete outdoor spaces — from farm house decoration and garden design to landscaping, lawns, vertical gardens, water features and irrigation systems. Alongside our project work, our online plant store delivers healthy indoor and outdoor plants, pots, fertilizers and gardening tools straight to your door.</p>
-        <h4>Our Promise</h4>
-        <p>Every plant we sell and every project we take on is backed by our in-house horticulture team. We also offer ongoing Plant Care Subscription plans so your garden keeps looking its best long after installation day.</p>
-        <h4>Get In Touch</h4>
-        <p>Reach us anytime on WhatsApp or phone at +91 93116 49629, or email depthnovacustomersupport@gmail.com for quotes, orders or support.</p>`
-    },
-    privacy: {
-        title: "Privacy Policy",
-        body: `
-        <p>This Privacy Policy explains how depthnova Gardens ("we", "us") collects and uses information when you use this website.</p>
-        <h4>Information We Collect</h4>
-        <p>When you place an order, request a quote or contact us, we collect details you provide directly — such as your name, mobile number, email, delivery address and project information. Cart and wishlist selections are stored only in your browser session and are not transmitted to any server unless you submit an order or quote request.</p>
-        <h4>How We Use Your Information</h4>
-        <p>Order and quote details you submit are sent directly to our business WhatsApp number to process your order, prepare a quote, or respond to your enquiry. We do not sell or share your personal information with third parties for marketing purposes.</p>
-        <h4>Payments</h4>
-        <p>Online payments made through Razorpay are processed by Razorpay's secure payment gateway. We do not store your card, UPI or banking details on our systems.</p>
-        <h4>Contact</h4>
-        <p>For any privacy-related questions, please email depthnovacustomersupport@gmail.com.</p>`
-    },
-    terms: {
-        title: "Terms & Conditions",
-        body: `
-        <p>By using this website and placing an order or quote request, you agree to the following terms.</p>
-        <h4>Orders & Pricing</h4>
-        <p>Product prices, discounts and delivery charges shown are correct at the time of listing and may change without prior notice. Orders placed via WhatsApp are confirmed by our team before dispatch.</p>
-        <h4>Plants & Delivery</h4>
-        <p>Plants are living products and their appearance may vary slightly from photos shown. We take care to pack and deliver plants safely; please inspect your order on delivery and report any issues to us within 24 hours.</p>
-        <h4>Services & Quotes</h4>
-        <p>Instant Quote requests are estimates based on the information and photos you provide. A final quote is confirmed only after our team reviews your requirements or completes a site visit where required.</p>
-        <h4>Subscriptions</h4>
-        <p>Plant Care Subscription plans renew as per the schedule agreed with our team at the time of subscribing and can be cancelled by contacting us on WhatsApp.</p>
-        <h4>Payments</h4>
-        <p>Online payments are securely processed via Razorpay. Cash-on-delivery/WhatsApp-confirmed orders are settled as agreed with our team at the time of order confirmation.</p>`
-    }
+const PLANTS = [
+  { id: 'p1', name: 'Money Plant (Small)', category: 'Indoor', categoryLabel: 'Indoor Plants', price: 799, size: 'Small', tag: 'bestseller', img: 'https://loremflickr.com/500/650/houseplant,plant/all?lock=1', desc: 'Healthy Money Plant — small size, perfect for home & office decor. Nursery-grown, well-rooted, ready to plant.' },
+  { id: 'p2', name: 'Snake Plant (Medium)', category: 'Indoor', categoryLabel: 'Indoor Plants', price: 149, size: 'Medium', tag: 'none', img: 'https://loremflickr.com/500/650/houseplant,plant/all?lock=2', desc: 'Healthy Snake Plant — medium size, perfect for home & office decor. Nursery-grown, well-rooted, ready to plant.' },
+  { id: 'p3', name: 'Areca Palm (Large)', category: 'Indoor', categoryLabel: 'Indoor Plants', price: 299, size: 'Large', tag: 'new', img: 'https://loremflickr.com/500/650/houseplant,plant/all?lock=3', desc: 'Healthy Areca Palm — large size, perfect for home & office decor. Nursery-grown, well-rooted, ready to plant.' },
+  { id: 'p4', name: 'Peace Lily (Small)', category: 'Indoor', categoryLabel: 'Indoor Plants', price: 249, size: 'Small', tag: 'bestseller', img: 'https://loremflickr.com/500/650/houseplant,plant/all?lock=4', desc: 'Healthy Peace Lily — small size, perfect for home & office decor. Nursery-grown, well-rooted, ready to plant.' },
+  { id: 'p5', name: 'ZZ Plant (Medium)', category: 'Indoor', categoryLabel: 'Indoor Plants', price: 799, size: 'Medium', tag: 'none', img: 'https://loremflickr.com/500/650/houseplant,plant/all?lock=5', desc: 'Healthy ZZ Plant — medium size, perfect for home & office decor. Nursery-grown, well-rooted, ready to plant.' },
+  { id: 'p6', name: 'Spider Plant (Large)', category: 'Indoor', categoryLabel: 'Indoor Plants', price: 199, size: 'Large', tag: 'none', img: 'https://loremflickr.com/500/650/houseplant,plant/all?lock=6', desc: 'Healthy Spider Plant — large size, perfect for home & office decor. Nursery-grown, well-rooted, ready to plant.' },
+  { id: 'p7', name: 'Rubber Plant (Small)', category: 'Indoor', categoryLabel: 'Indoor Plants', price: 449, size: 'Small', tag: 'bestseller', img: 'https://loremflickr.com/500/650/houseplant,plant/all?lock=7', desc: 'Healthy Rubber Plant — small size, perfect for home & office decor. Nursery-grown, well-rooted, ready to plant.' },
+  { id: 'p8', name: 'Fiddle Leaf Fig (Medium)', category: 'Indoor', categoryLabel: 'Indoor Plants', price: 149, size: 'Medium', tag: 'bestseller', img: 'https://loremflickr.com/500/650/houseplant,plant/all?lock=8', desc: 'Healthy Fiddle Leaf Fig — medium size, perfect for home & office decor. Nursery-grown, well-rooted, ready to plant.' },
+  { id: 'p9', name: 'Philodendron (Large)', category: 'Indoor', categoryLabel: 'Indoor Plants', price: 299, size: 'Large', tag: 'new', img: 'https://loremflickr.com/500/650/houseplant,plant/all?lock=9', desc: 'Healthy Philodendron — large size, perfect for home & office decor. Nursery-grown, well-rooted, ready to plant.' },
+  { id: 'p10', name: 'Pothos Golden (Small)', category: 'Indoor', categoryLabel: 'Indoor Plants', price: 599, size: 'Small', tag: 'none', img: 'https://loremflickr.com/500/650/houseplant,plant/all?lock=10', desc: 'Healthy Pothos Golden — small size, perfect for home & office decor. Nursery-grown, well-rooted, ready to plant.' },
+  { id: 'p11', name: 'Dracaena (Medium)', category: 'Indoor', categoryLabel: 'Indoor Plants', price: 149, size: 'Medium', tag: 'none', img: 'https://loremflickr.com/500/650/houseplant,plant/all?lock=11', desc: 'Healthy Dracaena — medium size, perfect for home & office decor. Nursery-grown, well-rooted, ready to plant.' },
+  { id: 'p12', name: 'Aglaonema (Large)', category: 'Indoor', categoryLabel: 'Indoor Plants', price: 299, size: 'Large', tag: 'none', img: 'https://loremflickr.com/500/650/houseplant,plant/all?lock=12', desc: 'Healthy Aglaonema — large size, perfect for home & office decor. Nursery-grown, well-rooted, ready to plant.' },
+  { id: 'p13', name: 'Calathea (Small)', category: 'Indoor', categoryLabel: 'Indoor Plants', price: 449, size: 'Small', tag: 'new', img: 'https://loremflickr.com/500/650/houseplant,plant/all?lock=13', desc: 'Healthy Calathea — small size, perfect for home & office decor. Nursery-grown, well-rooted, ready to plant.' },
+  { id: 'p14', name: 'Croton (Medium)', category: 'Indoor', categoryLabel: 'Indoor Plants', price: 499, size: 'Medium', tag: 'none', img: 'https://loremflickr.com/500/650/houseplant,plant/all?lock=14', desc: 'Healthy Croton — medium size, perfect for home & office decor. Nursery-grown, well-rooted, ready to plant.' },
+  { id: 'p15', name: 'Anthurium (Large)', category: 'Indoor', categoryLabel: 'Indoor Plants', price: 349, size: 'Large', tag: 'bestseller', img: 'https://loremflickr.com/500/650/houseplant,plant/all?lock=15', desc: 'Healthy Anthurium — large size, perfect for home & office decor. Nursery-grown, well-rooted, ready to plant.' },
+  { id: 'p16', name: 'Monstera Deliciosa (Small)', category: 'Indoor', categoryLabel: 'Indoor Plants', price: 999, size: 'Small', tag: 'new', img: 'https://loremflickr.com/500/650/houseplant,plant/all?lock=16', desc: 'Healthy Monstera Deliciosa — small size, perfect for home & office decor. Nursery-grown, well-rooted, ready to plant.' },
+  { id: 'p17', name: 'Bamboo Palm (Medium)', category: 'Indoor', categoryLabel: 'Indoor Plants', price: 899, size: 'Medium', tag: 'none', img: 'https://loremflickr.com/500/650/houseplant,plant/all?lock=17', desc: 'Healthy Bamboo Palm — medium size, perfect for home & office decor. Nursery-grown, well-rooted, ready to plant.' },
+  { id: 'p18', name: 'Boston Fern (Large)', category: 'Indoor', categoryLabel: 'Indoor Plants', price: 399, size: 'Large', tag: 'none', img: 'https://loremflickr.com/500/650/houseplant,plant/all?lock=18', desc: 'Healthy Boston Fern — large size, perfect for home & office decor. Nursery-grown, well-rooted, ready to plant.' },
+  { id: 'p19', name: 'Parlor Palm (Small)', category: 'Indoor', categoryLabel: 'Indoor Plants', price: 249, size: 'Small', tag: 'new', img: 'https://loremflickr.com/500/650/houseplant,plant/all?lock=19', desc: 'Healthy Parlor Palm — small size, perfect for home & office decor. Nursery-grown, well-rooted, ready to plant.' },
+  { id: 'p20', name: 'Chinese Evergreen (Medium)', category: 'Indoor', categoryLabel: 'Indoor Plants', price: 999, size: 'Medium', tag: 'none', img: 'https://loremflickr.com/500/650/houseplant,plant/all?lock=20', desc: 'Healthy Chinese Evergreen — medium size, perfect for home & office decor. Nursery-grown, well-rooted, ready to plant.' },
+  { id: 'p21', name: 'Hibiscus (Small)', category: 'Outdoor', categoryLabel: 'Outdoor Plants', price: 199, size: 'Small', tag: 'bestseller', img: 'https://loremflickr.com/500/650/gardenplant,plant/all?lock=21', desc: 'Healthy Hibiscus — small size, perfect for garden & landscaping. Nursery-grown, well-rooted, ready to plant.' },
+  { id: 'p22', name: 'Bougainvillea (Medium)', category: 'Outdoor', categoryLabel: 'Outdoor Plants', price: 449, size: 'Medium', tag: 'bestseller', img: 'https://loremflickr.com/500/650/gardenplant,plant/all?lock=22', desc: 'Healthy Bougainvillea — medium size, perfect for garden & landscaping. Nursery-grown, well-rooted, ready to plant.' },
+  { id: 'p23', name: 'Rose Plant (Large)', category: 'Outdoor', categoryLabel: 'Outdoor Plants', price: 399, size: 'Large', tag: 'none', img: 'https://loremflickr.com/500/650/gardenplant,plant/all?lock=23', desc: 'Healthy Rose Plant — large size, perfect for garden & landscaping. Nursery-grown, well-rooted, ready to plant.' },
+  { id: 'p24', name: 'Jasmine (Small)', category: 'Outdoor', categoryLabel: 'Outdoor Plants', price: 699, size: 'Small', tag: 'none', img: 'https://loremflickr.com/500/650/gardenplant,plant/all?lock=24', desc: 'Healthy Jasmine — small size, perfect for garden & landscaping. Nursery-grown, well-rooted, ready to plant.' },
+  { id: 'p25', name: 'Marigold (Medium)', category: 'Outdoor', categoryLabel: 'Outdoor Plants', price: 999, size: 'Medium', tag: 'bestseller', img: 'https://loremflickr.com/500/650/gardenplant,plant/all?lock=25', desc: 'Healthy Marigold — medium size, perfect for garden & landscaping. Nursery-grown, well-rooted, ready to plant.' },
+  { id: 'p26', name: 'Ixora (Large)', category: 'Outdoor', categoryLabel: 'Outdoor Plants', price: 899, size: 'Large', tag: 'none', img: 'https://loremflickr.com/500/650/gardenplant,plant/all?lock=26', desc: 'Healthy Ixora — large size, perfect for garden & landscaping. Nursery-grown, well-rooted, ready to plant.' },
+  { id: 'p27', name: 'Adenium Desert Rose (Small)', category: 'Outdoor', categoryLabel: 'Outdoor Plants', price: 599, size: 'Small', tag: 'bestseller', img: 'https://loremflickr.com/500/650/gardenplant,plant/all?lock=27', desc: 'Healthy Adenium Desert Rose — small size, perfect for garden & landscaping. Nursery-grown, well-rooted, ready to plant.' },
+  { id: 'p28', name: 'Curry Leaf Tree (Medium)', category: 'Outdoor', categoryLabel: 'Outdoor Plants', price: 1499, size: 'Medium', tag: 'none', img: 'https://loremflickr.com/500/650/gardenplant,plant/all?lock=28', desc: 'Healthy Curry Leaf Tree — medium size, perfect for garden & landscaping. Nursery-grown, well-rooted, ready to plant.' },
+  { id: 'p29', name: 'Ashoka Tree (Large)', category: 'Outdoor', categoryLabel: 'Outdoor Plants', price: 199, size: 'Large', tag: 'none', img: 'https://loremflickr.com/500/650/gardenplant,plant/all?lock=29', desc: 'Healthy Ashoka Tree — large size, perfect for garden & landscaping. Nursery-grown, well-rooted, ready to plant.' },
+  { id: 'p30', name: 'Champa Plumeria (Small)', category: 'Outdoor', categoryLabel: 'Outdoor Plants', price: 349, size: 'Small', tag: 'none', img: 'https://loremflickr.com/500/650/gardenplant,plant/all?lock=30', desc: 'Healthy Champa Plumeria — small size, perfect for garden & landscaping. Nursery-grown, well-rooted, ready to plant.' },
+  { id: 'p31', name: 'Ficus Hedge (Medium)', category: 'Outdoor', categoryLabel: 'Outdoor Plants', price: 1499, size: 'Medium', tag: 'none', img: 'https://loremflickr.com/500/650/gardenplant,plant/all?lock=31', desc: 'Healthy Ficus Hedge — medium size, perfect for garden & landscaping. Nursery-grown, well-rooted, ready to plant.' },
+  { id: 'p32', name: 'Duranta (Large)', category: 'Outdoor', categoryLabel: 'Outdoor Plants', price: 699, size: 'Large', tag: 'new', img: 'https://loremflickr.com/500/650/gardenplant,plant/all?lock=32', desc: 'Healthy Duranta — large size, perfect for garden & landscaping. Nursery-grown, well-rooted, ready to plant.' },
+  { id: 'p33', name: 'Croton Garden (Small)', category: 'Outdoor', categoryLabel: 'Outdoor Plants', price: 899, size: 'Small', tag: 'bestseller', img: 'https://loremflickr.com/500/650/gardenplant,plant/all?lock=33', desc: 'Healthy Croton Garden — small size, perfect for garden & landscaping. Nursery-grown, well-rooted, ready to plant.' },
+  { id: 'p34', name: 'Palm Tree (Medium)', category: 'Outdoor', categoryLabel: 'Outdoor Plants', price: 149, size: 'Medium', tag: 'new', img: 'https://loremflickr.com/500/650/gardenplant,plant/all?lock=34', desc: 'Healthy Palm Tree — medium size, perfect for garden & landscaping. Nursery-grown, well-rooted, ready to plant.' },
+  { id: 'p35', name: 'Neem Sapling (Large)', category: 'Outdoor', categoryLabel: 'Outdoor Plants', price: 999, size: 'Large', tag: 'none', img: 'https://loremflickr.com/500/650/gardenplant,plant/all?lock=35', desc: 'Healthy Neem Sapling — large size, perfect for garden & landscaping. Nursery-grown, well-rooted, ready to plant.' },
+  { id: 'p36', name: 'Petunia (Small)', category: 'Flowering', categoryLabel: 'Flowering Plants', price: 199, size: 'Small', tag: 'new', img: 'https://loremflickr.com/500/650/flowerplant,plant/all?lock=36', desc: 'Healthy Petunia — small size, perfect for garden & landscaping. Nursery-grown, well-rooted, ready to plant.' },
+  { id: 'p37', name: 'Dahlia (Medium)', category: 'Flowering', categoryLabel: 'Flowering Plants', price: 1299, size: 'Medium', tag: 'bestseller', img: 'https://loremflickr.com/500/650/flowerplant,plant/all?lock=37', desc: 'Healthy Dahlia — medium size, perfect for garden & landscaping. Nursery-grown, well-rooted, ready to plant.' },
+  { id: 'p38', name: 'Chrysanthemum (Large)', category: 'Flowering', categoryLabel: 'Flowering Plants', price: 449, size: 'Large', tag: 'none', img: 'https://loremflickr.com/500/650/flowerplant,plant/all?lock=38', desc: 'Healthy Chrysanthemum — large size, perfect for garden & landscaping. Nursery-grown, well-rooted, ready to plant.' },
+  { id: 'p39', name: 'Portulaca (Small)', category: 'Flowering', categoryLabel: 'Flowering Plants', price: 499, size: 'Small', tag: 'none', img: 'https://loremflickr.com/500/650/flowerplant,plant/all?lock=39', desc: 'Healthy Portulaca — small size, perfect for garden & landscaping. Nursery-grown, well-rooted, ready to plant.' },
+  { id: 'p40', name: 'Vinca (Medium)', category: 'Flowering', categoryLabel: 'Flowering Plants', price: 249, size: 'Medium', tag: 'none', img: 'https://loremflickr.com/500/650/flowerplant,plant/all?lock=40', desc: 'Healthy Vinca — medium size, perfect for garden & landscaping. Nursery-grown, well-rooted, ready to plant.' },
+  { id: 'p41', name: 'Lantana (Large)', category: 'Flowering', categoryLabel: 'Flowering Plants', price: 399, size: 'Large', tag: 'new', img: 'https://loremflickr.com/500/650/flowerplant,plant/all?lock=41', desc: 'Healthy Lantana — large size, perfect for garden & landscaping. Nursery-grown, well-rooted, ready to plant.' },
+  { id: 'p42', name: 'Hydrangea (Small)', category: 'Flowering', categoryLabel: 'Flowering Plants', price: 799, size: 'Small', tag: 'none', img: 'https://loremflickr.com/500/650/flowerplant,plant/all?lock=42', desc: 'Healthy Hydrangea — small size, perfect for garden & landscaping. Nursery-grown, well-rooted, ready to plant.' },
+  { id: 'p43', name: 'Gerbera (Medium)', category: 'Flowering', categoryLabel: 'Flowering Plants', price: 899, size: 'Medium', tag: 'bestseller', img: 'https://loremflickr.com/500/650/flowerplant,plant/all?lock=43', desc: 'Healthy Gerbera — medium size, perfect for garden & landscaping. Nursery-grown, well-rooted, ready to plant.' },
+  { id: 'p44', name: 'Cosmos (Large)', category: 'Flowering', categoryLabel: 'Flowering Plants', price: 699, size: 'Large', tag: 'new', img: 'https://loremflickr.com/500/650/flowerplant,plant/all?lock=44', desc: 'Healthy Cosmos — large size, perfect for garden & landscaping. Nursery-grown, well-rooted, ready to plant.' },
+  { id: 'p45', name: 'Zinnia (Small)', category: 'Flowering', categoryLabel: 'Flowering Plants', price: 599, size: 'Small', tag: 'new', img: 'https://loremflickr.com/500/650/flowerplant,plant/all?lock=45', desc: 'Healthy Zinnia — small size, perfect for garden & landscaping. Nursery-grown, well-rooted, ready to plant.' },
+  { id: 'p46', name: 'Balsam (Medium)', category: 'Flowering', categoryLabel: 'Flowering Plants', price: 249, size: 'Medium', tag: 'none', img: 'https://loremflickr.com/500/650/flowerplant,plant/all?lock=46', desc: 'Healthy Balsam — medium size, perfect for garden & landscaping. Nursery-grown, well-rooted, ready to plant.' },
+  { id: 'p47', name: 'Gaillardia (Large)', category: 'Flowering', categoryLabel: 'Flowering Plants', price: 449, size: 'Large', tag: 'none', img: 'https://loremflickr.com/500/650/flowerplant,plant/all?lock=47', desc: 'Healthy Gaillardia — large size, perfect for garden & landscaping. Nursery-grown, well-rooted, ready to plant.' },
+  { id: 'p48', name: 'Salvia (Small)', category: 'Flowering', categoryLabel: 'Flowering Plants', price: 1499, size: 'Small', tag: 'none', img: 'https://loremflickr.com/500/650/flowerplant,plant/all?lock=48', desc: 'Healthy Salvia — small size, perfect for garden & landscaping. Nursery-grown, well-rooted, ready to plant.' },
+  { id: 'p49', name: 'Torenia (Medium)', category: 'Flowering', categoryLabel: 'Flowering Plants', price: 299, size: 'Medium', tag: 'none', img: 'https://loremflickr.com/500/650/flowerplant,plant/all?lock=49', desc: 'Healthy Torenia — medium size, perfect for garden & landscaping. Nursery-grown, well-rooted, ready to plant.' },
+  { id: 'p50', name: 'Celosia (Large)', category: 'Flowering', categoryLabel: 'Flowering Plants', price: 1299, size: 'Large', tag: 'bestseller', img: 'https://loremflickr.com/500/650/flowerplant,plant/all?lock=50', desc: 'Healthy Celosia — large size, perfect for garden & landscaping. Nursery-grown, well-rooted, ready to plant.' },
+  { id: 'p51', name: 'Echeveria (Small)', category: 'Succulents', categoryLabel: 'Succulents & Cacti', price: 299, size: 'Small', tag: 'bestseller', img: 'https://loremflickr.com/500/650/succulent,plant/all?lock=51', desc: 'Healthy Echeveria — small size, perfect for plant lovers. Nursery-grown, well-rooted, ready to plant.' },
+  { id: 'p52', name: 'Haworthia (Medium)', category: 'Succulents', categoryLabel: 'Succulents & Cacti', price: 999, size: 'Medium', tag: 'none', img: 'https://loremflickr.com/500/650/succulent,plant/all?lock=52', desc: 'Healthy Haworthia — medium size, perfect for plant lovers. Nursery-grown, well-rooted, ready to plant.' },
+  { id: 'p53', name: 'Jade Plant (Large)', category: 'Succulents', categoryLabel: 'Succulents & Cacti', price: 449, size: 'Large', tag: 'none', img: 'https://loremflickr.com/500/650/succulent,plant/all?lock=53', desc: 'Healthy Jade Plant — large size, perfect for plant lovers. Nursery-grown, well-rooted, ready to plant.' },
+  { id: 'p54', name: 'Aloe Vera (Small)', category: 'Succulents', categoryLabel: 'Succulents & Cacti', price: 199, size: 'Small', tag: 'new', img: 'https://loremflickr.com/500/650/succulent,plant/all?lock=54', desc: 'Healthy Aloe Vera — small size, perfect for plant lovers. Nursery-grown, well-rooted, ready to plant.' },
+  { id: 'p55', name: 'Sedum (Medium)', category: 'Succulents', categoryLabel: 'Succulents & Cacti', price: 1499, size: 'Medium', tag: 'none', img: 'https://loremflickr.com/500/650/succulent,plant/all?lock=55', desc: 'Healthy Sedum — medium size, perfect for plant lovers. Nursery-grown, well-rooted, ready to plant.' },
+  { id: 'p56', name: 'String of Pearls (Large)', category: 'Succulents', categoryLabel: 'Succulents & Cacti', price: 1499, size: 'Large', tag: 'none', img: 'https://loremflickr.com/500/650/succulent,plant/all?lock=56', desc: 'Healthy String of Pearls — large size, perfect for plant lovers. Nursery-grown, well-rooted, ready to plant.' },
+  { id: 'p57', name: 'Barrel Cactus (Small)', category: 'Succulents', categoryLabel: 'Succulents & Cacti', price: 299, size: 'Small', tag: 'none', img: 'https://loremflickr.com/500/650/succulent,plant/all?lock=57', desc: 'Healthy Barrel Cactus — small size, perfect for plant lovers. Nursery-grown, well-rooted, ready to plant.' },
+  { id: 'p58', name: 'Bunny Ear Cactus (Medium)', category: 'Succulents', categoryLabel: 'Succulents & Cacti', price: 449, size: 'Medium', tag: 'none', img: 'https://loremflickr.com/500/650/succulent,plant/all?lock=58', desc: 'Healthy Bunny Ear Cactus — medium size, perfect for plant lovers. Nursery-grown, well-rooted, ready to plant.' },
+  { id: 'p59', name: 'Crown of Thorns (Large)', category: 'Succulents', categoryLabel: 'Succulents & Cacti', price: 249, size: 'Large', tag: 'none', img: 'https://loremflickr.com/500/650/succulent,plant/all?lock=59', desc: 'Healthy Crown of Thorns — large size, perfect for plant lovers. Nursery-grown, well-rooted, ready to plant.' },
+  { id: 'p60', name: 'Kalanchoe (Small)', category: 'Succulents', categoryLabel: 'Succulents & Cacti', price: 249, size: 'Small', tag: 'new', img: 'https://loremflickr.com/500/650/succulent,plant/all?lock=60', desc: 'Healthy Kalanchoe — small size, perfect for plant lovers. Nursery-grown, well-rooted, ready to plant.' },
+  { id: 'p61', name: 'Sansevieria Mini (Medium)', category: 'Succulents', categoryLabel: 'Succulents & Cacti', price: 899, size: 'Medium', tag: 'none', img: 'https://loremflickr.com/500/650/succulent,plant/all?lock=61', desc: 'Healthy Sansevieria Mini — medium size, perfect for plant lovers. Nursery-grown, well-rooted, ready to plant.' },
+  { id: 'p62', name: 'Ghost Plant (Large)', category: 'Succulents', categoryLabel: 'Succulents & Cacti', price: 599, size: 'Large', tag: 'none', img: 'https://loremflickr.com/500/650/succulent,plant/all?lock=62', desc: 'Healthy Ghost Plant — large size, perfect for plant lovers. Nursery-grown, well-rooted, ready to plant.' },
+  { id: 'p63', name: 'Zebra Haworthia (Small)', category: 'Succulents', categoryLabel: 'Succulents & Cacti', price: 899, size: 'Small', tag: 'none', img: 'https://loremflickr.com/500/650/succulent,plant/all?lock=63', desc: 'Healthy Zebra Haworthia — small size, perfect for plant lovers. Nursery-grown, well-rooted, ready to plant.' },
+  { id: 'p64', name: 'Christmas Cactus (Medium)', category: 'Succulents', categoryLabel: 'Succulents & Cacti', price: 449, size: 'Medium', tag: 'none', img: 'https://loremflickr.com/500/650/succulent,plant/all?lock=64', desc: 'Healthy Christmas Cactus — medium size, perfect for plant lovers. Nursery-grown, well-rooted, ready to plant.' },
+  { id: 'p65', name: 'Moon Cactus (Large)', category: 'Succulents', categoryLabel: 'Succulents & Cacti', price: 449, size: 'Large', tag: 'none', img: 'https://loremflickr.com/500/650/succulent,plant/all?lock=65', desc: 'Healthy Moon Cactus — large size, perfect for plant lovers. Nursery-grown, well-rooted, ready to plant.' },
+  { id: 'p66', name: 'Areca Palm Air (Small)', category: 'AirPurifying', categoryLabel: 'Air-Purifying Plants', price: 299, size: 'Small', tag: 'new', img: 'https://loremflickr.com/500/650/leafplant,plant/all?lock=66', desc: 'Healthy Areca Palm Air — small size, perfect for home & office decor. Nursery-grown, well-rooted, ready to plant.' },
+  { id: 'p67', name: 'Snake Plant XL (Medium)', category: 'AirPurifying', categoryLabel: 'Air-Purifying Plants', price: 599, size: 'Medium', tag: 'none', img: 'https://loremflickr.com/500/650/leafplant,plant/all?lock=67', desc: 'Healthy Snake Plant XL — medium size, perfect for home & office decor. Nursery-grown, well-rooted, ready to plant.' },
+  { id: 'p68', name: 'Peace Lily Air (Large)', category: 'AirPurifying', categoryLabel: 'Air-Purifying Plants', price: 199, size: 'Large', tag: 'bestseller', img: 'https://loremflickr.com/500/650/leafplant,plant/all?lock=68', desc: 'Healthy Peace Lily Air — large size, perfect for home & office decor. Nursery-grown, well-rooted, ready to plant.' },
+  { id: 'p69', name: 'Spider Plant Air (Small)', category: 'AirPurifying', categoryLabel: 'Air-Purifying Plants', price: 1299, size: 'Small', tag: 'bestseller', img: 'https://loremflickr.com/500/650/leafplant,plant/all?lock=69', desc: 'Healthy Spider Plant Air — small size, perfect for home & office decor. Nursery-grown, well-rooted, ready to plant.' },
+  { id: 'p70', name: 'Bamboo Palm Air (Medium)', category: 'AirPurifying', categoryLabel: 'Air-Purifying Plants', price: 249, size: 'Medium', tag: 'new', img: 'https://loremflickr.com/500/650/leafplant,plant/all?lock=70', desc: 'Healthy Bamboo Palm Air — medium size, perfect for home & office decor. Nursery-grown, well-rooted, ready to plant.' },
+  { id: 'p71', name: 'English Ivy (Large)', category: 'AirPurifying', categoryLabel: 'Air-Purifying Plants', price: 999, size: 'Large', tag: 'none', img: 'https://loremflickr.com/500/650/leafplant,plant/all?lock=71', desc: 'Healthy English Ivy — large size, perfect for home & office decor. Nursery-grown, well-rooted, ready to plant.' },
+  { id: 'p72', name: 'Rubber Plant Air (Small)', category: 'AirPurifying', categoryLabel: 'Air-Purifying Plants', price: 699, size: 'Small', tag: 'bestseller', img: 'https://loremflickr.com/500/650/leafplant,plant/all?lock=72', desc: 'Healthy Rubber Plant Air — small size, perfect for home & office decor. Nursery-grown, well-rooted, ready to plant.' },
+  { id: 'p73', name: 'Aloe Air (Medium)', category: 'AirPurifying', categoryLabel: 'Air-Purifying Plants', price: 449, size: 'Medium', tag: 'none', img: 'https://loremflickr.com/500/650/leafplant,plant/all?lock=73', desc: 'Healthy Aloe Air — medium size, perfect for home & office decor. Nursery-grown, well-rooted, ready to plant.' },
+  { id: 'p74', name: 'ZZ Plant Air (Large)', category: 'AirPurifying', categoryLabel: 'Air-Purifying Plants', price: 699, size: 'Large', tag: 'none', img: 'https://loremflickr.com/500/650/leafplant,plant/all?lock=74', desc: 'Healthy ZZ Plant Air — large size, perfect for home & office decor. Nursery-grown, well-rooted, ready to plant.' },
+  { id: 'p75', name: 'Dracaena Air (Small)', category: 'AirPurifying', categoryLabel: 'Air-Purifying Plants', price: 599, size: 'Small', tag: 'none', img: 'https://loremflickr.com/500/650/leafplant,plant/all?lock=75', desc: 'Healthy Dracaena Air — small size, perfect for home & office decor. Nursery-grown, well-rooted, ready to plant.' },
+  { id: 'p76', name: 'Tulsi Holy Basil (Small)', category: 'Medicinal', categoryLabel: 'Medicinal & Herbal', price: 599, size: 'Small', tag: 'bestseller', img: 'https://loremflickr.com/500/650/herbplant,plant/all?lock=76', desc: 'Healthy Tulsi Holy Basil — small size, perfect for plant lovers. Nursery-grown, well-rooted, ready to plant.' },
+  { id: 'p77', name: 'Aloe Vera Medicinal (Medium)', category: 'Medicinal', categoryLabel: 'Medicinal & Herbal', price: 799, size: 'Medium', tag: 'bestseller', img: 'https://loremflickr.com/500/650/herbplant,plant/all?lock=77', desc: 'Healthy Aloe Vera Medicinal — medium size, perfect for plant lovers. Nursery-grown, well-rooted, ready to plant.' },
+  { id: 'p78', name: 'Mint Pudina (Large)', category: 'Medicinal', categoryLabel: 'Medicinal & Herbal', price: 799, size: 'Large', tag: 'none', img: 'https://loremflickr.com/500/650/herbplant,plant/all?lock=78', desc: 'Healthy Mint Pudina — large size, perfect for plant lovers. Nursery-grown, well-rooted, ready to plant.' },
+  { id: 'p79', name: 'Lemongrass (Small)', category: 'Medicinal', categoryLabel: 'Medicinal & Herbal', price: 999, size: 'Small', tag: 'none', img: 'https://loremflickr.com/500/650/herbplant,plant/all?lock=79', desc: 'Healthy Lemongrass — small size, perfect for plant lovers. Nursery-grown, well-rooted, ready to plant.' },
+  { id: 'p80', name: 'Ajwain Plant (Medium)', category: 'Medicinal', categoryLabel: 'Medicinal & Herbal', price: 999, size: 'Medium', tag: 'none', img: 'https://loremflickr.com/500/650/herbplant,plant/all?lock=80', desc: 'Healthy Ajwain Plant — medium size, perfect for plant lovers. Nursery-grown, well-rooted, ready to plant.' },
+  { id: 'p81', name: 'Stevia (Large)', category: 'Medicinal', categoryLabel: 'Medicinal & Herbal', price: 199, size: 'Large', tag: 'none', img: 'https://loremflickr.com/500/650/herbplant,plant/all?lock=81', desc: 'Healthy Stevia — large size, perfect for plant lovers. Nursery-grown, well-rooted, ready to plant.' },
+  { id: 'p82', name: 'Ashwagandha (Small)', category: 'Medicinal', categoryLabel: 'Medicinal & Herbal', price: 449, size: 'Small', tag: 'new', img: 'https://loremflickr.com/500/650/herbplant,plant/all?lock=82', desc: 'Healthy Ashwagandha — small size, perfect for plant lovers. Nursery-grown, well-rooted, ready to plant.' },
+  { id: 'p83', name: 'Giloy (Medium)', category: 'Medicinal', categoryLabel: 'Medicinal & Herbal', price: 499, size: 'Medium', tag: 'bestseller', img: 'https://loremflickr.com/500/650/herbplant,plant/all?lock=83', desc: 'Healthy Giloy — medium size, perfect for plant lovers. Nursery-grown, well-rooted, ready to plant.' },
+  { id: 'p84', name: 'Brahmi (Large)', category: 'Medicinal', categoryLabel: 'Medicinal & Herbal', price: 899, size: 'Large', tag: 'none', img: 'https://loremflickr.com/500/650/herbplant,plant/all?lock=84', desc: 'Healthy Brahmi — large size, perfect for plant lovers. Nursery-grown, well-rooted, ready to plant.' },
+  { id: 'p85', name: 'Curry Leaf Herbal (Small)', category: 'Medicinal', categoryLabel: 'Medicinal & Herbal', price: 599, size: 'Small', tag: 'new', img: 'https://loremflickr.com/500/650/herbplant,plant/all?lock=85', desc: 'Healthy Curry Leaf Herbal — small size, perfect for plant lovers. Nursery-grown, well-rooted, ready to plant.' },
+  { id: 'p86', name: 'Ficus Bonsai (Small)', category: 'Bonsai', categoryLabel: 'Bonsai', price: 599, size: 'Small', tag: 'bestseller', img: 'https://loremflickr.com/500/650/bonsai,plant/all?lock=86', desc: 'Healthy Ficus Bonsai — small size, perfect for plant lovers. Nursery-grown, well-rooted, ready to plant.' },
+  { id: 'p87', name: 'Banyan Bonsai (Medium)', category: 'Bonsai', categoryLabel: 'Bonsai', price: 1299, size: 'Medium', tag: 'none', img: 'https://loremflickr.com/500/650/bonsai,plant/all?lock=87', desc: 'Healthy Banyan Bonsai — medium size, perfect for plant lovers. Nursery-grown, well-rooted, ready to plant.' },
+  { id: 'p88', name: 'Jade Bonsai (Large)', category: 'Bonsai', categoryLabel: 'Bonsai', price: 1299, size: 'Large', tag: 'none', img: 'https://loremflickr.com/500/650/bonsai,plant/all?lock=88', desc: 'Healthy Jade Bonsai — large size, perfect for plant lovers. Nursery-grown, well-rooted, ready to plant.' },
+  { id: 'p89', name: 'Chinese Elm Bonsai (Small)', category: 'Bonsai', categoryLabel: 'Bonsai', price: 699, size: 'Small', tag: 'new', img: 'https://loremflickr.com/500/650/bonsai,plant/all?lock=89', desc: 'Healthy Chinese Elm Bonsai — small size, perfect for plant lovers. Nursery-grown, well-rooted, ready to plant.' },
+  { id: 'p90', name: 'Bougainvillea Bonsai (Medium)', category: 'Bonsai', categoryLabel: 'Bonsai', price: 249, size: 'Medium', tag: 'none', img: 'https://loremflickr.com/500/650/bonsai,plant/all?lock=90', desc: 'Healthy Bougainvillea Bonsai — medium size, perfect for plant lovers. Nursery-grown, well-rooted, ready to plant.' },
+  { id: 'p91', name: 'Juniper Bonsai (Large)', category: 'Bonsai', categoryLabel: 'Bonsai', price: 999, size: 'Large', tag: 'new', img: 'https://loremflickr.com/500/650/bonsai,plant/all?lock=91', desc: 'Healthy Juniper Bonsai — large size, perfect for plant lovers. Nursery-grown, well-rooted, ready to plant.' },
+  { id: 'p92', name: 'Peepal Bonsai (Small)', category: 'Bonsai', categoryLabel: 'Bonsai', price: 599, size: 'Small', tag: 'none', img: 'https://loremflickr.com/500/650/bonsai,plant/all?lock=92', desc: 'Healthy Peepal Bonsai — small size, perfect for plant lovers. Nursery-grown, well-rooted, ready to plant.' },
+  { id: 'p93', name: 'Money Plant Bonsai (Medium)', category: 'Bonsai', categoryLabel: 'Bonsai', price: 1499, size: 'Medium', tag: 'bestseller', img: 'https://loremflickr.com/500/650/bonsai,plant/all?lock=93', desc: 'Healthy Money Plant Bonsai — medium size, perfect for plant lovers. Nursery-grown, well-rooted, ready to plant.' },
+  { id: 'p94', name: 'Lemon Plant (Small)', category: 'Fruit', categoryLabel: 'Fruit Plants', price: 699, size: 'Small', tag: 'none', img: 'https://loremflickr.com/500/650/fruitplant,plant/all?lock=94', desc: 'Healthy Lemon Plant — small size, perfect for plant lovers. Nursery-grown, well-rooted, ready to plant.' },
+  { id: 'p95', name: 'Guava Plant (Medium)', category: 'Fruit', categoryLabel: 'Fruit Plants', price: 499, size: 'Medium', tag: 'bestseller', img: 'https://loremflickr.com/500/650/fruitplant,plant/all?lock=95', desc: 'Healthy Guava Plant — medium size, perfect for plant lovers. Nursery-grown, well-rooted, ready to plant.' },
+  { id: 'p96', name: 'Pomegranate Plant (Large)', category: 'Fruit', categoryLabel: 'Fruit Plants', price: 199, size: 'Large', tag: 'none', img: 'https://loremflickr.com/500/650/fruitplant,plant/all?lock=96', desc: 'Healthy Pomegranate Plant — large size, perfect for plant lovers. Nursery-grown, well-rooted, ready to plant.' },
+  { id: 'p97', name: 'Papaya Plant (Small)', category: 'Fruit', categoryLabel: 'Fruit Plants', price: 1499, size: 'Small', tag: 'none', img: 'https://loremflickr.com/500/650/fruitplant,plant/all?lock=97', desc: 'Healthy Papaya Plant — small size, perfect for plant lovers. Nursery-grown, well-rooted, ready to plant.' },
+  { id: 'p98', name: 'Fig Anjeer Plant (Medium)', category: 'Fruit', categoryLabel: 'Fruit Plants', price: 299, size: 'Medium', tag: 'bestseller', img: 'https://loremflickr.com/500/650/fruitplant,plant/all?lock=98', desc: 'Healthy Fig Anjeer Plant — medium size, perfect for plant lovers. Nursery-grown, well-rooted, ready to plant.' },
+  { id: 'p99', name: 'Mango Sapling (Large)', category: 'Fruit', categoryLabel: 'Fruit Plants', price: 299, size: 'Large', tag: 'none', img: 'https://loremflickr.com/500/650/fruitplant,plant/all?lock=99', desc: 'Healthy Mango Sapling — large size, perfect for plant lovers. Nursery-grown, well-rooted, ready to plant.' },
+  { id: 'p100', name: 'Chikoo Sapling (Small)', category: 'Fruit', categoryLabel: 'Fruit Plants', price: 199, size: 'Small', tag: 'bestseller', img: 'https://loremflickr.com/500/650/fruitplant,plant/all?lock=100', desc: 'Healthy Chikoo Sapling — small size, perfect for plant lovers. Nursery-grown, well-rooted, ready to plant.' },
+];const SAMPLES = PLANTS.filter((p) => p.tag === "bestseller").slice(0, 4);
+
+/* ---------------- In-memory state ----------------
+   NOTE: user auth + favorites are also mirrored into localStorage so
+   they survive a page refresh once this is hosted for real (localStorage
+   only works on an actual deployed URL, not inside a sandboxed preview).
+------------------------------------------------------ */
+const state = {
+  activeTab: "explore",
+  activeFilter: "grid",
+  catDetailCategory: null,
+  catDetailFilter: "all",
+  searchQuery: "",
+  favorites: new Set(),
+  isSignedIn: false,
+  user: null, // { name, email, picture }
+  currentPlant: null,
+  pendingOrderPlant: null, // plant waiting for delivery-details step
 };
 
-function openPolicySheet(type) {
-    const content = policyContent[type];
-    if (!content) return;
-    document.getElementById("policy-sheet-title").innerText = content.title;
-    document.getElementById("policy-sheet-body").innerHTML = content.body;
-    document.getElementById("policy-sheet-overlay").classList.add("active");
+/* =========================================================
+   Init
+   ========================================================= */
+document.addEventListener("DOMContentLoaded", () => {
+  loadFavoritesFromStorage();
+  loadUserFromStorage();
+  initGoogleSignIn();
+  renderCollections();
+  renderPlants();
+  renderSamples();
+  wireSearch();
+  updateProfileUI();
+});
+
+/* =========================================================
+   Tabs / navigation
+   ========================================================= */
+function switchTab(tab, el) {
+  state.activeTab = tab;
+
+  document.querySelectorAll(".screen-content").forEach((s) => s.classList.remove("active"));
+  document.getElementById(`screen-${tab}`).classList.add("active");
+
+  document.querySelectorAll(".nav-item").forEach((n) => n.classList.remove("active"));
+  if (el) el.classList.add("active");
 }
 
-function closePolicySheet() {
-    document.getElementById("policy-sheet-overlay").classList.remove("active");
+/* ----- Collections (Categories tab) ----- */
+function renderCollections() {
+  const el = document.getElementById("collection-carousel");
+  el.innerHTML = CATEGORIES.map((c) => {
+    const count = PLANTS.filter((p) => p.category === c.key).length;
+    return `
+      <div class="carousel-card" style="background-image:url('${c.img}')" onclick="openCategory('${c.key}')">
+        <div class="carousel-info">
+          <h2>${c.title}</h2>
+          <p>${count} plant${count === 1 ? "" : "s"}</p>
+          <button class="explore-pill-btn" onclick="event.stopPropagation(); openCategory('${c.key}')">Explore</button>
+        </div>
+      </div>
+    `;
+  }).join("");
 }
 
-// ------------------------------------------------------
-// PART 20 — TOAST
-// ------------------------------------------------------
-function showToast(message) {
-    if (!toastEl) { console.log(message); return; }
-    toastEl.innerText = message;
-    toastEl.classList.add("show");
-    clearTimeout(window.toastTimer);
-    window.toastTimer = setTimeout(() => toastEl.classList.remove("show"), 2500);
+/* ----- Category detail screen ----- */
+function openCategory(category) {
+  state.catDetailCategory = category;
+  state.catDetailFilter = "all";
+  document.getElementById("cat-detail-title").textContent =
+    CATEGORIES.find((c) => c.key === category)?.title || category;
+
+  document.querySelectorAll(".cat-tab").forEach((t) => t.classList.remove("active"));
+  document.querySelector('.cat-tab[data-cat-filter="all"]').classList.add("active");
+
+  switchTab("category-detail", null);
+  renderCategoryDetailGrid();
+}
+
+function switchCatTab(el) {
+  document.querySelectorAll(".cat-tab").forEach((t) => t.classList.remove("active"));
+  el.classList.add("active");
+  state.catDetailFilter = el.dataset.catFilter;
+  renderCategoryDetailGrid();
+}
+
+function renderCategoryDetailGrid() {
+  let list = PLANTS.filter((p) => p.category === state.catDetailCategory);
+  if (state.catDetailFilter === "bestseller") list = list.filter((p) => p.tag === "bestseller");
+  if (state.catDetailFilter === "new") list = list.filter((p) => p.tag === "new");
+
+  const container = document.getElementById("cat-detail-grid");
+  if (list.length === 0) {
+    container.innerHTML = `<p style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:30px 0;">No plants found.</p>`;
+    return;
+  }
+  container.innerHTML = list.map(cardHtml).join("");
+}
+
+function switchSubCat(el) {
+  document.querySelectorAll(".sub-cat-item").forEach((s) => s.classList.remove("active"));
+  el.classList.add("active");
+  state.activeFilter = el.dataset.filter;
+  renderPlants();
+}
+
+/* =========================================================
+   Search
+   ========================================================= */
+function wireSearch() {
+  const input = document.getElementById("search-input");
+  input.addEventListener("input", (e) => {
+    state.searchQuery = e.target.value.trim().toLowerCase();
+    renderPlants();
+  });
+}
+
+/* =========================================================
+   Rendering (Explore tab)
+   ========================================================= */
+function getFilteredPlants() {
+  let list = PLANTS.slice();
+
+  if (state.searchQuery) {
+    list = list.filter(
+      (p) =>
+        p.name.toLowerCase().includes(state.searchQuery) ||
+        p.categoryLabel.toLowerCase().includes(state.searchQuery)
+    );
+  }
+
+  switch (state.activeFilter) {
+    case "gift": // Budget
+      list = list.filter((p) => p.price <= 300);
+      break;
+    case "diamond": // Premium
+      list = list.filter((p) => p.price > 300);
+      break;
+    case "star":
+      list = list.filter((p) => state.favorites.has(p.id));
+      break;
+    case "fire":
+      list = list.filter((p) => p.tag === "bestseller" || p.tag === "new");
+      break;
+    case "shuffle":
+      list = list.sort(() => Math.random() - 0.5);
+      break;
+    default:
+      break;
+  }
+
+  return list;
+}
+
+function renderPlants() {
+  const container = document.getElementById("wallpaper-grid-container");
+  const list = getFilteredPlants();
+
+  if (list.length === 0) {
+    container.innerHTML = `<p style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:30px 0;">No plants found.</p>`;
+    return;
+  }
+
+  container.innerHTML = list.map(cardHtml).join("");
+}
+
+function renderSamples() {
+  document.getElementById("samples-grid").innerHTML = SAMPLES.map(cardHtml).join("");
+}
+
+function cardHtml(p) {
+  const favClass = state.favorites.has(p.id) ? "favorited" : "";
+  let badge = "";
+  if (p.tag === "bestseller") badge = `<div class="premium-badge">BEST SELLER</div>`;
+  else if (p.tag === "new") badge = `<div class="new-badge">NEW</div>`;
+  else badge = `<div class="free-badge">IN STOCK</div>`;
+
+  return `
+    <div class="wallpaper-card" style="background-image:url('${p.img}')" onclick="openPlant('${p.id}')">
+      <div class="card-top">
+        <div class="star-badge ${favClass}" onclick="toggleFavorite(event, '${p.id}')">
+          <i class="fa-solid fa-heart"></i>
+        </div>
+        ${badge}
+      </div>
+      <div class="card-bottom">
+        <div class="card-time">${p.categoryLabel}</div>
+        <div class="card-clock">₹${p.price}</div>
+        <div class="card-title">${p.name}</div>
+      </div>
+    </div>
+  `;
+}
+
+function toggleFavorite(event, id) {
+  event.stopPropagation();
+  if (state.favorites.has(id)) {
+    state.favorites.delete(id);
+  } else {
+    state.favorites.add(id);
+  }
+  saveFavoritesToStorage();
+  renderPlants();
+  renderSamples();
+  renderCategoryDetailGrid();
+}
+
+function loadFavoritesFromStorage() {
+  try {
+    const raw = localStorage.getItem("mitti_favorites");
+    if (raw) state.favorites = new Set(JSON.parse(raw));
+  } catch (e) {}
+}
+function saveFavoritesToStorage() {
+  try {
+    localStorage.setItem("mitti_favorites", JSON.stringify([...state.favorites]));
+  } catch (e) {}
+}
+
+/* =========================================================
+   Plant detail screen
+   ========================================================= */
+function openPlant(id) {
+  const p = PLANTS.find((x) => x.id === id);
+  if (!p) return;
+  state.currentPlant = p;
+
+  document.getElementById("editor-preview-img").style.backgroundImage = `url('${p.img}')`;
+  document.getElementById("product-name").textContent = p.name;
+  document.getElementById("product-category").textContent = p.categoryLabel;
+  document.getElementById("product-price").textContent = `₹${p.price}`;
+  document.getElementById("product-description").textContent = p.desc;
+
+  const badgeEl = document.getElementById("product-tag-badge");
+  if (p.tag === "bestseller") {
+    badgeEl.textContent = "BEST SELLER";
+    badgeEl.className = "premium-badge";
+    badgeEl.style.display = "inline-block";
+  } else if (p.tag === "new") {
+    badgeEl.textContent = "NEW";
+    badgeEl.className = "new-badge";
+    badgeEl.style.display = "inline-block";
+  } else {
+    badgeEl.style.display = "none";
+  }
+
+  switchTab("editor", null);
+}
+
+function closeEditorScreen() {
+  switchTab("explore", document.getElementById("nav-explore"));
+}
+
+/* =========================================================
+   WhatsApp
+   ========================================================= */
+function openWhatsApp(message) {
+  const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+  window.open(url, "_blank");
+}
+
+function openWhatsAppForCurrentPlant() {
+  if (!state.currentPlant) {
+    openWhatsApp("Hi, I want to know more about your plants.");
+    return;
+  }
+  openWhatsApp(
+    `Hi, I'm interested in "${state.currentPlant.name}" (₹${state.currentPlant.price}). Can you share more details?`
+  );
+}
+
+/* =========================================================
+   Google Sign-In
+   ========================================================= */
+function initGoogleSignIn() {
+  if (!window.google || !google.accounts || !google.accounts.id) {
+    // GIS script may still be loading; retry shortly.
+    setTimeout(initGoogleSignIn, 300);
+    return;
+  }
+  google.accounts.id.initialize({
+    client_id: GOOGLE_CLIENT_ID,
+    callback: handleGoogleCredential,
+    auto_select: false,
+  });
+
+  // Render an actual (invisible-ish) Google button we can trigger,
+  // since Google requires its own button for the styled prompt to work
+  // reliably across browsers.
+  const wrapper = document.getElementById("g_id_signin_wrapper");
+  if (wrapper) {
+    google.accounts.id.renderButton(wrapper, {
+      theme: "outline",
+      size: "large",
+      shape: "pill",
+      width: 260,
+    });
+  }
+}
+
+function triggerGoogleLogin() {
+  // Clicking our custom button "forwards" the click to Google's real button.
+  const realBtn = document.querySelector("#g_id_signin_wrapper div[role=button]");
+  if (realBtn) {
+    realBtn.click();
+  } else if (window.google && google.accounts && google.accounts.id) {
+    google.accounts.id.prompt();
+  } else {
+    showToast("Google Sign-In is still loading, try again in a second.");
+  }
+}
+
+function decodeJwt(token) {
+  try {
+    const base64 = token.split(".")[1].replace(/-/g, "+").replace(/_/g, "/");
+    return JSON.parse(decodeURIComponent(escape(atob(base64))));
+  } catch (e) {
+    return null;
+  }
+}
+
+function handleGoogleCredential(response) {
+  const payload = decodeJwt(response.credential);
+  if (!payload) {
+    showToast("Login failed, please try again.");
+    return;
+  }
+  state.isSignedIn = true;
+  state.user = {
+    name: payload.name || "",
+    email: payload.email || "",
+    picture: payload.picture || "",
+  };
+  saveUserToStorage();
+  updateProfileUI();
+  showToast(`Welcome, ${state.user.name.split(" ")[0]}!`);
+
+  // If the user was in the middle of ordering, continue automatically.
+  if (state.pendingOrderPlant) {
+    const plant = state.pendingOrderPlant;
+    state.pendingOrderPlant = null;
+    openDeliveryDetailsScreen(plant);
+  }
+}
+
+function logoutUser() {
+  state.isSignedIn = false;
+  state.user = null;
+  try {
+    localStorage.removeItem("mitti_user");
+  } catch (e) {}
+  if (window.google && google.accounts && google.accounts.id) {
+    google.accounts.id.disableAutoSelect();
+  }
+  updateProfileUI();
+  showToast("Logged out");
+}
+
+function updateProfileUI() {
+  const out = document.getElementById("profile-logged-out");
+  const inn = document.getElementById("profile-logged-in");
+  const contact = document.getElementById("profile-contact-info");
+  if (state.isSignedIn && state.user) {
+    out.style.display = "none";
+    inn.style.display = "flex";
+    contact.style.display = "block";
+    document.getElementById("profile-name").textContent = state.user.name;
+    document.getElementById("profile-email").textContent = state.user.email;
+    const avatar = document.getElementById("profile-avatar");
+    if (state.user.picture) {
+      avatar.style.backgroundImage = `url('${state.user.picture}')`;
+      avatar.textContent = "";
+    } else {
+      avatar.style.backgroundImage = "";
+      avatar.textContent = (state.user.name || "?").charAt(0).toUpperCase();
+    }
+  } else {
+    out.style.display = "flex";
+    inn.style.display = "none";
+    contact.style.display = "none";
+  }
+}
+
+function saveUserToStorage() {
+  try {
+    localStorage.setItem("mitti_user", JSON.stringify(state.user));
+  } catch (e) {}
+}
+function loadUserFromStorage() {
+  try {
+    const raw = localStorage.getItem("mitti_user");
+    if (raw) {
+      state.user = JSON.parse(raw);
+      state.isSignedIn = true;
+    }
+  } catch (e) {}
+}
+
+/* =========================================================
+   Order flow: Order Now -> (login if needed) -> delivery details -> advance payment
+   ========================================================= */
+function startOrder() {
+  if (!state.currentPlant) return;
+
+  if (!state.isSignedIn) {
+    state.pendingOrderPlant = state.currentPlant;
+    showToast("Please login with Google to continue your order");
+    switchTab("settings", document.getElementById("nav-settings"));
+    setTimeout(() => triggerGoogleLogin(), 400);
+    return;
+  }
+
+  openDeliveryDetailsScreen(state.currentPlant);
+}
+
+function openDeliveryDetailsScreen(plant) {
+  state.currentPlant = plant;
+
+  // Prefill from logged-in user where possible
+  document.getElementById("ord-name").value = state.user?.name || "";
+  document.getElementById("ord-phone").value = "";
+  document.getElementById("ord-email").value = state.user?.email || "";
+  document.getElementById("ord-address").value = "";
+  document.getElementById("ord-pincode").value = "";
+  document.getElementById("ord-area").value = "";
+  document.getElementById("ord-landmark").value = "";
+
+  const advance = Math.round(plant.price * ADVANCE_PERCENT);
+  document.getElementById("ord-summary-plant").textContent = plant.name;
+  document.getElementById("ord-summary-full").textContent = `₹${plant.price}`;
+  document.getElementById("ord-summary-advance").textContent = `₹${advance}`;
+
+  switchTab("premium", null);
+}
+
+function closeOrderFlow() {
+  switchTab("editor", null);
+}
+
+function validateDeliveryForm() {
+  const name = document.getElementById("ord-name").value.trim();
+  const phone = document.getElementById("ord-phone").value.trim();
+  const email = document.getElementById("ord-email").value.trim();
+  const address = document.getElementById("ord-address").value.trim();
+  const pincode = document.getElementById("ord-pincode").value.trim();
+  const area = document.getElementById("ord-area").value.trim();
+
+  if (!name || !phone || !email || !address || !pincode || !area) {
+    showToast("Please fill all required delivery details");
+    return null;
+  }
+  if (!/^\d{10}$/.test(phone.replace(/\D/g, "").slice(-10))) {
+    showToast("Please enter a valid 10-digit phone number");
+    return null;
+  }
+  if (!/^\S+@\S+\.\S+$/.test(email)) {
+    showToast("Please enter a valid email");
+    return null;
+  }
+
+  return {
+    name,
+    phone,
+    email,
+    address,
+    pincode,
+    area,
+    landmark: document.getElementById("ord-landmark").value.trim(),
+  };
+}
+
+function payAdvance() {
+  const plant = state.currentPlant;
+  if (!plant) return;
+
+  const details = validateDeliveryForm();
+  if (!details) return;
+
+  const advanceAmount = Math.round(plant.price * ADVANCE_PERCENT);
+  const btn = document.getElementById("ord-pay-advance-btn");
+  btn.disabled = true;
+  btn.textContent = "Opening payment...";
+
+  const rzp = new Razorpay({
+    key: RAZORPAY_KEY_ID,
+    amount: advanceAmount * 100, // paise
+    currency: "INR",
+    name: "Mitti Manor",
+    description: `Advance for ${plant.name}`,
+    prefill: {
+      name: details.name,
+      email: details.email,
+      contact: details.phone,
+    },
+    theme: { color: "#1a6cf0" },
+    handler: function (response) {
+      sendOrderEmail(plant, details, advanceAmount, response.razorpay_payment_id);
+      showToast("Payment successful! Order confirmed.");
+      switchTab("explore", document.getElementById("nav-explore"));
+      btn.disabled = false;
+      btn.textContent = "Pay Advance & Confirm Order";
+    },
+    modal: {
+      ondismiss: function () {
+        btn.disabled = false;
+        btn.textContent = "Pay Advance & Confirm Order";
+      },
+    },
+  });
+
+  rzp.on("payment.failed", function () {
+    showToast("Payment failed. Please try again.");
+    btn.disabled = false;
+    btn.textContent = "Pay Advance & Confirm Order";
+  });
+
+  rzp.open();
+}
+
+function sendOrderEmail(plant, details, advanceAmount, paymentId) {
+  const remaining = plant.price - advanceAmount;
+  const message = [
+    `NEW PLANT ORDER`,
+    ``,
+    `Plant: ${plant.name}`,
+    `Category: ${plant.categoryLabel}`,
+    `Price: ₹${plant.price}`,
+    `Advance Paid (25%): ₹${advanceAmount}`,
+    `Remaining (on delivery): ₹${remaining}`,
+    `Razorpay Payment ID: ${paymentId || "N/A"}`,
+    ``,
+    `Customer Name: ${details.name}`,
+    `Phone: ${details.phone}`,
+    `Email: ${details.email}`,
+    `Address: ${details.address}`,
+    `Pincode: ${details.pincode}`,
+    `Area: ${details.area}`,
+    `Landmark: ${details.landmark || "-"}`,
+  ].join("\n");
+
+  fetch("https://api.web3forms.com/submit", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Accept: "application/json" },
+    body: JSON.stringify({
+      access_key: WEB3FORMS_ACCESS_KEY,
+      subject: `New Order: ${plant.name} — Advance Paid ₹${advanceAmount}`,
+      from_name: "Mitti Manor Website",
+      name: details.name,
+      email: details.email,
+      message: message,
+    }),
+  }).catch(() => {
+    // Even if the email fails to send, the payment has gone through;
+    // don't block the user, but let them know to follow up on WhatsApp.
+    showToast("Order placed, but confirmation email failed. We'll reach out on WhatsApp.");
+  });
+
+  // Also open WhatsApp so the customer/owner has an instant channel too.
+  openWhatsApp(
+    `Hi, I just placed an order for "${plant.name}" and paid ₹${advanceAmount} advance (Payment ID: ${paymentId || "N/A"}). My delivery address: ${details.address}, ${details.area}, ${details.pincode}.`
+  );
+}
+
+/* =========================================================
+   Landscaping enquiry
+   ========================================================= */
+function openLandscapingScreen() {
+  switchTab("order", null);
+}
+
+function submitLandscapingEnquiry() {
+  const name = document.getElementById("land-name").value.trim();
+  const phone = document.getElementById("land-phone").value.trim();
+  const email = document.getElementById("land-email").value.trim();
+  const propertyType = document.getElementById("land-property-type").value;
+  const location = document.getElementById("land-location").value.trim();
+  const requirement = document.getElementById("order-message").value.trim();
+
+  if (!name || !phone || !email || !location || !requirement) {
+    showToast("Please fill all details");
+    return;
+  }
+  if (!/^\S+@\S+\.\S+$/.test(email)) {
+    showToast("Please enter a valid email");
+    return;
+  }
+
+  const btn = document.getElementById("order-pay-btn");
+  btn.disabled = true;
+  btn.textContent = "Sending...";
+
+  const message = [
+    `NEW LANDSCAPING ENQUIRY`,
+    ``,
+    `Name: ${name}`,
+    `Phone: ${phone}`,
+    `Email: ${email}`,
+    `Property Type: ${propertyType}`,
+    `Location: ${location}`,
+    ``,
+    `Requirement:`,
+    requirement,
+  ].join("\n");
+
+  fetch("https://api.web3forms.com/submit", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Accept: "application/json" },
+    body: JSON.stringify({
+      access_key: WEB3FORMS_ACCESS_KEY,
+      subject: `Landscaping Enquiry from ${name} (${propertyType})`,
+      from_name: "Mitti Manor Website",
+      name: name,
+      email: email,
+      message: message,
+    }),
+  })
+    .then((res) => res.json())
+    .then(() => {
+      showToast("Enquiry sent! We'll contact you soon.");
+      openWhatsApp(
+        `Hi, I sent a landscaping enquiry for my ${propertyType} in ${location}. Requirement: ${requirement}`
+      );
+      document.getElementById("land-name").value = "";
+      document.getElementById("land-phone").value = "";
+      document.getElementById("land-email").value = "";
+      document.getElementById("land-location").value = "";
+      document.getElementById("order-message").value = "";
+      switchTab("request", document.getElementById("nav-request"));
+    })
+    .catch(() => {
+      showToast("Something went wrong. Please try WhatsApp instead.");
+    })
+    .finally(() => {
+      btn.disabled = false;
+      btn.textContent = "Send Enquiry";
+    });
+}
+
+/* =========================================================
+   Toast
+   ========================================================= */
+let toastTimeout;
+function showToast(msg) {
+  const el = document.getElementById("app-toast");
+  el.textContent = msg;
+  el.classList.add("show");
+  clearTimeout(toastTimeout);
+  toastTimeout = setTimeout(() => {
+    el.classList.remove("show");
+  }, 3000);
 }
