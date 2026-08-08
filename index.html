@@ -71,41 +71,85 @@
       <!-- ========================= -->
 
       <div id="screen-editor" class="screen-content editor-screen">
-        <div class="editor-header">
-          <div class="back-btn" onclick="closeEditorScreen()">
+        <div class="pd-topbar">
+          <div class="pd-icon-btn" onclick="closeEditorScreen()" aria-label="Back">
             <i class="fa-solid fa-chevron-left"></i>
           </div>
-          <h1>Plant Details</h1>
-          <div class="editor-fav-btn" id="editor-fav-btn" onclick="openWhatsAppForCurrentPlant()">
-            <i class="fa-brands fa-whatsapp"></i>
+          <div class="pd-icon-btn" onclick="goToSearch()" aria-label="Search">
+            <i class="fa-solid fa-magnifying-glass"></i>
+          </div>
+          <div class="pd-icon-btn" id="pd-fav-btn" onclick="toggleFavoriteCurrentPlant()" aria-label="Wishlist">
+            <i class="fa-solid fa-heart"></i>
+          </div>
+          <div class="pd-icon-btn pd-cart-btn" onclick="openCartModal()" aria-label="Cart">
+            <i class="fa-solid fa-cart-shopping"></i>
+            <span class="pd-cart-badge" id="pd-cart-badge" style="display:none;">0</span>
           </div>
         </div>
 
-        <div class="shop-product-container" style="padding: 16px; display: flex; flex-direction: column; gap: 16px; overflow-y: auto; height: calc(100% - 70px);">
-          <div class="shop-image-slider" style="position: relative; width: 100%; height: 350px; border-radius: 16px; overflow: hidden; background: #000;">
-            <div id="editor-preview-img" style="width:100%;height:100%;background-size:cover;background-position:center;"></div>
+        <div class="shop-product-container">
+          <div class="pd-gallery" id="pd-gallery">
+            <div class="pd-gallery-track" id="pd-gallery-track"></div>
+            <div class="pd-gallery-count" id="pd-gallery-count">1/1</div>
+            <div class="pd-gallery-dots" id="pd-gallery-dots"></div>
           </div>
 
           <div class="shop-product-info">
-            <div style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
-              <h2 id="product-name" style="font-size: 22px; font-weight: 700;">Product Name</h2>
+            <div class="pd-title-row">
+              <h2 id="product-name">Product Name</h2>
               <span id="product-tag-badge" class="free-badge" style="display:none;"></span>
             </div>
-            <div id="product-category" style="font-size:12px; color: var(--text-muted); margin: 4px 0 10px 0;"></div>
-            <div id="product-price" style="font-size: 22px; font-weight: 800; color: var(--primary-color); margin-bottom: 12px;">₹0</div>
+            <div id="product-category" class="pd-category"></div>
+            <div id="product-price" class="pd-price">₹0</div>
 
-            <h3 style="font-size: 14px; font-weight: 600; opacity: 0.7; margin-bottom: 4px;">Description</h3>
-            <p id="product-description" style="font-size: 14px; line-height: 1.5; opacity: 0.9;"></p>
+            <h3 class="pd-section-label">Description</h3>
+            <p id="product-description" class="pd-desc"></p>
           </div>
 
-          <div class="shop-action-buttons" style="display: flex; gap: 12px; margin-top: auto; padding-bottom: 20px;">
-            <button class="add-to-cart-btn" onclick="openWhatsAppForCurrentPlant()" style="flex: 1; padding: 14px; border-radius: 12px; border: 1px solid currentColor; background: transparent; font-weight: 600; cursor: pointer;">
-              <i class="fa-brands fa-whatsapp"></i> Enquire
-            </button>
-            <button class="buy-now-btn" onclick="startOrder()" style="flex: 1; padding: 14px; border-radius: 12px; background: #6366f1; color: white; border: none; font-weight: 600; cursor: pointer;">
-              Order Now
-            </button>
+          <div class="pd-accordion">
+            <div class="pd-accordion-head" onclick="toggleAccordion('pd-highlights')">
+              <h3>Product Highlights</h3>
+              <i class="fa-solid fa-chevron-down pd-chevron" id="pd-highlights-chevron"></i>
+            </div>
+            <div class="pd-accordion-body" id="pd-highlights-body"></div>
           </div>
+
+          <div class="pd-accordion">
+            <div class="pd-accordion-head" onclick="toggleAccordion('pd-details')">
+              <h3>Additional Details</h3>
+              <i class="fa-solid fa-chevron-down pd-chevron" id="pd-details-chevron"></i>
+            </div>
+            <div class="pd-accordion-body" id="pd-details-body"></div>
+          </div>
+
+          <div class="section-title">You might also like</div>
+          <div class="pd-carousel" id="pd-related-carousel"></div>
+
+          <div class="section-title">Customer Ratings &amp; Reviews</div>
+          <div class="pd-reviews-card" id="pd-reviews-card"></div>
+
+          <div class="pd-delivery-card">
+            <div class="pd-delivery-info">
+              <i class="fa-solid fa-truck-fast"></i>
+              <div>
+                <h4>Delivery by <span id="pd-delivery-date">-</span></h4>
+                <p id="pd-delivery-pincode">Enter pincode to check delivery date</p>
+              </div>
+            </div>
+            <button class="pd-delivery-change-btn" onclick="changeDeliveryPincode()">Change</button>
+          </div>
+
+          <div class="section-title">People Also Viewed</div>
+          <div class="pd-carousel" id="pd-alsoviewed-carousel"></div>
+        </div>
+
+        <div class="pd-sticky-actions">
+          <button class="pd-addcart-btn" onclick="addToCartCurrentPlant()">
+            <i class="fa-solid fa-cart-plus"></i> Add to Cart
+          </button>
+          <button class="pd-buynow-btn" onclick="startOrder()">
+            <i class="fa-solid fa-bolt"></i> Buy Now
+          </button>
         </div>
       </div>
 
@@ -115,7 +159,20 @@
 
       <div id="screen-explore" class="screen-content active">
         <div class="explore-header">
-          <h1 id="explore-title">Mitti Manor</h1>
+          <div class="explore-topbar">
+            <div class="explore-brand">
+              <img src="logo.png" alt="Mitti Manor" class="brand-logo" onerror="this.style.display='none'" />
+              <span class="brand-name">MITTI MANOR</span>
+            </div>
+            <div class="explore-topbar-icons">
+              <div class="topbar-icon-btn" onclick="goToFavorites()" aria-label="Favorites">
+                <i class="fa-solid fa-heart"></i>
+              </div>
+              <div class="topbar-icon-btn" onclick="showToast('No new notifications yet')" aria-label="Notifications">
+                <i class="fa-solid fa-bell"></i>
+              </div>
+            </div>
+          </div>
           <div class="search-box">
             <input type="text" id="search-input" placeholder="Search plants..." />
             <i class="fa-solid fa-magnifying-glass"></i>
@@ -302,16 +359,14 @@
       <!-- ========================= -->
 
       <div id="screen-settings" class="screen-content">
-        <div class="page-header"><h1>Profile</h1></div>
+        <div class="page-header"><h1>Account</h1></div>
 
-        <div id="profile-logged-out" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 60vh; gap: 20px;">
-          <div style="width: 80px; height: 80px; border-radius: 50%; background: #e0e0e0; display: flex; align-items: center; justify-content: center; font-size: 32px; color: #555;">
-            <i class="fa-solid fa-user"></i>
+        <div id="profile-logged-out" class="account-logged-out">
+          <div class="account-logged-out-icon">
+            <i class="fa-solid fa-seedling"></i>
           </div>
-          <div id="g_id_signin_wrapper"></div>
-          <button onclick="triggerGoogleLogin()" style="padding: 12px 32px; border-radius: 12px; background: #6366f1; color: white; border: none; font-weight: 600; font-size: 16px; cursor: pointer; display:flex; align-items:center; gap:8px;">
-            <i class="fa-brands fa-google"></i> Login with Google
-          </button>
+          <p class="account-logged-out-text">Login to track orders, save favorites &amp; more</p>
+          <div id="g_id_signin_wrapper" class="g-signin-wrapper"></div>
         </div>
 
         <div id="profile-logged-in" class="profile-card" style="display:none;">
@@ -326,7 +381,45 @@
           <div class="logout-btn" onclick="logoutUser()"><i class="fa-solid fa-right-from-bracket"></i></div>
         </div>
 
-        <div id="profile-contact-info" style="display:none; margin-top: 20px;">
+        <div id="profile-account-options" style="display:none; margin-top: 4px;">
+          <div class="account-grid">
+            <div class="account-grid-item" onclick="showToast('MM Balance: ₹0')">
+              <div class="account-grid-icon"><i class="fa-solid fa-wallet"></i></div>
+              <span>MM Balance</span>
+            </div>
+            <div class="account-grid-item" onclick="switchTab('explore', document.getElementById('nav-explore')); setTimeout(goToFavorites, 150)">
+              <div class="account-grid-icon"><i class="fa-solid fa-heart"></i></div>
+              <span>Favorites</span>
+            </div>
+            <div class="account-grid-item" onclick="showToast('Order history coming soon — message us on WhatsApp for order status.')">
+              <div class="account-grid-icon"><i class="fa-solid fa-box"></i></div>
+              <span>My Orders</span>
+            </div>
+            <div class="account-grid-item" onclick="openWhatsApp('Hi! I want to refer Mitti Manor to a friend.')">
+              <div class="account-grid-icon"><i class="fa-solid fa-gift"></i></div>
+              <span>Refer &amp; Earn</span>
+            </div>
+          </div>
+        </div>
+
+        <div id="profile-contact-info" style="display:none; margin-top: 10px;">
+          <div class="settings-section-label">GENERAL</div>
+          <div class="settings-row" onclick="showToast('Notifications are all caught up!')">
+            <div class="settings-row-icon"><i class="fa-solid fa-bell"></i></div>
+            <div class="settings-row-text"><h4>Notifications</h4><p>Order &amp; offer updates</p></div>
+            <div class="settings-row-arrow"><i class="fa-solid fa-chevron-right"></i></div>
+          </div>
+          <div class="settings-row" onclick="openWhatsApp('Hi Mitti Manor! I would love to leave a rating or review.')">
+            <div class="settings-row-icon"><i class="fa-solid fa-star"></i></div>
+            <div class="settings-row-text"><h4>Rate Mitti Manor</h4><p>Tell us how we're doing</p></div>
+            <div class="settings-row-arrow"><i class="fa-solid fa-chevron-right"></i></div>
+          </div>
+          <div class="settings-row" onclick="switchTab('legal', document.getElementById('nav-settings'))">
+            <div class="settings-row-icon"><i class="fa-solid fa-file-shield"></i></div>
+            <div class="settings-row-text"><h4>Legal &amp; Policies</h4><p>Terms, privacy &amp; more</p></div>
+            <div class="settings-row-arrow"><i class="fa-solid fa-chevron-right"></i></div>
+          </div>
+
           <div class="settings-section-label">CONTACT US</div>
           <div class="settings-row" onclick="openWhatsApp('Hi Mitti Manor, I have a question.')">
             <div class="settings-row-icon"><i class="fa-brands fa-whatsapp"></i></div>
@@ -342,17 +435,31 @@
       </div>
 
       <!-- ========================= -->
+      <!-- LEGAL & POLICIES SCREEN -->
+      <!-- ========================= -->
+
+      <div id="screen-legal" class="screen-content">
+        <div class="cat-detail-header">
+          <div class="back-btn" onclick="switchTab('settings', document.getElementById('nav-settings'))">
+            <i class="fa-solid fa-chevron-left"></i>
+          </div>
+          <h1>Legal and Policies</h1>
+        </div>
+        <div id="legal-policy-list"></div>
+      </div>
+
+      <!-- ========================= -->
       <!-- Bottom Navigation -->
       <!-- ========================= -->
 
       <nav class="bottom-nav">
+        <div class="nav-item active" id="nav-explore" onclick="switchTab('explore', this)">
+          <div class="nav-icon-wrapper"><i class="fa-solid fa-house"></i></div>
+          <span>Home</span>
+        </div>
         <div class="nav-item" id="nav-categories" onclick="switchTab('categories', this)">
           <div class="nav-icon-wrapper"><i class="fa-solid fa-layer-group"></i></div>
           <span>Categories</span>
-        </div>
-        <div class="nav-item active" id="nav-explore" onclick="switchTab('explore', this)">
-          <div class="nav-icon-wrapper"><i class="fa-solid fa-compass"></i></div>
-          <span>Explore</span>
         </div>
         <div class="nav-item" id="nav-request" onclick="switchTab('request', this)">
           <div class="nav-icon-wrapper"><i class="fa-solid fa-tree"></i></div>
@@ -360,9 +467,44 @@
         </div>
         <div class="nav-item" id="nav-settings" onclick="switchTab('settings', this)">
           <div class="nav-icon-wrapper"><i class="fa-solid fa-user"></i></div>
-          <span>Profile</span>
+          <span>Account</span>
         </div>
       </nav>
+
+      <!-- Cart Modal -->
+      <div id="cart-modal-overlay" class="modal-overlay" onclick="if(event.target===this) closeCartModal()">
+        <div class="modal-sheet">
+          <div class="modal-sheet-header">
+            <h3>Your Cart</h3>
+            <div class="pd-icon-btn" onclick="closeCartModal()"><i class="fa-solid fa-xmark"></i></div>
+          </div>
+          <div id="cart-items-list" class="cart-items-list"></div>
+          <div id="cart-empty-state" class="cart-empty-state" style="display:none;">
+            <i class="fa-solid fa-cart-shopping"></i>
+            <p>Your cart is empty</p>
+          </div>
+          <div class="cart-modal-footer">
+            <div class="cart-total-row">
+              <span>Total</span>
+              <span id="cart-total-amount">₹0</span>
+            </div>
+            <button class="cart-checkout-btn" onclick="checkoutCartOnWhatsApp()">
+              <i class="fa-brands fa-whatsapp"></i> Checkout on WhatsApp
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Legal Policy Detail Modal -->
+      <div id="legal-modal-overlay" class="modal-overlay" onclick="if(event.target===this) closeLegalModal()">
+        <div class="modal-sheet">
+          <div class="modal-sheet-header">
+            <h3 id="legal-modal-title">Policy</h3>
+            <div class="pd-icon-btn" onclick="closeLegalModal()"><i class="fa-solid fa-xmark"></i></div>
+          </div>
+          <div id="legal-modal-body" class="legal-modal-body"></div>
+        </div>
+      </div>
 
       <!-- Toast -->
       <div id="app-toast" class="toast"></div>
