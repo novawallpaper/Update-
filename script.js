@@ -117,6 +117,54 @@ const PLANTS = [
   { id: 'p100', name: 'Chikoo Sapling (Small)', category: 'Fruit', categoryLabel: 'Fruit Plants', price: 199, size: 'Small', tag: 'bestseller', img: 'https://loremflickr.com/500/650/fruitplant,plant/all?lock=100', desc: 'Healthy Chikoo Sapling — small size, perfect for plant lovers. Nursery-grown, well-rooted, ready to plant.' },
 ];const SAMPLES = PLANTS.filter((p) => p.tag === "bestseller").slice(0, 4);
 
+/* =========================================================
+   Product image gallery helper
+   NOTE: real per-product photos/videos aren't wired up yet — this builds
+   a placeholder multi-image gallery (product angles + one "customer
+   photo") from the single p.img field so the swipeable gallery UI works
+   today. Swap this out once real uploaded images/videos are added per
+   product (just replace the returned array with real URLs).
+   ========================================================= */
+function getPlantGallerySlides(p) {
+  const base = p.img.split("?")[0];
+  return [
+    { type: "product", img: `${base}?lock=${p.id}a` },
+    { type: "product", img: `${base}?lock=${p.id}b` },
+    { type: "product", img: `${base}?lock=${p.id}c` },
+    { type: "review", img: `${base}?lock=${p.id}r`, label: "Customer Photo" },
+  ];
+}
+
+/* =========================================================
+   Demo review/rating data
+   NOTE: there's no real reviews backend yet, so this generates
+   consistent (not random-per-render) placeholder rating data per plant
+   using its id. Replace with real review data once you have a backend
+   or a review-collection flow.
+   ========================================================= */
+function getDemoReviewData(p) {
+  let hash = 0;
+  for (let i = 0; i < p.id.length; i++) hash = (hash * 31 + p.id.charCodeAt(i)) >>> 0;
+  const rating = (3.7 + (hash % 13) / 10).toFixed(1); // 3.7 - 4.9
+  const totalReviews = 40 + (hash % 260);
+  const veryGoodPct = 55 + (hash % 20);
+  const goodPct = Math.max(5, 25 - (hash % 15));
+  const okPct = Math.max(3, 10 - (hash % 7));
+  const badPct = Math.max(1, 6 - (hash % 4));
+  const veryBadPct = Math.max(0, 100 - veryGoodPct - goodPct - okPct - badPct);
+  return {
+    rating,
+    totalReviews,
+    breakdown: [
+      { label: "Very Good", pct: veryGoodPct },
+      { label: "Good", pct: goodPct },
+      { label: "Ok-Ok", pct: okPct },
+      { label: "Bad", pct: badPct },
+      { label: "Very Bad", pct: veryBadPct },
+    ],
+  };
+}
+
 /* ---------------- In-memory state ----------------
    NOTE: user auth + favorites are also mirrored into localStorage so
    they survive a page refresh once this is hosted for real (localStorage
@@ -133,6 +181,9 @@ const state = {
   user: null, // { name, email, picture }
   currentPlant: null,
   pendingOrderPlant: null, // plant waiting for delivery-details step
+  cart: [], // [{ id, qty }]
+  deliveryPincode: null,
+  deliveryDateText: null,
 };
 
 /* =========================================================
@@ -141,12 +192,15 @@ const state = {
 document.addEventListener("DOMContentLoaded", () => {
   loadFavoritesFromStorage();
   loadUserFromStorage();
+  loadCartFromStorage();
   initGoogleSignIn();
   renderCollections();
   renderPlants();
   renderSamples();
+  renderLegalPolicyList();
   wireSearch();
   updateProfileUI();
+  updateCartBadge();
 });
 
 /* =========================================================
@@ -162,10 +216,14 @@ function switchTab(tab, el) {
   if (el) el.classList.add("active");
 }
 
-/* ----- Collections (Categories tab) ----- */
+/* ----- Collections (Categories tab) -----
+   Infinite loop: we render the same set of cards 3x in a row, start the
+   scroll position in the middle copy, then silently snap back by one
+   set-width whenever the user scrolls near either edge — this gives a
+   smooth, seamless infinite carousel with plain native scrolling. */
 function renderCollections() {
   const el = document.getElementById("collection-carousel");
-  el.innerHTML = CATEGORIES.map((c) => {
+  const cardsHtml = CATEGORIES.map((c) => {
     const count = PLANTS.filter((p) => p.category === c.key).length;
     return `
       <div class="carousel-card" style="background-image:url('${c.img}')" onclick="openCategory('${c.key}')">
@@ -177,6 +235,34 @@ function renderCollections() {
       </div>
     `;
   }).join("");
+
+  el.innerHTML = cardsHtml + cardsHtml + cardsHtml;
+
+  requestAnimationFrame(() => {
+    const setWidth = el.scrollWidth / 3;
+    el.dataset.setWidth = setWidth;
+    el.scrollLeft = setWidth; // start in the middle copy
+  });
+
+  if (!el.dataset.loopBound) {
+    el.dataset.loopBound = "1";
+    el.addEventListener("scroll", handleCollectionLoopScroll);
+  }
+}
+
+let collectionLoopTimer;
+function handleCollectionLoopScroll() {
+  clearTimeout(collectionLoopTimer);
+  collectionLoopTimer = setTimeout(() => {
+    const el = document.getElementById("collection-carousel");
+    const setWidth = parseFloat(el.dataset.setWidth || 0);
+    if (!setWidth) return;
+    if (el.scrollLeft < setWidth * 0.5) {
+      el.scrollLeft += setWidth;
+    } else if (el.scrollLeft > setWidth * 1.5) {
+      el.scrollLeft -= setWidth;
+    }
+  }, 120);
 }
 
 /* ----- Category detail screen ----- */
@@ -218,6 +304,23 @@ function switchSubCat(el) {
   el.classList.add("active");
   state.activeFilter = el.dataset.filter;
   renderPlants();
+}
+
+/* =========================================================
+   Header shortcuts (heart -> favorites filter, search -> explore search)
+   ========================================================= */
+function goToFavorites() {
+  switchTab("explore", document.getElementById("nav-explore"));
+  const starTab = document.querySelector('.sub-cat-item[data-filter="star"]');
+  if (starTab) switchSubCat(starTab);
+}
+
+function goToSearch() {
+  switchTab("explore", document.getElementById("nav-explore"));
+  setTimeout(() => {
+    const input = document.getElementById("search-input");
+    if (input) input.focus();
+  }, 150);
 }
 
 /* =========================================================
@@ -285,7 +388,8 @@ function renderSamples() {
 }
 
 function cardHtml(p) {
-  const favClass = state.favorites.has(p.id) ? "favorited" : "";
+  // NOTE: the favorite heart is intentionally NOT shown here in the grid —
+  // it only appears on the product detail page (see openPlant / pd-fav-btn).
   let badge = "";
   if (p.tag === "bestseller") badge = `<div class="premium-badge">BEST SELLER</div>`;
   else if (p.tag === "new") badge = `<div class="new-badge">NEW</div>`;
@@ -294,9 +398,7 @@ function cardHtml(p) {
   return `
     <div class="wallpaper-card" style="background-image:url('${p.img}')" onclick="openPlant('${p.id}')">
       <div class="card-top">
-        <div class="star-badge ${favClass}" onclick="toggleFavorite(event, '${p.id}')">
-          <i class="fa-solid fa-heart"></i>
-        </div>
+        <div></div>
         ${badge}
       </div>
       <div class="card-bottom">
@@ -334,6 +436,136 @@ function saveFavoritesToStorage() {
 }
 
 /* =========================================================
+   Cart
+   ========================================================= */
+function loadCartFromStorage() {
+  try {
+    const raw = localStorage.getItem("mitti_cart");
+    if (raw) state.cart = JSON.parse(raw);
+  } catch (e) {}
+}
+function saveCartToStorage() {
+  try {
+    localStorage.setItem("mitti_cart", JSON.stringify(state.cart));
+  } catch (e) {}
+}
+
+function addToCartCurrentPlant() {
+  if (!state.currentPlant) return;
+  addToCart(state.currentPlant.id);
+}
+
+function addToCart(id) {
+  const existing = state.cart.find((c) => c.id === id);
+  if (existing) {
+    existing.qty += 1;
+  } else {
+    state.cart.push({ id, qty: 1 });
+  }
+  saveCartToStorage();
+  updateCartBadge();
+  showToast("Added to cart");
+}
+
+function changeCartQty(id, delta) {
+  const item = state.cart.find((c) => c.id === id);
+  if (!item) return;
+  item.qty += delta;
+  if (item.qty <= 0) {
+    state.cart = state.cart.filter((c) => c.id !== id);
+  }
+  saveCartToStorage();
+  updateCartBadge();
+  renderCartModal();
+}
+
+function removeFromCart(id) {
+  state.cart = state.cart.filter((c) => c.id !== id);
+  saveCartToStorage();
+  updateCartBadge();
+  renderCartModal();
+}
+
+function getCartCount() {
+  return state.cart.reduce((sum, c) => sum + c.qty, 0);
+}
+function getCartTotal() {
+  return state.cart.reduce((sum, c) => {
+    const p = PLANTS.find((x) => x.id === c.id);
+    return sum + (p ? p.price * c.qty : 0);
+  }, 0);
+}
+
+function updateCartBadge() {
+  const badge = document.getElementById("pd-cart-badge");
+  if (!badge) return;
+  const count = getCartCount();
+  badge.textContent = count;
+  badge.style.display = count > 0 ? "flex" : "none";
+}
+
+function openCartModal() {
+  renderCartModal();
+  document.getElementById("cart-modal-overlay").classList.add("show");
+}
+function closeCartModal() {
+  document.getElementById("cart-modal-overlay").classList.remove("show");
+}
+
+function renderCartModal() {
+  const listEl = document.getElementById("cart-items-list");
+  const emptyEl = document.getElementById("cart-empty-state");
+  const totalEl = document.getElementById("cart-total-amount");
+
+  if (state.cart.length === 0) {
+    listEl.innerHTML = "";
+    emptyEl.style.display = "flex";
+    totalEl.textContent = "₹0";
+    return;
+  }
+
+  emptyEl.style.display = "none";
+  listEl.innerHTML = state.cart
+    .map((c) => {
+      const p = PLANTS.find((x) => x.id === c.id);
+      if (!p) return "";
+      return `
+        <div class="cart-item-row">
+          <div class="cart-item-img" style="background-image:url('${p.img}')"></div>
+          <div class="cart-item-info">
+            <h5>${p.name}</h5>
+            <span>₹${p.price}</span>
+          </div>
+          <div class="cart-qty-control">
+            <button onclick="changeCartQty('${p.id}', -1)">-</button>
+            <span>${c.qty}</span>
+            <button onclick="changeCartQty('${p.id}', 1)">+</button>
+          </div>
+          <div class="cart-item-remove" onclick="removeFromCart('${p.id}')"><i class="fa-solid fa-trash"></i></div>
+        </div>
+      `;
+    })
+    .join("");
+
+  totalEl.textContent = `₹${getCartTotal()}`;
+}
+
+function checkoutCartOnWhatsApp() {
+  if (state.cart.length === 0) {
+    showToast("Your cart is empty");
+    return;
+  }
+  const lines = ["Hi, I'd like to order the following plants:", ""];
+  state.cart.forEach((c) => {
+    const p = PLANTS.find((x) => x.id === c.id);
+    if (p) lines.push(`- ${p.name} x${c.qty} — ₹${p.price * c.qty}`);
+  });
+  lines.push("", `Total: ₹${getCartTotal()}`);
+  openWhatsApp(lines.join("\n"));
+  closeCartModal();
+}
+
+/* =========================================================
    Plant detail screen
    ========================================================= */
 function openPlant(id) {
@@ -341,7 +573,6 @@ function openPlant(id) {
   if (!p) return;
   state.currentPlant = p;
 
-  document.getElementById("editor-preview-img").style.backgroundImage = `url('${p.img}')`;
   document.getElementById("product-name").textContent = p.name;
   document.getElementById("product-category").textContent = p.categoryLabel;
   document.getElementById("product-price").textContent = `₹${p.price}`;
@@ -360,11 +591,192 @@ function openPlant(id) {
     badgeEl.style.display = "none";
   }
 
+  renderPdGallery(p);
+  renderPdHighlights(p);
+  renderPdDetails(p);
+  renderPdCarousel("pd-related-carousel", getRelatedPlants(p));
+  renderPdCarousel("pd-alsoviewed-carousel", getAlsoViewedPlants(p));
+  renderPdReviews(p);
+  resetPdDelivery();
+  updatePdFavIcon();
+  updateCartBadge();
+
+  // Collapse accordions back to closed state each time a product opens.
+  document.querySelectorAll(".pd-accordion").forEach((a) => a.classList.remove("open"));
+
   switchTab("editor", null);
 }
 
 function closeEditorScreen() {
   switchTab("explore", document.getElementById("nav-explore"));
+}
+
+/* ----- Image gallery ----- */
+function renderPdGallery(p) {
+  const slides = getPlantGallerySlides(p);
+  const track = document.getElementById("pd-gallery-track");
+  const dotsEl = document.getElementById("pd-gallery-dots");
+  const countEl = document.getElementById("pd-gallery-count");
+
+  track.innerHTML = slides
+    .map(
+      (s) => `
+      <div class="pd-gallery-slide" style="background-image:url('${s.img}')">
+        ${s.type === "review" ? `<div class="pd-review-tag">${s.label}</div>` : ""}
+      </div>
+    `
+    )
+    .join("");
+
+  dotsEl.innerHTML = slides.map((_, i) => `<div class="dot ${i === 0 ? "active" : ""}"></div>`).join("");
+  countEl.textContent = `1/${slides.length}`;
+
+  track.scrollLeft = 0;
+  track.onscroll = () => {
+    const idx = Math.round(track.scrollLeft / track.clientWidth);
+    countEl.textContent = `${Math.min(idx + 1, slides.length)}/${slides.length}`;
+    dotsEl.querySelectorAll(".dot").forEach((d, i) => d.classList.toggle("active", i === idx));
+  };
+}
+
+/* ----- Product Highlights ----- */
+function renderPdHighlights(p) {
+  const body = document.getElementById("pd-highlights-body");
+  body.innerHTML = `
+    <ul>
+      <li>${p.size} size, nursery-grown &amp; well-rooted</li>
+      <li>Category: ${p.categoryLabel}</li>
+      <li>Comes with a sturdy nursery pot, ready to repot</li>
+      <li>Ideal for ${p.category === "Outdoor" ? "gardens, balconies &amp; landscaping" : "home &amp; office decor"}</li>
+      ${p.tag === "bestseller" ? "<li>One of our most-loved best sellers</li>" : ""}
+      ${p.tag === "new" ? "<li>Newly added to our collection</li>" : ""}
+    </ul>
+  `;
+}
+
+/* ----- Additional Details ----- */
+function renderPdDetails(p) {
+  const body = document.getElementById("pd-details-body");
+  body.innerHTML = `
+    <table>
+      <tr><td>Category</td><td>${p.categoryLabel}</td></tr>
+      <tr><td>Size</td><td>${p.size}</td></tr>
+      <tr><td>Price</td><td>₹${p.price}</td></tr>
+      <tr><td>Advance Payment</td><td>${Math.round(ADVANCE_PERCENT * 100)}% now, rest on delivery</td></tr>
+      <tr><td>Availability</td><td>In stock</td></tr>
+    </table>
+  `;
+}
+
+/* ----- You might also like / People also viewed carousels ----- */
+function getRelatedPlants(p) {
+  return PLANTS.filter((x) => x.category === p.category && x.id !== p.id).slice(0, 8);
+}
+function getAlsoViewedPlants(p) {
+  return PLANTS.filter((x) => x.category !== p.category).slice(0, 8);
+}
+function renderPdCarousel(containerId, list) {
+  const el = document.getElementById(containerId);
+  if (!list.length) {
+    el.innerHTML = "";
+    return;
+  }
+  el.innerHTML = list
+    .map(
+      (p) => `
+      <div class="pd-carousel-card" onclick="openPlant('${p.id}')">
+        <div class="pd-carousel-card-img" style="background-image:url('${p.img}')"></div>
+        <div class="pd-carousel-card-info">
+          <h5>${p.name}</h5>
+          <span>₹${p.price}</span>
+        </div>
+      </div>
+    `
+    )
+    .join("");
+}
+
+/* ----- Customer Ratings & Reviews (demo data — see getDemoReviewData) ----- */
+function renderPdReviews(p) {
+  const data = getDemoReviewData(p);
+  const maxPct = Math.max(...data.breakdown.map((b) => b.pct));
+  const slides = getPlantGallerySlides(p);
+
+  document.getElementById("pd-reviews-card").innerHTML = `
+    <div class="pd-review-summary">
+      <div class="pd-review-score">
+        <div class="num">${data.rating} <i class="fa-solid fa-star" style="font-size:12px;"></i></div>
+        <div class="label">${data.totalReviews} ratings</div>
+      </div>
+      <div class="pd-review-bars">
+        ${data.breakdown
+          .map(
+            (b) => `
+          <div class="pd-review-bar-row">
+            <span style="width:52px;flex-shrink:0;">${b.label}</span>
+            <div class="pd-review-bar-track"><div class="pd-review-bar-fill" style="width:${Math.round(
+              (b.pct / maxPct) * 100
+            )}%"></div></div>
+          </div>
+        `
+          )
+          .join("")}
+      </div>
+    </div>
+    <div class="pd-review-count">${data.totalReviews} customers shared photos &amp; feedback</div>
+    <div class="pd-review-photos">
+      ${slides.map((s) => `<div class="pd-review-photo" style="background-image:url('${s.img}')"></div>`).join("")}
+    </div>
+    <div class="pd-review-note">Showing sample ratings — real customer reviews will appear here as orders come in.</div>
+  `;
+}
+
+/* ----- Delivery info ----- */
+function resetPdDelivery() {
+  const dateEl = document.getElementById("pd-delivery-date");
+  const pinEl = document.getElementById("pd-delivery-pincode");
+  if (state.deliveryPincode && state.deliveryDateText) {
+    dateEl.textContent = state.deliveryDateText;
+    pinEl.textContent = `to ${state.deliveryPincode}`;
+  } else {
+    dateEl.textContent = "-";
+    pinEl.textContent = "Enter pincode to check delivery date";
+  }
+}
+
+function changeDeliveryPincode() {
+  const pin = prompt("Enter your 6-digit delivery pincode:", state.deliveryPincode || "");
+  if (!pin) return;
+  const clean = pin.trim();
+  if (!/^\d{6}$/.test(clean)) {
+    showToast("Please enter a valid 6-digit pincode");
+    return;
+  }
+  state.deliveryPincode = clean;
+  const d = new Date();
+  d.setDate(d.getDate() + 5);
+  state.deliveryDateText = d.toLocaleDateString("en-IN", { weekday: "short", day: "numeric", month: "short" });
+  resetPdDelivery();
+  showToast("Delivery estimate updated");
+}
+
+/* ----- Accordions ----- */
+function toggleAccordion(id) {
+  const body = document.getElementById(`${id}-body`);
+  const wrapper = body.closest(".pd-accordion");
+  wrapper.classList.toggle("open");
+}
+
+/* ----- Favorite on product detail page ----- */
+function toggleFavoriteCurrentPlant() {
+  if (!state.currentPlant) return;
+  toggleFavorite({ stopPropagation: () => {} }, state.currentPlant.id);
+  updatePdFavIcon();
+}
+function updatePdFavIcon() {
+  const btn = document.getElementById("pd-fav-btn");
+  if (!btn || !state.currentPlant) return;
+  btn.classList.toggle("favorited", state.favorites.has(state.currentPlant.id));
 }
 
 /* =========================================================
@@ -476,10 +888,12 @@ function updateProfileUI() {
   const out = document.getElementById("profile-logged-out");
   const inn = document.getElementById("profile-logged-in");
   const contact = document.getElementById("profile-contact-info");
+  const options = document.getElementById("profile-account-options");
   if (state.isSignedIn && state.user) {
     out.style.display = "none";
     inn.style.display = "flex";
     contact.style.display = "block";
+    options.style.display = "block";
     document.getElementById("profile-name").textContent = state.user.name;
     document.getElementById("profile-email").textContent = state.user.email;
     const avatar = document.getElementById("profile-avatar");
@@ -494,6 +908,7 @@ function updateProfileUI() {
     out.style.display = "flex";
     inn.style.display = "none";
     contact.style.display = "none";
+    options.style.display = "none";
   }
 }
 
@@ -750,6 +1165,119 @@ function submitLandscapingEnquiry() {
       btn.disabled = false;
       btn.textContent = "Send Enquiry";
     });
+}
+
+/* =========================================================
+   Legal & Policies
+   NOTE: only policies relevant to a small plant-nursery e-commerce
+   business are included (out of the full reference list given). Dropped:
+   Responsible Disclosure / Hall of Fame / Whistleblower Policy (bug-bounty
+   & corporate-governance policies for large platforms), M-Deliver
+   (a marketplace's own delivery-partner brand), Influencer Marketing
+   T&Cs (not currently running an influencer program), and CCPA Dark
+   Pattern Declaration (California-specific, large-platform regulation).
+   Edit LEGAL_POLICIES below any time to add/remove/edit a policy.
+   ========================================================= */
+const LEGAL_POLICIES = {
+  terms: {
+    title: "Terms and Conditions",
+    content: `
+      <p>By using the Mitti Manor website and placing an order, you agree to these terms. Mitti Manor sells live plants, pots and related landscaping services for personal and commercial use.</p>
+      <h4>Orders</h4>
+      <p>Orders are confirmed only after the advance payment (25% of the order value) is received. The remaining balance is collected on delivery.</p>
+      <h4>Pricing</h4>
+      <p>Prices shown are in Indian Rupees (INR) and may change without prior notice. The price at the time of order confirmation applies.</p>
+      <h4>Plant Nature</h4>
+      <p>As live products, plants may show minor natural variation in size, colour or leaf pattern from the photos shown.</p>
+    `,
+  },
+  privacy: {
+    title: "Privacy Policy",
+    content: `
+      <p>We collect only the information needed to process your order and provide support: your name, phone number, email, delivery address and, if you sign in, your Google account name/email.</p>
+      <h4>How we use your data</h4>
+      <p>Your details are used to confirm orders, arrange delivery, send order updates on WhatsApp/email, and respond to enquiries. We do not sell your personal information to third parties.</p>
+      <h4>Third-party services</h4>
+      <p>We use Google Sign-In for login, Razorpay for payments, and WhatsApp/email for order communication. These providers process your data under their own privacy policies.</p>
+      <h4>Your choices</h4>
+      <p>You can request that we delete your account information at any time by contacting us on WhatsApp or email.</p>
+    `,
+  },
+  returns: {
+    title: "Returns, Refunds and Replacement Policy",
+    content: `
+      <p>Because plants are living, perishable goods, returns are only accepted in specific cases:</p>
+      <ul>
+        <li>The plant arrived damaged, dead, or significantly different from what was ordered.</li>
+        <li>The wrong item was delivered.</li>
+      </ul>
+      <p>Please share clear photos/video within 24 hours of delivery on WhatsApp. Approved cases are eligible for a free replacement or refund of the amount paid.</p>
+      <h4>Refund timeline</h4>
+      <p>Approved refunds are processed back to the original payment method within 5–7 business days.</p>
+    `,
+  },
+  cancellation: {
+    title: "Cancellation Policy",
+    content: `
+      <p>Orders can be cancelled free of charge before the plant is dispatched for delivery. Once dispatched, cancellation is no longer possible since plants cannot be re-shipped.</p>
+      <p>To cancel, message us on WhatsApp with your order details as soon as possible. If an advance payment was made and the order is cancelled before dispatch, it will be refunded within 5–7 business days.</p>
+    `,
+  },
+  ip: {
+    title: "Intellectual Property Policy",
+    content: `
+      <p>All content on this website — including the Mitti Manor name, logo, photographs, and descriptions — belongs to Mitti Manor unless otherwise stated.</p>
+      <p>You may not copy, reproduce or use our branding, photos or written content for commercial purposes without written permission.</p>
+    `,
+  },
+  antiphishing: {
+    title: "Anti Phishing Alert",
+    content: `
+      <p>Mitti Manor will never ask for your bank OTP, UPI PIN, or full card details over call, SMS, WhatsApp, or email. All payments are processed securely through Razorpay's checkout screen only.</p>
+      <p>If you receive a suspicious message claiming to be from Mitti Manor asking for payment outside our official checkout, or asking for your OTP/PIN, please do not respond and report it to us directly at mittimanor@gmail.com.</p>
+    `,
+  },
+  thirdparty: {
+    title: "Third Party Functionality - Terms and Conditions",
+    content: `
+      <p>Our website uses the following third-party services to operate:</p>
+      <ul>
+        <li><strong>Google Sign-In</strong> — for account login</li>
+        <li><strong>Razorpay</strong> — for secure payment processing</li>
+        <li><strong>Web3Forms</strong> — to deliver order/enquiry notifications to our team</li>
+        <li><strong>WhatsApp</strong> — for order communication and support</li>
+      </ul>
+      <p>Use of these services is also governed by each provider's own terms and privacy policy. We are not responsible for outages or issues originating from these third-party providers.</p>
+    `,
+  },
+};
+
+function renderLegalPolicyList() {
+  const el = document.getElementById("legal-policy-list");
+  if (!el) return;
+  el.innerHTML = Object.keys(LEGAL_POLICIES)
+    .map((key) => {
+      const policy = LEGAL_POLICIES[key];
+      return `
+        <div class="settings-row" onclick="openLegalPolicy('${key}')">
+          <div class="settings-row-icon"><i class="fa-solid fa-file-lines"></i></div>
+          <div class="settings-row-text"><h4>${policy.title}</h4></div>
+          <div class="settings-row-arrow"><i class="fa-solid fa-chevron-right"></i></div>
+        </div>
+      `;
+    })
+    .join("");
+}
+
+function openLegalPolicy(key) {
+  const policy = LEGAL_POLICIES[key];
+  if (!policy) return;
+  document.getElementById("legal-modal-title").textContent = policy.title;
+  document.getElementById("legal-modal-body").innerHTML = policy.content;
+  document.getElementById("legal-modal-overlay").classList.add("show");
+}
+function closeLegalModal() {
+  document.getElementById("legal-modal-overlay").classList.remove("show");
 }
 
 /* =========================================================
