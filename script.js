@@ -1,7 +1,18 @@
 /* =========================================================
    MITTI MANOR
-   Main JavaScript
+   FULL UPDATED SCRIPT
+   Firebase + Cart + Wishlist + Search + Login
 ========================================================= */
+
+import {
+    auth,
+    loginWithGoogle,
+    logoutUser,
+    watchAuthState,
+    saveUserProfile,
+    saveUserCart,
+    getUserCart
+} from "./config.js";
 
 
 /* =========================================================
@@ -52,16 +63,22 @@ const products = [
 
 
 /* =========================================================
-   2. GLOBAL STATE
+   2. LOCAL STATE
 ========================================================= */
 
-let cart = JSON.parse(
-    localStorage.getItem("mittiManorCart")
-) || [];
+let cart =
+    JSON.parse(
+        localStorage.getItem("mittiManorCart")
+    ) || [];
 
-let wishlist = JSON.parse(
-    localStorage.getItem("mittiManorWishlist")
-) || [];
+
+let wishlist =
+    JSON.parse(
+        localStorage.getItem("mittiManorWishlist")
+    ) || [];
+
+
+let currentUser = null;
 
 
 /* =========================================================
@@ -145,7 +162,50 @@ const toastMessage =
 
 
 /* =========================================================
-   4. MOBILE MENU
+   4. HELPERS
+========================================================= */
+
+function formatPrice(price) {
+
+    return new Intl.NumberFormat(
+        "en-IN",
+        {
+            style: "currency",
+            currency: "INR",
+            maximumFractionDigits: 0
+        }
+    ).format(price);
+}
+
+
+function showToast(message) {
+
+    if (!toast || !toastMessage) {
+        console.log(message);
+        return;
+    }
+
+    toastMessage.textContent = message;
+
+    toast.classList.add("show");
+
+    clearTimeout(
+        window.mittiToastTimer
+    );
+
+    window.mittiToastTimer =
+        setTimeout(() => {
+
+            toast.classList.remove(
+                "show"
+            );
+
+        }, 2800);
+}
+
+
+/* =========================================================
+   5. MOBILE MENU
 ========================================================= */
 
 if (mobileMenuBtn) {
@@ -154,7 +214,9 @@ if (mobileMenuBtn) {
         "click",
         () => {
 
-            mainNav.classList.toggle("active");
+            mainNav.classList.toggle(
+                "active"
+            );
 
             mobileMenuBtn.textContent =
                 mainNav.classList.contains("active")
@@ -165,8 +227,6 @@ if (mobileMenuBtn) {
 }
 
 
-/* Close mobile menu after clicking link */
-
 document
     .querySelectorAll(".main-nav a")
     .forEach(link => {
@@ -175,10 +235,13 @@ document
             "click",
             () => {
 
-                mainNav.classList.remove("active");
+                mainNav.classList.remove(
+                    "active"
+                );
 
                 if (mobileMenuBtn) {
-                    mobileMenuBtn.textContent = "☰";
+                    mobileMenuBtn.textContent =
+                        "☰";
                 }
             }
         );
@@ -186,22 +249,24 @@ document
 
 
 /* =========================================================
-   5. SEARCH
+   6. SEARCH
 ========================================================= */
 
 function openSearch() {
 
     if (!searchOverlay) return;
 
-    searchOverlay.classList.add("active");
+    searchOverlay.classList.add(
+        "active"
+    );
 
-    document.body.classList.add("no-scroll");
+    document.body.classList.add(
+        "no-scroll"
+    );
 
     setTimeout(() => {
 
-        if (searchInput) {
-            searchInput.focus();
-        }
+        searchInput?.focus();
 
     }, 100);
 }
@@ -211,9 +276,13 @@ function closeSearchOverlay() {
 
     if (!searchOverlay) return;
 
-    searchOverlay.classList.remove("active");
+    searchOverlay.classList.remove(
+        "active"
+    );
 
-    document.body.classList.remove("no-scroll");
+    document.body.classList.remove(
+        "no-scroll"
+    );
 }
 
 
@@ -256,9 +325,10 @@ if (searchOverlay) {
 function performProductSearch() {
 
     const query =
-        searchInput.value
-            .trim()
+        searchInput?.value
+            ?.trim()
             .toLowerCase();
+
 
     if (!query) {
 
@@ -297,7 +367,7 @@ function performProductSearch() {
     closeSearchOverlay();
 
 
-    if (results.length === 0) {
+    if (!results.length) {
 
         showToast(
             `No products found for "${query}".`
@@ -329,19 +399,19 @@ function performProductSearch() {
 
         setTimeout(() => {
 
-            firstResult.style.outline =
-                "";
-
-            firstResult.style.outlineOffset =
-                "";
+            firstResult.style.outline = "";
+            firstResult.style.outlineOffset = "";
 
         }, 2000);
-
     }
 
 
     showToast(
-        `${results.length} product found.`
+        `${results.length} product${
+            results.length > 1
+                ? "s"
+                : ""
+        } found.`
     );
 }
 
@@ -361,17 +431,11 @@ if (searchInput) {
         "keydown",
         event => {
 
-            if (
-                event.key === "Enter"
-            ) {
-
+            if (event.key === "Enter") {
                 performProductSearch();
             }
 
-            if (
-                event.key === "Escape"
-            ) {
-
+            if (event.key === "Escape") {
                 closeSearchOverlay();
             }
         }
@@ -380,10 +444,10 @@ if (searchInput) {
 
 
 /* =========================================================
-   6. CART
+   7. CART STORAGE
 ========================================================= */
 
-function saveCart() {
+function saveLocalCart() {
 
     localStorage.setItem(
         "mittiManorCart",
@@ -392,7 +456,103 @@ function saveCart() {
 }
 
 
-function addToCart(productId) {
+/* =========================================================
+   8. FIREBASE CART SYNC
+========================================================= */
+
+async function syncCartToFirebase() {
+
+    if (!currentUser) {
+        return;
+    }
+
+
+    try {
+
+        await saveUserCart(
+            currentUser.uid,
+            cart
+        );
+
+    } catch (error) {
+
+        console.error(
+            "Cart sync failed:",
+            error
+        );
+    }
+}
+
+
+async function loadFirebaseCart() {
+
+    if (!currentUser) {
+        return;
+    }
+
+
+    try {
+
+        const firebaseCart =
+            await getUserCart(
+                currentUser.uid
+            );
+
+
+        if (
+            Array.isArray(firebaseCart) &&
+            firebaseCart.length > 0
+        ) {
+
+            cart = firebaseCart;
+
+            saveLocalCart();
+
+            updateCartUI();
+
+            return;
+        }
+
+
+        await syncCartToFirebase();
+
+    } catch (error) {
+
+        console.error(
+            "Firebase cart loading failed:",
+            error
+        );
+    }
+}
+
+
+/* =========================================================
+   9. CART FUNCTIONS
+========================================================= */
+
+function getCartCount() {
+
+    return cart.reduce(
+        (total, item) =>
+            total + Number(item.quantity || 0),
+        0
+    );
+}
+
+
+function getCartTotal() {
+
+    return cart.reduce(
+        (total, item) =>
+            total +
+            Number(item.price || 0) *
+            Number(item.quantity || 0),
+        0
+    );
+}
+
+
+async function addToCart(productId) {
 
     const product =
         products.find(
@@ -401,19 +561,22 @@ function addToCart(productId) {
         );
 
 
-    if (!product) return;
+    if (!product) {
+        return;
+    }
 
 
-    const existingItem =
+    const existing =
         cart.find(
             item =>
                 item.id === product.id
         );
 
 
-    if (existingItem) {
+    if (existing) {
 
-        existingItem.quantity += 1;
+        existing.quantity =
+            Number(existing.quantity) + 1;
 
     } else {
 
@@ -424,9 +587,12 @@ function addToCart(productId) {
     }
 
 
-    saveCart();
+    saveLocalCart();
 
     updateCartUI();
+
+    await syncCartToFirebase();
+
 
     showToast(
         `${product.name} added to cart.`
@@ -434,7 +600,7 @@ function addToCart(productId) {
 }
 
 
-function removeFromCart(productId) {
+async function removeFromCart(productId) {
 
     cart =
         cart.filter(
@@ -443,9 +609,12 @@ function removeFromCart(productId) {
         );
 
 
-    saveCart();
+    saveLocalCart();
 
     updateCartUI();
+
+    await syncCartToFirebase();
+
 
     showToast(
         "Product removed from cart."
@@ -453,9 +622,9 @@ function removeFromCart(productId) {
 }
 
 
-function changeQuantity(
+async function changeQuantity(
     productId,
-    change
+    amount
 ) {
 
     const item =
@@ -468,85 +637,56 @@ function changeQuantity(
     if (!item) return;
 
 
-    item.quantity += change;
+    item.quantity =
+        Number(item.quantity) + amount;
 
 
     if (item.quantity <= 0) {
 
-        removeFromCart(productId);
+        await removeFromCart(
+            productId
+        );
 
         return;
     }
 
 
-    saveCart();
+    saveLocalCart();
 
     updateCartUI();
+
+    await syncCartToFirebase();
 }
 
 
-function getCartCount() {
-
-    return cart.reduce(
-        (total, item) =>
-            total + item.quantity,
-        0
-    );
-}
-
-
-function getCartTotal() {
-
-    return cart.reduce(
-        (total, item) =>
-            total +
-            item.price *
-            item.quantity,
-        0
-    );
-}
-
-
-function formatPrice(price) {
-
-    return new Intl.NumberFormat(
-        "en-IN",
-        {
-            style: "currency",
-            currency: "INR",
-            maximumFractionDigits: 0
-        }
-    ).format(price);
-}
-
+/* =========================================================
+   10. CART UI
+========================================================= */
 
 function updateCartUI() {
-
-    const count =
-        getCartCount();
-
-    const total =
-        getCartTotal();
-
 
     if (cartCount) {
 
         cartCount.textContent =
-            count;
+            getCartCount();
     }
 
 
     if (cartTotal) {
 
         cartTotal.textContent =
-            formatPrice(total);
+            formatPrice(
+                getCartTotal()
+            );
     }
 
 
-    if (!cartItems) return;
+    if (!cartItems) {
+        return;
+    }
 
 
-    if (cart.length === 0) {
+    if (!cart.length) {
 
         cartItems.innerHTML = `
 
@@ -564,6 +704,7 @@ function updateCartUI() {
                 </p>
 
             </div>
+
         `;
 
         return;
@@ -614,6 +755,7 @@ function updateCartUI() {
                             class="quantity-btn"
                             data-action="decrease"
                             data-id="${item.id}"
+                            aria-label="Decrease quantity"
                             style="
                                 width:26px;
                                 height:26px;
@@ -625,6 +767,7 @@ function updateCartUI() {
                             −
                         </button>
 
+
                         <span
                             style="
                                 font-size:12px;
@@ -635,10 +778,12 @@ function updateCartUI() {
                             ${item.quantity}
                         </span>
 
+
                         <button
                             class="quantity-btn"
                             data-action="increase"
                             data-id="${item.id}"
+                            aria-label="Increase quantity"
                             style="
                                 width:26px;
                                 height:26px;
@@ -670,8 +815,24 @@ function updateCartUI() {
 
 
 /* =========================================================
-   CART EVENT DELEGATION
+   11. CART BUTTON EVENTS
 ========================================================= */
+
+document
+    .querySelectorAll(".add-cart")
+    .forEach(button => {
+
+        button.addEventListener(
+            "click",
+            () => {
+
+                addToCart(
+                    button.dataset.id
+                );
+            }
+        );
+    });
+
 
 if (cartItems) {
 
@@ -708,15 +869,17 @@ if (cartItems) {
                         quantityButton.dataset.id
                     );
 
-                const action =
-                    quantityButton.dataset.action;
+
+                const amount =
+                    quantityButton.dataset.action ===
+                    "increase"
+                        ? 1
+                        : -1;
 
 
                 changeQuantity(
                     id,
-                    action === "increase"
-                        ? 1
-                        : -1
+                    amount
                 );
             }
         }
@@ -725,27 +888,7 @@ if (cartItems) {
 
 
 /* =========================================================
-   ADD TO CART BUTTONS
-========================================================= */
-
-document
-    .querySelectorAll(".add-cart")
-    .forEach(button => {
-
-        button.addEventListener(
-            "click",
-            () => {
-
-                addToCart(
-                    button.dataset.id
-                );
-            }
-        );
-    });
-
-
-/* =========================================================
-   OPEN / CLOSE CART
+   12. CART DRAWER
 ========================================================= */
 
 function openCart() {
@@ -754,11 +897,17 @@ function openCart() {
 
     updateCartUI();
 
-    cartDrawer.classList.add("active");
+    cartDrawer.classList.add(
+        "active"
+    );
 
-    drawerBackdrop.classList.add("active");
+    drawerBackdrop?.classList.add(
+        "active"
+    );
 
-    document.body.classList.add("no-scroll");
+    document.body.classList.add(
+        "no-scroll"
+    );
 }
 
 
@@ -766,11 +915,17 @@ function closeCartDrawer() {
 
     if (!cartDrawer) return;
 
-    cartDrawer.classList.remove("active");
+    cartDrawer.classList.remove(
+        "active"
+    );
 
-    drawerBackdrop.classList.remove("active");
+    drawerBackdrop?.classList.remove(
+        "active"
+    );
 
-    document.body.classList.remove("no-scroll");
+    document.body.classList.remove(
+        "no-scroll"
+    );
 }
 
 
@@ -802,7 +957,7 @@ if (drawerBackdrop) {
 
 
 /* =========================================================
-   7. WISHLIST
+   13. WISHLIST
 ========================================================= */
 
 function saveWishlist() {
@@ -811,6 +966,44 @@ function saveWishlist() {
         "mittiManorWishlist",
         JSON.stringify(wishlist)
     );
+}
+
+
+function updateWishlistUI() {
+
+    document
+        .querySelectorAll(
+            ".wishlist-product"
+        )
+        .forEach(button => {
+
+            const id =
+                Number(
+                    button.dataset.id
+                );
+
+
+            if (
+                wishlist.includes(id)
+            ) {
+
+                button.classList.add(
+                    "active"
+                );
+
+                button.textContent =
+                    "♥";
+
+            } else {
+
+                button.classList.remove(
+                    "active"
+                );
+
+                button.textContent =
+                    "♡";
+            }
+        });
 }
 
 
@@ -851,47 +1044,17 @@ function toggleWishlist(productId) {
 }
 
 
-function updateWishlistUI() {
-
-    document
-        .querySelectorAll(".wishlist-product")
-        .forEach(button => {
-
-            const id =
-                Number(button.dataset.id);
-
-            if (
-                wishlist.includes(id)
-            ) {
-
-                button.classList.add(
-                    "active"
-                );
-
-                button.textContent =
-                    "♥";
-
-            } else {
-
-                button.classList.remove(
-                    "active"
-                );
-
-                button.textContent =
-                    "♡";
-            }
-        });
-}
-
-
 document
-    .querySelectorAll(".wishlist-product")
+    .querySelectorAll(
+        ".wishlist-product"
+    )
     .forEach(button => {
 
         button.addEventListener(
             "click",
             event => {
 
+                event.preventDefault();
                 event.stopPropagation();
 
                 toggleWishlist(
@@ -908,9 +1071,7 @@ if (wishlistBtn) {
         "click",
         () => {
 
-            if (
-                wishlist.length === 0
-            ) {
+            if (!wishlist.length) {
 
                 showToast(
                     "Your wishlist is empty."
@@ -933,16 +1094,58 @@ if (wishlistBtn) {
 
 
 /* =========================================================
-   8. LOGIN MODAL
+   14. FIREBASE AUTH UI
+========================================================= */
+
+function updateLoggedInUI(user) {
+
+    if (!loginBtn) {
+        return;
+    }
+
+
+    if (!user) {
+
+        loginBtn.textContent =
+            "Login";
+
+        loginBtn.dataset.loggedIn =
+            "false";
+
+        return;
+    }
+
+
+    const firstName =
+        user.displayName
+            ?.split(" ")[0];
+
+
+    loginBtn.textContent =
+        firstName
+            ? firstName
+            : "Account";
+
+    loginBtn.dataset.loggedIn =
+        "true";
+}
+
+
+/* =========================================================
+   15. LOGIN MODAL
 ========================================================= */
 
 function openLoginModal() {
 
     if (!loginModal) return;
 
-    loginModal.classList.add("active");
+    loginModal.classList.add(
+        "active"
+    );
 
-    document.body.classList.add("no-scroll");
+    document.body.classList.add(
+        "no-scroll"
+    );
 }
 
 
@@ -950,17 +1153,12 @@ function closeLoginModal() {
 
     if (!loginModal) return;
 
-    loginModal.classList.remove("active");
+    loginModal.classList.remove(
+        "active"
+    );
 
-    document.body.classList.remove("no-scroll");
-}
-
-
-if (loginBtn) {
-
-    loginBtn.addEventListener(
-        "click",
-        openLoginModal
+    document.body.classList.remove(
+        "no-scroll"
     );
 }
 
@@ -993,7 +1191,185 @@ if (loginModal) {
 
 
 /* =========================================================
-   9. EMAIL LOGIN PLACEHOLDER
+   16. GOOGLE LOGIN
+========================================================= */
+
+async function handleGoogleLogin() {
+
+    if (!googleLoginBtn) {
+        return;
+    }
+
+
+    const originalText =
+        googleLoginBtn.innerHTML;
+
+
+    try {
+
+        googleLoginBtn.disabled =
+            true;
+
+        googleLoginBtn.innerHTML =
+            "Signing in...";
+
+
+        const user =
+            await loginWithGoogle();
+
+
+        if (user) {
+
+            await saveUserProfile(
+                user
+            );
+
+            currentUser =
+                user;
+
+            updateLoggedInUI(
+                user
+            );
+
+            await loadFirebaseCart();
+
+            closeLoginModal();
+
+            showToast(
+                `Welcome, ${
+                    user.displayName ||
+                    "to Mitti Manor"
+                }!`
+            );
+        }
+
+    } catch (error) {
+
+        console.error(
+            "Google login failed:",
+            error
+        );
+
+
+        let message =
+            "Google login failed.";
+
+
+        if (
+            error?.code ===
+            "auth/popup-closed-by-user"
+        ) {
+
+            message =
+                "Login window was closed.";
+
+        } else if (
+            error?.code ===
+            "auth/popup-blocked"
+        ) {
+
+            message =
+                "Please allow popups for this website.";
+
+        } else if (
+            error?.code ===
+            "auth/unauthorized-domain"
+        ) {
+
+            message =
+                "This domain is not authorized in Firebase.";
+
+        }
+
+
+        showToast(message);
+
+    } finally {
+
+        googleLoginBtn.disabled =
+            false;
+
+        googleLoginBtn.innerHTML =
+            originalText;
+    }
+}
+
+
+if (googleLoginBtn) {
+
+    googleLoginBtn.addEventListener(
+        "click",
+        handleGoogleLogin
+    );
+}
+
+
+/* =========================================================
+   17. LOGIN BUTTON
+========================================================= */
+
+if (loginBtn) {
+
+    loginBtn.addEventListener(
+        "click",
+        async () => {
+
+            if (!currentUser) {
+
+                openLoginModal();
+
+                return;
+            }
+
+
+            const shouldLogout =
+                confirm(
+                    `Logged in as ${
+                        currentUser.email ||
+                        currentUser.displayName ||
+                        "User"
+                    }.\n\nLogout?`
+                );
+
+
+            if (!shouldLogout) {
+                return;
+            }
+
+
+            try {
+
+                await logoutUser();
+
+                currentUser =
+                    null;
+
+                updateLoggedInUI(
+                    null
+                );
+
+                showToast(
+                    "You have been logged out."
+                );
+
+            } catch (error) {
+
+                console.error(
+                    "Logout failed:",
+                    error
+                );
+
+                showToast(
+                    "Logout failed."
+                );
+            }
+        }
+    );
+}
+
+
+/* =========================================================
+   18. EMAIL LOGIN
 ========================================================= */
 
 if (loginForm) {
@@ -1008,7 +1384,13 @@ if (loginForm) {
             const email =
                 document.getElementById(
                     "loginEmail"
-                ).value.trim();
+                )?.value.trim();
+
+
+            const password =
+                document.getElementById(
+                    "loginPassword"
+                )?.value;
 
 
             if (!email) {
@@ -1021,8 +1403,18 @@ if (loginForm) {
             }
 
 
+            if (!password) {
+
+                showToast(
+                    "Please enter your password."
+                );
+
+                return;
+            }
+
+
             showToast(
-                "Firebase login will be connected next."
+                "Email authentication will be enabled in the next Firebase auth update."
             );
         }
     );
@@ -1030,25 +1422,7 @@ if (loginForm) {
 
 
 /* =========================================================
-   10. GOOGLE LOGIN PLACEHOLDER
-========================================================= */
-
-if (googleLoginBtn) {
-
-    googleLoginBtn.addEventListener(
-        "click",
-        () => {
-
-            showToast(
-                "Google Login will be connected with Firebase."
-            );
-        }
-    );
-}
-
-
-/* =========================================================
-   11. SIGNUP PLACEHOLDER
+   19. SIGN UP
 ========================================================= */
 
 if (signupBtn) {
@@ -1058,7 +1432,7 @@ if (signupBtn) {
         () => {
 
             showToast(
-                "Account creation will be connected with Firebase."
+                "Account creation will be enabled with Firebase."
             );
         }
     );
@@ -1066,35 +1440,7 @@ if (signupBtn) {
 
 
 /* =========================================================
-   12. CHECKOUT
-========================================================= */
-
-if (checkoutBtn) {
-
-    checkoutBtn.addEventListener(
-        "click",
-        () => {
-
-            if (cart.length === 0) {
-
-                showToast(
-                    "Your cart is empty."
-                );
-
-                return;
-            }
-
-
-            showToast(
-                "Checkout and Razorpay will be connected next."
-            );
-        }
-    );
-}
-
-
-/* =========================================================
-   13. NEWSLETTER
+   20. NEWSLETTER
 ========================================================= */
 
 if (newsletterForm) {
@@ -1109,7 +1455,7 @@ if (newsletterForm) {
             const email =
                 document.getElementById(
                     "newsletterEmail"
-                ).value.trim();
+                )?.value.trim();
 
 
             if (!email) {
@@ -1134,47 +1480,180 @@ if (newsletterForm) {
 
 
 /* =========================================================
-   14. TOAST NOTIFICATION
+   21. CHECKOUT
 ========================================================= */
 
-let toastTimer;
+if (checkoutBtn) {
 
+    checkoutBtn.addEventListener(
+        "click",
+        () => {
 
-function showToast(message) {
+            if (!cart.length) {
 
-    if (!toast || !toastMessage) return;
-
-
-    toastMessage.textContent =
-        message;
-
-
-    toast.classList.add(
-        "show"
-    );
-
-
-    clearTimeout(
-        toastTimer
-    );
-
-
-    toastTimer =
-        setTimeout(
-            () => {
-
-                toast.classList.remove(
-                    "show"
+                showToast(
+                    "Your cart is empty."
                 );
 
-            },
-            2800
-        );
+                return;
+            }
+
+
+            if (!currentUser) {
+
+                closeCartDrawer();
+
+                openLoginModal();
+
+                showToast(
+                    "Please login before checkout."
+                );
+
+                return;
+            }
+
+
+            showToast(
+                "Checkout is ready for Razorpay integration."
+            );
+        }
+    );
 }
 
 
 /* =========================================================
-   15. ESCAPE KEY
+   22. AUTH STATE LISTENER
+========================================================= */
+
+watchAuthState(
+    async user => {
+
+        currentUser =
+            user || null;
+
+
+        updateLoggedInUI(
+            currentUser
+        );
+
+
+        if (currentUser) {
+
+            console.log(
+                "Logged in:",
+                currentUser.email
+            );
+
+
+            try {
+
+                await saveUserProfile(
+                    currentUser
+                );
+
+                await loadFirebaseCart();
+
+            } catch (error) {
+
+                console.error(
+                    "User sync error:",
+                    error
+                );
+            }
+
+        } else {
+
+            console.log(
+                "No user logged in."
+            );
+        }
+    }
+);
+
+
+/* =========================================================
+   23. NAV ACTIVE SECTION
+========================================================= */
+
+const sections =
+    document.querySelectorAll(
+        "main section[id]"
+    );
+
+
+const navLinks =
+    document.querySelectorAll(
+        ".main-nav a"
+    );
+
+
+window.addEventListener(
+    "scroll",
+    () => {
+
+        let currentSection =
+            "";
+
+
+        sections.forEach(
+            section => {
+
+                const top =
+                    section.offsetTop - 160;
+
+
+                const bottom =
+                    top +
+                    section.offsetHeight;
+
+
+                if (
+                    window.scrollY >= top &&
+                    window.scrollY < bottom
+                ) {
+
+                    currentSection =
+                        section.id;
+                }
+            }
+        );
+
+
+        navLinks.forEach(
+            link => {
+
+                link.classList.remove(
+                    "active"
+                );
+
+
+                const href =
+                    link.getAttribute(
+                        "href"
+                    );
+
+
+                if (
+                    href ===
+                    `#${currentSection}`
+                ) {
+
+                    link.classList.add(
+                        "active"
+                    );
+                }
+            }
+        );
+
+    },
+    {
+        passive: true
+    }
+);
+
+
+/* =========================================================
+   24. ESCAPE KEY
 ========================================================= */
 
 document.addEventListener(
@@ -1182,7 +1661,8 @@ document.addEventListener(
     event => {
 
         if (
-            event.key !== "Escape"
+            event.key !==
+            "Escape"
         ) {
             return;
         }
@@ -1198,127 +1678,28 @@ document.addEventListener(
 
 
 /* =========================================================
-   16. ACTIVE NAVIGATION
+   25. INITIAL UI
 ========================================================= */
 
-const sections =
-    document.querySelectorAll(
-        "main section[id]"
-    );
-
-const navLinks =
-    document.querySelectorAll(
-        ".main-nav a"
-    );
-
-
-window.addEventListener(
-    "scroll",
-    () => {
-
-        let currentSection = "";
-
-
-        sections.forEach(section => {
-
-            const sectionTop =
-                section.offsetTop - 150;
-
-            const sectionHeight =
-                section.offsetHeight;
-
-
-            if (
-                window.scrollY >=
-                sectionTop
-
-                &&
-
-                window.scrollY <
-                sectionTop +
-                sectionHeight
-            ) {
-
-                currentSection =
-                    section.getAttribute(
-                        "id"
-                    );
-            }
-
-        });
-
-
-        navLinks.forEach(link => {
-
-            link.classList.remove(
-                "active"
-            );
-
-
-            const href =
-                link.getAttribute(
-                    "href"
-                );
-
-
-            if (
-                href ===
-                `#${currentSection}`
-            ) {
-
-                link.classList.add(
-                    "active"
-                );
-            }
-
-        });
-
-    },
-    {
-        passive: true
-    }
-);
-
-
-/* =========================================================
-   17. CONTACT LINKS
-========================================================= */
-
-document
-    .querySelectorAll(
-        'a[href^="mailto:"]'
-    )
-    .forEach(link => {
-
-        link.addEventListener(
-            "click",
-            () => {
-
-                showToast(
-                    "Opening your email app..."
-                );
-            }
-        );
-    });
-
-
-/* =========================================================
-   18. INITIALIZE
-========================================================= */
-
-function initializeAppUI() {
+function initializeMittiManor() {
 
     updateCartUI();
 
     updateWishlistUI();
 
+    updateLoggedInUI(
+        currentUser
+    );
+
+    console.log(
+        "🌿 Mitti Manor initialized."
+    );
 }
 
 
-initializeAppUI();
+initializeMittiManor();
 
 
 /* =========================================================
-   MITTI MANOR
-   End of script
+   END
 ========================================================= */
