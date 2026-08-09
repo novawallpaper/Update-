@@ -1,56 +1,2859 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mitti Manor — Plants for every home</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css" onerror="document.getElementById('app') && (document.getElementById('app').innerHTML='<div style=\'padding:50px 20px;text-align:center;font-family:sans-serif\'><div style=\'font-size:40px\'>&#9888;&#65039;</div><h2 style=\'color:#D6484A\'>style.css not found</h2><p style=\'font-size:13px;color:#555\'>Make sure style.css is saved in the exact same folder as index.html.</p></div>')">
-</head>
-<body>
-<div id="app"></div>
-<div id="toast" class="toast"></div>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">  <meta name="theme-color" content="#153A24">
+  <meta name="description" content="Mitti Manor — Plants, landscaping and garden services in Delhi NCR. We Design Green Spaces, You Live In Peace.">  <title>Mitti Manor — Plants & Landscaping</title>  <!-- Google Fonts -->  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap"
+    rel="stylesheet"
+  >  <!-- Main stylesheet -->  <link rel="stylesheet" href="style.css">  <style>
+    /* =========================================================
+       MITTI MANOR — INDEX FOUNDATION
+       Main styling is kept in style.css.
+       These small helpers keep the HTML functional even while
+       the rest of the project is being built.
+    ========================================================= */
 
-<script>
-  // Shows immediately so you know index.html itself is loading correctly.
-  document.getElementById('app').innerHTML = '<div style="padding:60px 20px;text-align:center;font-family:sans-serif;color:#888">Loading Mitti Manor…</div>';
-  // Catches ANY script error anywhere on the page and shows it on-screen
-  // (so you don't need to open browser dev-console on mobile to debug).
-  window.onerror = function(msg, url, line, col){
-    var app = document.getElementById('app');
-    if(app){
-      app.innerHTML = '<div style="padding:40px 20px;text-align:center;font-family:sans-serif;max-width:420px;margin:0 auto">'
-        + '<div style="font-size:40px;margin-bottom:8px">&#9888;&#65039;</div>'
-        + '<h2 style="color:#D6484A;font-size:17px;margin:0 0 8px">Page Error</h2>'
-        + '<p style="font-size:13px;color:#555;margin:0 0 10px">' + msg + '</p>'
-        + '<p style="font-size:11px;color:#999">at ' + (url ? url.split('/').pop() : '?') + ':' + line + '</p></div>';
+    .mm-page-loading {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 30px;
+      background: #fbfaf6;
+      color: #153a24;
+      font-family: "DM Sans", sans-serif;
     }
-    return false;
-  };
-  function fileMissing(name){
-    var app = document.getElementById('app');
-    if(app){
-      app.innerHTML = '<div style="padding:50px 20px;text-align:center;font-family:sans-serif">'
-        + '<div style="font-size:40px">&#9888;&#65039;</div>'
-        + '<h2 style="color:#D6484A">' + name + ' not found</h2>'
-        + '<p style="font-size:13px;color:#555">Make sure ' + name + ' is saved in the exact same folder as index.html, with that exact file name.</p></div>';
+
+    .mm-loading-box {
+      text-align: center;
     }
-  }
-</script>
 
-<!-- Firebase (Phone OTP login) -->
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+    .mm-loading-box img {
+      width: 90px;
+      height: 90px;
+      object-fit: contain;
+      margin: 0 auto 18px;
+    }
 
-<!-- Google Sign-In -->
-<script src="https://accounts.google.com/gsi/client" async defer></script>
+    .mm-loading-box h2 {
+      font-family: "Playfair Display", serif;
+      margin: 0 0 6px;
+    }
 
-<!-- Razorpay Checkout -->
-<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    .mm-loading-box p {
+      margin: 0;
+      color: #6b7a72;
+      font-size: 14px;
+    }
+  </style></head><body>  <!-- ========================================================
+       TOP ANNOUNCEMENT
+  ========================================================= -->  <div class="announcement-bar">
+    <div class="container announcement-inner">
+      <span>🌿 Plants • Landscaping • Garden Care</span>
+      <span class="announcement-desktop">
+        Serving Delhi NCR
+      </span>
+    </div>
+  </div>  <!-- ========================================================
+       HEADER
+  ========================================================= -->  <header class="site-header" id="siteHeader"><div class="container header-main">
 
-<!-- App config (keys) + app logic -->
-<script src="config.js" onerror="fileMissing('config.js')"></script>
-<script src="app.js" onerror="fileMissing('app.js')"></script>
-</body>
+  <!-- Mobile menu -->
+  <button
+    class="mobile-menu-btn"
+    id="mobileMenuBtn"
+    type="button"
+    aria-label="Open menu"
+    aria-expanded="false"
+  >
+    <span></span>
+    <span></span>
+    <span></span>
+  </button>
+
+
+  <!-- Logo -->
+  <a href="index.html" class="brand-logo-link" aria-label="Mitti Manor Home">
+
+    <img
+      src="logo.png"
+      alt="Mitti Manor"
+      class="brand-logo-image"
+      onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"
+    >
+
+    <span class="brand-logo-fallback">
+      <span class="brand-logo-icon">🌿</span>
+      <span>
+        <strong>Mitti Manor</strong>
+        <small>Green Spaces. Peaceful Living.</small>
+      </span>
+    </span>
+
+  </a>
+
+
+  <!-- Desktop Navigation -->
+  <nav class="desktop-navigation" aria-label="Main navigation">
+
+    <a href="#home" class="nav-link active">Home</a>
+
+    <a href="#shop" class="nav-link">
+      Shop Plants
+    </a>
+
+    <a href="#services" class="nav-link">
+      Landscaping
+    </a>
+
+    <a href="#projects" class="nav-link">
+      Projects
+    </a>
+
+    <a href="#about" class="nav-link">
+      About
+    </a>
+
+    <a href="#contact" class="nav-link">
+      Contact
+    </a>
+
+  </nav>
+
+
+  <!-- Header actions -->
+  <div class="header-actions">
+
+    <!-- Search -->
+    <button
+      class="header-icon-btn"
+      id="searchBtn"
+      type="button"
+      aria-label="Search"
+      title="Search"
+    >
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <circle cx="11" cy="11" r="7"></circle>
+        <path d="M21 21l-4.3-4.3"></path>
+      </svg>
+    </button>
+
+
+    <!-- Account -->
+    <button
+      class="header-icon-btn account-btn"
+      id="accountBtn"
+      type="button"
+      aria-label="My account"
+      title="My Account"
+    >
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <circle cx="12" cy="8" r="3.5"></circle>
+        <path d="M5 20c1.4-4 3.8-5.5 7-5.5s5.6 1.5 7 5.5"></path>
+      </svg>
+    </button>
+
+
+    <!-- Cart -->
+    <button
+      class="header-icon-btn cart-btn"
+      id="cartBtn"
+      type="button"
+      aria-label="Shopping cart"
+      title="Cart"
+    >
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M3 4h2l2.2 11.5a2 2 0 0 0 2 1.6h7.5a2 2 0 0 0 2-1.6L21 8H6"></path>
+        <circle cx="9.5" cy="21" r="1.3"></circle>
+        <circle cx="17" cy="21" r="1.3"></circle>
+      </svg>
+
+      <span class="cart-count" id="cartCount">0</span>
+    </button>
+
+  </div>
+
+</div>
+
+
+<!-- Search panel -->
+<div class="search-panel" id="searchPanel">
+
+  <div class="container">
+
+    <div class="search-panel-inner">
+
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <circle cx="11" cy="11" r="7"></circle>
+        <path d="M21 21l-4.3-4.3"></path>
+      </svg>
+
+      <input
+        type="search"
+        id="globalSearch"
+        placeholder="Search plants, pots, services..."
+        autocomplete="off"
+      >
+
+      <button
+        type="button"
+        id="closeSearchBtn"
+        aria-label="Close search"
+      >
+        ×
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- Mobile navigation -->
+<div class="mobile-navigation" id="mobileNavigation">
+
+  <div class="mobile-navigation-inner">
+
+    <a href="#home">Home</a>
+
+    <a href="#shop">Shop Plants</a>
+
+    <a href="#services">Landscaping Services</a>
+
+    <a href="#projects">Our Projects</a>
+
+    <a href="#about">About Mitti Manor</a>
+
+    <a href="#contact">Contact Us</a>
+
+    <div class="mobile-menu-divider"></div>
+
+    <button type="button" id="mobileAccountBtn">
+      👤 My Account
+    </button>
+
+    <button type="button" id="mobileCartBtn">
+      🛒 My Cart
+    </button>
+
+  </div>
+
+</div>
+
+  </header>  <!-- ========================================================
+       MAIN
+  ========================================================= -->  <main id="home"><!-- ======================================================
+     HERO
+====================================================== -->
+<section class="hero-section">
+
+  <div class="hero-background-shape hero-shape-one"></div>
+  <div class="hero-background-shape hero-shape-two"></div>
+
+  <div class="container hero-grid">
+
+    <!-- Hero text -->
+    <div class="hero-content">
+
+      <div class="hero-small-label">
+        <span class="hero-label-dot"></span>
+        Delhi NCR's Plant & Garden Experts
+      </div>
+
+      <h1>
+        We Design
+        <span>Green Spaces,</span>
+        You Live In Peace.
+      </h1>
+
+      <p class="hero-description">
+        Discover beautiful plants, premium planters and complete
+        landscaping solutions designed to transform your home,
+        balcony, terrace or workplace.
+      </p>
+
+      <div class="hero-buttons">
+
+        <a href="#shop" class="btn btn-primary">
+          Shop Plants
+          <span>→</span>
+        </a>
+
+        <a href="#services" class="btn btn-outline">
+          Explore Landscaping
+        </a>
+
+      </div>
+
+
+      <!-- Trust points -->
+      <div class="hero-trust-row">
+
+        <div class="hero-trust-item">
+          <span>✓</span>
+          Healthy Plants
+        </div>
+
+        <div class="hero-trust-item">
+          <span>✓</span>
+          Expert Landscaping
+        </div>
+
+        <div class="hero-trust-item">
+          <span>✓</span>
+          Delhi NCR Delivery
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- Hero visual -->
+    <div class="hero-visual">
+
+      <div class="hero-image-card">
+
+        <div class="hero-image-placeholder">
+
+          <div class="hero-plant-emoji">
+            🌿
+          </div>
+
+          <div class="hero-visual-copy">
+            <span>BRING NATURE HOME</span>
+            <strong>Grow Something Beautiful</strong>
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- Floating cards -->
+      <div class="hero-floating-card hero-floating-top">
+
+        <span class="floating-icon">🪴</span>
+
+        <div>
+          <strong>100+ Plants</strong>
+          <small>Ready to explore</small>
+        </div>
+
+      </div>
+
+
+      <div class="hero-floating-card hero-floating-bottom">
+
+        <span class="floating-icon">🌳</span>
+
+        <div>
+          <strong>Garden Experts</strong>
+          <small>Professional service</small>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- ======================================================
+     QUICK SERVICES
+====================================================== -->
+<section class="quick-services">
+
+  <div class="container quick-services-grid">
+
+    <a href="#shop" class="quick-service-card">
+
+      <div class="quick-service-icon">🪴</div>
+
+      <div>
+        <strong>Shop Plants</strong>
+        <span>Indoor & outdoor plants</span>
+      </div>
+
+      <span class="quick-arrow">→</span>
+
+    </a>
+
+
+    <a href="#services" class="quick-service-card">
+
+      <div class="quick-service-icon">🌳</div>
+
+      <div>
+        <strong>Landscaping</strong>
+        <span>Design your dream garden</span>
+      </div>
+
+      <span class="quick-arrow">→</span>
+
+    </a>
+
+
+    <a href="#projects" class="quick-service-card">
+
+      <div class="quick-service-icon">📸</div>
+
+      <div>
+        <strong>Our Projects</strong>
+        <span>See our transformations</span>
+      </div>
+
+      <span class="quick-arrow">→</span>
+
+    </a>
+
+
+    <a
+      href="https://wa.me/919311649629?text=Hello%20Mitti%20Manor%2C%20I%20want%20help%20with%20plants%20or%20landscaping."
+      target="_blank"
+      rel="noopener"
+      class="quick-service-card"
+    >
+
+      <div class="quick-service-icon">💬</div>
+
+      <div>
+        <strong>Talk to Us</strong>
+        <span>WhatsApp our team</span>
+      </div>
+
+      <span class="quick-arrow">→</span>
+
+    </a>
+
+  </div>
+
+</section>
+
+
+<!-- ======================================================
+     CATEGORIES
+====================================================== -->
+<section class="section categories-section">
+
+  <div class="container">
+
+    <div class="section-heading centered">
+
+      <span class="eyebrow">EXPLORE OUR STORE</span>
+
+      <h2>
+        Find Your Perfect Green Companion
+      </h2>
+
+      <p>
+        Everything you need to create a greener, happier space.
+      </p>
+
+    </div>
+
+
+    <div class="category-grid">
+
+      <a href="#shop" class="category-card">
+        <div class="category-image category-plants">
+          🌿
+        </div>
+        <strong>Indoor Plants</strong>
+        <span>Beautiful greenery indoors</span>
+      </a>
+
+
+      <a href="#shop" class="category-card">
+        <div class="category-image category-outdoor">
+          🌳
+        </div>
+        <strong>Outdoor Plants</strong>
+        <span>Plants for open spaces</span>
+      </a>
+
+
+      <a href="#shop" class="category-card">
+        <div class="category-image category-flowering">
+          🌸
+        </div>
+        <strong>Flowering Plants</strong>
+        <span>Add colour to your home</span>
+      </a>
+
+
+      <a href="#shop" class="category-card">
+        <div class="category-image category-succulent">
+          🌵
+        </div>
+        <strong>Succulents & Cacti</strong>
+        <span>Easy-care plants</span>
+      </a>
+
+
+      <a href="#shop" class="category-card">
+        <div class="category-image category-fruit">
+          🍋
+        </div>
+        <strong>Fruit Plants</strong>
+        <span>Grow your own food</span>
+      </a>
+
+
+      <a href="#shop" class="category-card">
+        <div class="category-image category-pots">
+          🪴
+        </div>
+        <strong>Pots & Planters</strong>
+        <span>Give plants a beautiful home</span>
+      </a>
+
+
+      <a href="#shop" class="category-card">
+        <div class="category-image category-soil">
+          🪣
+        </div>
+        <strong>Soil & Fertilizers</strong>
+        <span>Healthy roots, healthy plants</span>
+      </a>
+
+
+      <a href="#shop" class="category-card">
+        <div class="category-image category-tools">
+          🛠️
+        </div>
+        <strong>Garden Tools</strong>
+        <span>Tools for every gardener</span>
+      </a>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- ======================================================
+     SHOP INTRO
+====================================================== -->
+<section class="section shop-section" id="shop">
+
+  <div class="container">
+
+    <div class="section-heading-row">
+
+      <div class="section-heading">
+
+        <span class="eyebrow">SHOP MITTI MANOR</span>
+
+        <h2>
+          Plants That Make Spaces Feel Alive
+        </h2>
+
+        <p>
+          Carefully selected plants for homes, balconies,
+          terraces and offices.
+        </p>
+
+      </div>
+
+      <a href="#shop-all" class="text-link">
+        View All Plants →
+      </a>
+
+    </div>
+
+
+    <!-- Shop filter -->
+    <div class="shop-filter-row">
+
+      <button class="shop-filter active" type="button">
+        All
+      </button>
+
+      <button class="shop-filter" type="button">
+        Indoor
+      </button>
+
+      <button class="shop-filter" type="button">
+        Outdoor
+      </button>
+
+      <button class="shop-filter" type="button">
+        Flowering
+      </button>
+
+      <button class="shop-filter" type="button">
+        Low Maintenance
+      </button>
+
+      <button class="shop-filter" type="button">
+        Best Sellers
+      </button>
+
+    </div>
+
+
+    <!-- Product container
+         app.js can populate this dynamically -->
+    <div
+      class="product-grid"
+      id="featuredProducts"
+    >
+
+      <!-- Product 1 -->
+      <article class="product-card">
+
+        <div class="product-image">
+
+          <span class="product-badge">
+            Bestseller
+          </span>
+
+          <button
+            class="product-wishlist"
+            type="button"
+            aria-label="Add to wishlist"
+          >
+            ♡
+          </button>
+
+          <div class="product-placeholder">
+            🌿
+          </div>
+
+        </div>
+
+        <div class="product-content">
+
+          <span class="product-category">
+            Indoor Plant
+          </span>
+
+          <h3>
+            Green Monstera
+          </h3>
+
+          <div class="product-rating">
+            ★★★★★
+            <span>(60)</span>
+          </div>
+
+          <div class="product-price-row">
+
+            <strong>
+              ₹360
+            </strong>
+
+            <del>
+              ₹580
+            </del>
+
+            <span>
+              38% OFF
+            </span>
+
+          </div>
+
+          <button
+            class="product-add-btn"
+            type="button"
+            data-product-id="p1"
+          >
+            Add to Cart
+          </button>
+
+        </div>
+
+      </article>
+
+
+      <!-- Product 2 -->
+      <article class="product-card">
+
+        <div class="product-image">
+
+          <button
+            class="product-wishlist"
+            type="button"
+            aria-label="Add to wishlist"
+          >
+            ♡
+          </button>
+
+          <div class="product-placeholder">
+            🪴
+          </div>
+
+        </div>
+
+        <div class="product-content">
+
+          <span class="product-category">
+            Pots & Planters
+          </span>
+
+          <h3>
+            Minimal Terracotta Pot
+          </h3>
+
+          <div class="product-rating">
+            ★★★★★
+            <span>(266)</span>
+          </div>
+
+          <div class="product-price-row">
+
+            <strong>
+              ₹130
+            </strong>
+
+            <del>
+              ₹180
+            </del>
+
+            <span>
+              28% OFF
+            </span>
+
+          </div>
+
+          <button
+            class="product-add-btn"
+            type="button"
+            data-product-id="p2"
+          >
+            Add to Cart
+          </button>
+
+        </div>
+
+      </article>
+
+
+      <!-- Product 3 -->
+      <article class="product-card">
+
+        <div class="product-image">
+
+          <span class="product-badge">
+            Popular
+          </span>
+
+          <button
+            class="product-wishlist"
+            type="button"
+            aria-label="Add to wishlist"
+          >
+            ♡
+          </button>
+
+          <div class="product-placeholder">
+            🌸
+          </div>
+
+        </div>
+
+        <div class="product-content">
+
+          <span class="product-category">
+            Flowering Plant
+          </span>
+
+          <h3>
+            Classic Anthurium
+          </h3>
+
+          <div class="product-rating">
+            ★★★★★
+            <span>(459)</span>
+          </div>
+
+          <div class="product-price-row">
+
+            <strong>
+              ₹580
+            </strong>
+
+            <del>
+              ₹920
+            </del>
+
+            <span>
+              37% OFF
+            </span>
+
+          </div>
+
+          <button
+            class="product-add-btn"
+            type="button"
+            data-product-id="p28"
+          >
+            Add to Cart
+          </button>
+
+        </div>
+
+      </article>
+
+
+      <!-- Product 4 -->
+      <article class="product-card">
+
+        <div class="product-image">
+
+          <button
+            class="product-wishlist"
+            type="button"
+            aria-label="Add to wishlist"
+          >
+            ♡
+          </button>
+
+          <div class="product-placeholder">
+            🌵
+          </div>
+
+        </div>
+
+        <div class="product-content">
+
+          <span class="product-category">
+            Low Maintenance
+          </span>
+
+          <h3>
+            Premium Aloe Vera
+          </h3>
+
+          <div class="product-rating">
+            ★★★★★
+            <span>(359)</span>
+          </div>
+
+          <div class="product-price-row">
+
+            <strong>
+              ₹700
+            </strong>
+
+            <del>
+              ₹1,110
+            </del>
+
+            <span>
+              37% OFF
+            </span>
+
+          </div>
+
+          <button
+            class="product-add-btn"
+            type="button"
+            data-product-id="p46"
+          >
+            Add to Cart
+          </button>
+
+        </div>
+
+      </article>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- ======================================================
+     LANDSCAPING SERVICES
+====================================================== -->
+<section class="section landscaping-section" id="services">
+
+  <div class="container">
+
+    <div class="landscaping-header">
+
+      <div class="section-heading">
+
+        <span class="eyebrow">
+          LANDSCAPING & GARDEN SERVICES
+        </span>
+
+        <h2>
+          Your Space.
+          <br>
+          Our Green Touch.
+        </h2>
+
+        <p>
+          From a tiny balcony to a complete terrace garden,
+          our team designs and creates green spaces around
+          your lifestyle.
+        </p>
+
+      </div>
+
+      <div class="landscaping-header-badge">
+        <strong>Delhi NCR</strong>
+        <span>Professional Garden Services</span>
+      </div>
+
+    </div>
+
+
+    <div class="service-grid">
+
+      <!-- Service -->
+      <article class="service-card">
+
+        <div class="service-number">
+          01
+        </div>
+
+        <div class="service-icon">
+          🌳
+        </div>
+
+        <h3>
+          Garden Design
+        </h3>
+
+        <p>
+          Complete garden planning and design tailored
+          to your available space.
+        </p>
+
+        <a href="#booking" class="service-link">
+          Get a Quote →
+        </a>
+
+      </article>
+
+
+      <article class="service-card">
+
+        <div class="service-number">
+          02
+        </div>
+
+        <div class="service-icon">
+          🏡
+        </div>
+
+        <h3>
+          Terrace Garden
+        </h3>
+
+        <p>
+          Turn your terrace into a beautiful and relaxing
+          green space.
+        </p>
+
+        <a href="#booking" class="service-link">
+          Get a Quote →
+        </a>
+
+      </article>
+
+
+      <article class="service-card">
+
+        <div class="service-number">
+          03
+        </div>
+
+        <div class="service-icon">
+          🪴
+        </div>
+
+        <h3>
+          Balcony Garden
+        </h3>
+
+        <p>
+          Smart balcony garden solutions for apartments
+          and compact spaces.
+        </p>
+
+        <a href="#booking" class="service-link">
+          Get a Quote →
+        </a>
+
+      </article>
+
+
+      <article class="service-card">
+
+        <div class="service-number">
+          04
+        </div>
+
+        <div class="service-icon">
+          🌱
+        </div>
+
+        <h3>
+          Vertical Garden
+        </h3>
+
+        <p>
+          Beautiful vertical greenery for homes, offices
+          and commercial spaces.
+        </p>
+
+        <a href="#booking" class="service-link">
+          Get a Quote →
+        </a>
+
+      </article>
+
+
+      <article class="service-card">
+
+        <div class="service-number">
+          05
+        </div>
+
+        <div class="service-icon">
+          🏢
+        </div>
+
+        <h3>
+          Office Landscaping
+        </h3>
+
+        <p>
+          Professional greenery solutions that make
+          workplaces feel fresh and welcoming.
+        </p>
+
+        <a href="#booking" class="service-link">
+          Get a Quote →
+        </a>
+
+      </article>
+
+
+      <article class="service-card">
+
+        <div class="service-number">
+          06
+        </div>
+
+        <div class="service-icon">
+          ✂️
+        </div>
+
+        <h3>
+          Garden Maintenance
+        </h3>
+
+        <p>
+          Regular plant care, pruning, soil work and
+          complete garden maintenance.
+        </p>
+
+        <a href="#booking" class="service-link">
+          Get a Quote →
+        </a>
+
+      </article>
+
+    </div>
+
+
+    <div class="service-cta">
+
+      <div>
+        <strong>
+          Have a custom landscaping requirement?
+        </strong>
+
+        <span>
+          Tell us about your space and we'll help you plan it.
+        </span>
+      </div>
+
+      <div class="service-cta-buttons">
+
+        <a
+          href="#booking"
+          class="btn btn-primary"
+        >
+          Book a Consultation
+        </a>
+
+        <a
+          href="https://wa.me/919311649629?text=Hello%20Mitti%20Manor%2C%20I%20want%20a%20landscaping%20consultation."
+          target="_blank"
+          rel="noopener"
+          class="btn btn-whatsapp"
+        >
+          WhatsApp Us
+        </a>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- ======================================================
+     HOW IT WORKS
+====================================================== -->
+<section class="section process-section">
+
+  <div class="container">
+
+    <div class="section-heading centered">
+
+      <span class="eyebrow">
+        HOW IT WORKS
+      </span>
+
+      <h2>
+        From Idea to Green Space
+      </h2>
+
+      <p>
+        Simple, transparent and designed around you.
+      </p>
+
+    </div>
+
+
+    <div class="process-grid">
+
+      <div class="process-item">
+
+        <div class="process-icon">
+          💬
+        </div>
+
+        <span class="process-step">
+          STEP 01
+        </span>
+
+        <h3>
+          Tell Us
+        </h3>
+
+        <p>
+          Share your requirements, space and ideas with us.
+        </p>
+
+      </div>
+
+
+      <div class="process-line"></div>
+
+
+      <div class="process-item">
+
+        <div class="process-icon">
+          📐
+        </div>
+
+        <span class="process-step">
+          STEP 02
+        </span>
+
+        <h3>
+          We Plan
+        </h3>
+
+        <p>
+          Our team creates a suitable green-space plan.
+        </p>
+
+      </div>
+
+
+      <div class="process-line"></div>
+
+
+      <div class="process-item">
+
+        <div class="process-icon">
+          🌱
+        </div>
+
+        <span class="process-step">
+          STEP 03
+        </span>
+
+        <h3>
+          We Create
+        </h3>
+
+        <p>
+          We install plants and transform your space.
+        </p>
+
+      </div>
+
+
+      <div class="process-line"></div>
+
+
+      <div class="process-item">
+
+        <div class="process-icon">
+          🧘
+        </div>
+
+        <span class="process-step">
+          STEP 04
+        </span>
+
+        <h3>
+          You Relax
+        </h3>
+
+        <p>
+          Enjoy a beautiful green space made for you.
+        </p>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- ======================================================
+     PROJECTS
+====================================================== -->
+<section class="section projects-section" id="projects">
+
+  <div class="container">
+
+    <div class="section-heading-row">
+
+      <div class="section-heading">
+
+        <span class="eyebrow">
+          OUR WORK
+        </span>
+
+        <h2>
+          Spaces We've Transformed
+        </h2>
+
+        <p>
+          Real green-space ideas for real homes and businesses.
+        </p>
+
+      </div>
+
+      <a href="#gallery" class="text-link">
+        View Gallery →
+      </a>
+
+    </div>
+
+
+    <div class="project-grid">
+
+      <article class="project-card project-large">
+
+        <div class="project-visual">
+          🌿
+        </div>
+
+        <div class="project-overlay">
+
+          <span>
+            TERRACE GARDEN
+          </span>
+
+          <h3>
+            A Peaceful Terrace Escape
+          </h3>
+
+          <p>
+            Delhi NCR
+          </p>
+
+        </div>
+
+      </article>
+
+
+      <article class="project-card">
+
+        <div class="project-visual">
+          🪴
+        </div>
+
+        <div class="project-overlay">
+
+          <span>
+            BALCONY GARDEN
+          </span>
+
+          <h3>
+            Compact Urban Greenery
+          </h3>
+
+          <p>
+            Delhi NCR
+          </p>
+
+        </div>
+
+      </article>
+
+
+      <article class="project-card">
+
+        <div class="project-visual">
+          🌳
+        </div>
+
+        <div class="project-overlay">
+
+          <span>
+            HOME GARDEN
+          </span>
+
+          <h3>
+            Natural Outdoor Living
+          </h3>
+
+          <p>
+            Delhi NCR
+          </p>
+
+        </div>
+
+      </article>
+
+
+      <article class="project-card">
+
+        <div class="project-visual">
+          🏢
+        </div>
+
+        <div class="project-overlay">
+
+          <span>
+            OFFICE LANDSCAPING
+          </span>
+
+          <h3>
+            Green Workplace
+          </h3>
+
+          <p>
+            Delhi NCR
+          </p>
+
+        </div>
+
+      </article>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- ======================================================
+     WHY MITTI MANOR
+====================================================== -->
+<section class="section why-section" id="about">
+
+  <div class="container why-grid">
+
+    <div class="why-visual">
+
+      <div class="why-main-card">
+        🌿
+      </div>
+
+      <div class="why-small-card">
+        <strong>Nature</strong>
+        <span>Designed for living</span>
+      </div>
+
+    </div>
+
+
+    <div class="why-content">
+
+      <span class="eyebrow">
+        WHY MITTI MANOR
+      </span>
+
+      <h2>
+        More Than Plants.
+        We Create Better Spaces.
+      </h2>
+
+      <p>
+        We believe greenery should not just decorate a space.
+        It should make the space feel calmer, fresher and more
+        alive.
+      </p>
+
+
+      <div class="why-list">
+
+        <div class="why-item">
+
+          <span>01</span>
+
+          <div>
+            <strong>Healthy Plants</strong>
+            <p>
+              Carefully selected plants for beautiful,
+              long-lasting greenery.
+            </p>
+          </div>
+
+        </div>
+
+
+        <div class="why-item">
+
+          <span>02</span>
+
+          <div>
+            <strong>Professional Design</strong>
+            <p>
+              Landscaping planned around your space,
+              lifestyle and budget.
+            </p>
+          </div>
+
+        </div>
+
+
+        <div class="why-item">
+
+          <span>03</span>
+
+          <div>
+            <strong>Complete Support</strong>
+            <p>
+              From choosing a plant to maintaining your
+              finished garden.
+            </p>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- ======================================================
+     BOOKING CTA
+====================================================== -->
+<section class="section booking-section" id="booking">
+
+  <div class="container">
+
+    <div class="booking-card">
+
+      <div class="booking-content">
+
+        <span class="eyebrow">
+          START YOUR PROJECT
+        </span>
+
+        <h2>
+          Ready to Create Your Green Space?
+        </h2>
+
+        <p>
+          Tell us what you have in mind. Our team will
+          understand your requirements and help you plan
+          the perfect solution.
+        </p>
+
+        <div class="booking-buttons">
+
+          <button
+            type="button"
+            class="btn btn-light"
+            id="openBookingBtn"
+          >
+            Book Landscaping
+          </button>
+
+          <a
+            href="https://wa.me/919311649629?text=Hello%20Mitti%20Manor%2C%20I%20want%20to%20book%20a%20landscaping%20service."
+            target="_blank"
+            rel="noopener"
+            class="btn btn-whatsapp-light"
+          >
+            WhatsApp Us
+          </a>
+
+        </div>
+
+      </div>
+
+
+      <div class="booking-decoration">
+        🌳
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- ======================================================
+     TESTIMONIALS
+====================================================== -->
+<section class="section testimonials-section">
+
+  <div class="container">
+
+    <div class="section-heading centered">
+
+      <span class="eyebrow">
+        CUSTOMER LOVE
+      </span>
+
+      <h2>
+        Green Spaces, Happy People
+      </h2>
+
+    </div>
+
+
+    <div class="testimonial-grid">
+
+      <article class="testimonial-card">
+
+        <div class="testimonial-stars">
+          ★★★★★
+        </div>
+
+        <p>
+          “The plants arrived beautifully packed and healthy.
+          The whole experience was smooth and professional.”
+        </p>
+
+        <div class="testimonial-person">
+          <div class="testimonial-avatar">
+            A
+          </div>
+
+          <div>
+            <strong>
+              Happy Customer
+            </strong>
+
+            <span>
+              Delhi NCR
+            </span>
+          </div>
+        </div>
+
+      </article>
+
+
+      <article class="testimonial-card">
+
+        <div class="testimonial-stars">
+          ★★★★★
+        </div>
+
+        <p>
+          “Mitti Manor transformed our terrace completely.
+          It finally feels like our own little garden.”
+        </p>
+
+        <div class="testimonial-person">
+          <div class="testimonial-avatar">
+            R
+          </div>
+
+          <div>
+            <strong>
+              Happy Customer
+            </strong>
+
+            <span>
+              Gurugram
+            </span>
+          </div>
+        </div>
+
+      </article>
+
+
+      <article class="testimonial-card">
+
+        <div class="testimonial-stars">
+          ★★★★★
+        </div>
+
+        <p>
+          “Great plant collection and very helpful team.
+          They guided us on exactly what would work at home.”
+        </p>
+
+        <div class="testimonial-person">
+          <div class="testimonial-avatar">
+            S
+          </div>
+
+          <div>
+            <strong>
+              Happy Customer
+            </strong>
+
+            <span>
+              Noida
+            </span>
+          </div>
+        </div>
+
+      </article>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- ======================================================
+     NEWSLETTER / CONTACT CTA
+====================================================== -->
+<section class="section newsletter-section" id="contact">
+
+  <div class="container">
+
+    <div class="newsletter-card">
+
+      <div>
+
+        <span class="eyebrow">
+          STAY CONNECTED
+        </span>
+
+        <h2>
+          Let's Make Your Space Greener.
+        </h2>
+
+        <p>
+          Have a question about plants or landscaping?
+          Our team is just a message away.
+        </p>
+
+      </div>
+
+
+      <div class="newsletter-actions">
+
+        <a
+          href="tel:+919311649629"
+          class="contact-action"
+        >
+          <span>📞</span>
+
+          <div>
+            <small>Call Us</small>
+            <strong>9311649629</strong>
+          </div>
+        </a>
+
+
+        <a
+          href="mailto:mittimanor@gmail.com"
+          class="contact-action"
+        >
+          <span>✉️</span>
+
+          <div>
+            <small>Email</small>
+            <strong>mittimanor@gmail.com</strong>
+          </div>
+        </a>
+
+
+        <a
+          href="https://wa.me/919311649629?text=Hello%20Mitti%20Manor%2C%20I%20need%20help."
+          target="_blank"
+          rel="noopener"
+          class="contact-action whatsapp-action"
+        >
+          <span>💬</span>
+
+          <div>
+            <small>WhatsApp</small>
+            <strong>Chat With Us</strong>
+          </div>
+        </a>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+  </main>  <!-- ========================================================
+       FOOTER
+  ========================================================= -->  <footer class="site-footer"><div class="container footer-grid">
+
+  <div class="footer-brand">
+
+    <a href="#home" class="footer-logo">
+      <img
+        src="logo.png"
+        alt="Mitti Manor"
+        onerror="this.style.display='none';this.nextElementSibling.style.display='inline';"
+      >
+
+      <span style="display:none;">
+        🌿 Mitti Manor
+      </span>
+    </a>
+
+    <p>
+      We Design Green Spaces, You Live In Peace.
+    </p>
+
+    <span class="footer-location">
+      📍 Delhi NCR
+    </span>
+
+  </div>
+
+
+  <div class="footer-column">
+
+    <h3>
+      Shop
+    </h3>
+
+    <a href="#shop">
+      Indoor Plants
+    </a>
+
+    <a href="#shop">
+      Outdoor Plants
+    </a>
+
+    <a href="#shop">
+      Flowering Plants
+    </a>
+
+    <a href="#shop">
+      Pots & Planters
+    </a>
+
+    <a href="#shop">
+      Soil & Fertilizers
+    </a>
+
+  </div>
+
+
+  <div class="footer-column">
+
+    <h3>
+      Services
+    </h3>
+
+    <a href="#services">
+      Garden Design
+    </a>
+
+    <a href="#services">
+      Terrace Garden
+    </a>
+
+    <a href="#services">
+      Balcony Garden
+    </a>
+
+    <a href="#services">
+      Vertical Garden
+    </a>
+
+    <a href="#services">
+      Garden Maintenance
+    </a>
+
+  </div>
+
+
+  <div class="footer-column">
+
+    <h3>
+      Help
+    </h3>
+
+    <a href="#contact">
+      Contact Us
+    </a>
+
+    <a href="#booking">
+      Book a Service
+    </a>
+
+    <a href="#shop">
+      Delivery Information
+    </a>
+
+    <a href="#home">
+      Privacy Policy
+    </a>
+
+    <a href="#home">
+      Terms & Conditions
+    </a>
+
+  </div>
+
+</div>
+
+
+<div class="container footer-bottom">
+
+  <span>
+    © 2026 Mitti Manor. All rights reserved.
+  </span>
+
+  <span>
+    Plants • Gardens • Peace
+  </span>
+
+</div>
+
+  </footer>  <!-- ========================================================
+       MOBILE BOTTOM NAV
+  ========================================================= -->  <nav class="mobile-bottom-nav"><a href="#home" class="bottom-nav-item active">
+  <span>⌂</span>
+  <small>Home</small>
+</a>
+
+<a href="#shop" class="bottom-nav-item">
+  <span>🪴</span>
+  <small>Shop</small>
+</a>
+
+<a href="#services" class="bottom-nav-item">
+  <span>🌳</span>
+  <small>Services</small>
+</a>
+
+<button
+  type="button"
+  class="bottom-nav-item"
+  id="bottomCartBtn"
+>
+  <span class="bottom-cart-icon">
+    🛒
+    <b id="bottomCartCount">0</b>
+  </span>
+  <small>Cart</small>
+</button>
+
+<button
+  type="button"
+  class="bottom-nav-item"
+  id="bottomAccountBtn"
+>
+  <span>👤</span>
+  <small>Account</small>
+</button>
+
+  </nav>  <!-- ========================================================
+       ACCOUNT MODAL
+  ========================================================= -->  <div
+    class="modal-overlay"
+    id="accountModal"
+    aria-hidden="true"
+  ><div class="modal-card">
+
+  <button
+    type="button"
+    class="modal-close"
+    data-close-modal="accountModal"
+    aria-label="Close"
+  >
+    ×
+  </button>
+
+  <div class="modal-icon">
+    👤
+  </div>
+
+  <span class="eyebrow">
+    MITTI MANOR ACCOUNT
+  </span>
+
+  <h2>
+    Login to Continue
+  </h2>
+
+  <p>
+    Login is required when you place an order.
+    You can use your phone number or Google account.
+  </p>
+
+  <button
+    type="button"
+    class="modal-primary-btn"
+    id="phoneLoginBtn"
+  >
+    📱 Continue with Phone
+  </button>
+
+  <button
+    type="button"
+    class="modal-google-btn"
+    id="googleLoginBtn"
+  >
+    <strong>G</strong>
+    Continue with Google
+  </button>
+
+</div>
+
+  </div>  <!-- ========================================================
+       BOOKING MODAL
+  ========================================================= -->  <div
+    class="modal-overlay"
+    id="bookingModal"
+    aria-hidden="true"
+  ><div class="modal-card booking-modal-card">
+
+  <button
+    type="button"
+    class="modal-close"
+    data-close-modal="bookingModal"
+    aria-label="Close"
+  >
+    ×
+  </button>
+
+  <span class="eyebrow">
+    LANDSCAPING CONSULTATION
+  </span>
+
+  <h2>
+    Tell Us About Your Space
+  </h2>
+
+  <p>
+    Submit your requirements and our team will contact you.
+  </p>
+
+
+  <form id="bookingForm">
+
+    <div class="form-grid">
+
+      <div class="form-field">
+
+        <label for="bookingName">
+          Your Name
+        </label>
+
+        <input
+          type="text"
+          id="bookingName"
+          name="name"
+          placeholder="Enter your name"
+          required
+        >
+
+      </div>
+
+
+      <div class="form-field">
+
+        <label for="bookingPhone">
+          Phone Number
+        </label>
+
+        <input
+          type="tel"
+          id="bookingPhone"
+          name="phone"
+          placeholder="10-digit mobile number"
+          maxlength="10"
+          required
+        >
+
+      </div>
+
+
+      <div class="form-field">
+
+        <label for="bookingService">
+          Service
+        </label>
+
+        <select
+          id="bookingService"
+          name="service"
+          required
+        >
+
+          <option value="">
+            Select a service
+          </option>
+
+          <option value="Garden Design">
+            Garden Design
+          </option>
+
+          <option value="Terrace Garden">
+            Terrace Garden
+          </option>
+
+          <option value="Balcony Garden">
+            Balcony Garden
+          </option>
+
+          <option value="Vertical Garden">
+            Vertical Garden
+          </option>
+
+          <option value="Office Landscaping">
+            Office Landscaping
+          </option>
+
+          <option value="Garden Maintenance">
+            Garden Maintenance
+          </option>
+
+          <option value="Other">
+            Other
+          </option>
+
+        </select>
+
+      </div>
+
+
+      <div class="form-field">
+
+        <label for="bookingArea">
+          Approx. Area
+        </label>
+
+        <input
+          type="text"
+          id="bookingArea"
+          name="area"
+          placeholder="Example: 500 sq ft"
+        >
+
+      </div>
+
+    </div>
+
+
+    <div class="form-field">
+
+      <label for="bookingLocation">
+        Location
+      </label>
+
+      <input
+        type="text"
+        id="bookingLocation"
+        name="location"
+        placeholder="Area / City in Delhi NCR"
+        required
+      >
+
+    </div>
+
+
+    <div class="form-field">
+
+      <label for="bookingMessage">
+        Tell us about your requirement
+      </label>
+
+      <textarea
+        id="bookingMessage"
+        name="message"
+        rows="4"
+        placeholder="Describe your space, requirements or ideas..."
+      ></textarea>
+
+    </div>
+
+
+    <button
+      type="submit"
+      class="modal-primary-btn"
+    >
+      Submit Booking Request
+    </button>
+
+
+    <a
+      href="https://wa.me/919311649629?text=Hello%20Mitti%20Manor%2C%20I%20want%20to%20book%20a%20landscaping%20service."
+      target="_blank"
+      rel="noopener"
+      class="modal-whatsapp-btn"
+    >
+      💬 Continue on WhatsApp
+    </a>
+
+  </form>
+
+</div>
+
+  </div>  <!-- ========================================================
+       CART DRAWER
+  ========================================================= -->  <aside
+    class="cart-drawer"
+    id="cartDrawer"
+    aria-hidden="true"
+  ><div class="cart-drawer-header">
+
+  <div>
+    <span class="eyebrow">
+      MITTI MANOR
+    </span>
+
+    <h2>
+      Your Cart
+    </h2>
+  </div>
+
+  <button
+    type="button"
+    class="modal-close"
+    id="closeCartBtn"
+    aria-label="Close cart"
+  >
+    ×
+  </button>
+
+</div>
+
+
+<div
+  class="cart-items"
+  id="cartItems"
+>
+
+  <div class="cart-empty">
+
+    <div>
+      🛒
+    </div>
+
+    <h3>
+      Your cart is empty
+    </h3>
+
+    <p>
+      Add some beautiful plants to get started.
+    </p>
+
+    <a href="#shop" class="btn btn-primary">
+      Explore Plants
+    </a>
+
+  </div>
+
+</div>
+
+
+<div class="cart-drawer-footer">
+
+  <div class="cart-total-row">
+
+    <span>
+      Total
+    </span>
+
+    <strong id="cartTotal">
+      ₹0
+    </strong>
+
+  </div>
+
+  <button
+    type="button"
+    class="btn btn-primary cart-checkout-btn"
+    id="checkoutBtn"
+  >
+    Proceed to Checkout
+  </button>
+
+  <small>
+    Login will be required before placing your order.
+  </small>
+
+</div>
+
+  </aside>  <!-- Cart overlay -->  <div
+    class="drawer-overlay"
+    id="drawerOverlay"
+  ></div>  <!-- ========================================================
+       TOAST
+  ========================================================= -->  <div
+    class="toast"
+    id="toast"
+    role="status"
+    aria-live="polite"
+  ></div>  <!-- ========================================================
+       INITIAL LOADING FALLBACK
+  ========================================================= -->  <noscript><div class="mm-page-loading">
+
+  <div class="mm-loading-box">
+
+    <h2>
+      Mitti Manor
+    </h2>
+
+    <p>
+      Please enable JavaScript to use our website.
+    </p>
+
+  </div>
+
+</div>
+
+  </noscript>  <!-- ========================================================
+       FIREBASE
+       Phone OTP authentication
+  ========================================================= -->  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>  <!-- Google Identity Services -->  <script
+    src="https://accounts.google.com/gsi/client"
+    async
+    defer
+  ></script>  <!-- Razorpay Checkout -->  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>  <!-- ========================================================
+       PROJECT CONFIG
+  ========================================================= -->  <script
+    src="config.js"
+    onerror="showFileError('config.js')"
+  ></script>  <!-- ========================================================
+       MAIN APP
+  ========================================================= -->  <script
+    src="app.js"
+    onerror="showFileError('app.js')"
+  ></script>  <!-- ========================================================
+       INDEX BASIC INTERACTIONS
+       app.js can extend/override these.
+  ========================================================= -->  <script>
+
+    function showFileError(fileName) {
+
+      const app = document.getElementById("home");
+
+      if (!app) return;
+
+      const message = document.createElement("div");
+
+      message.style.cssText =
+        "position:fixed;inset:0;z-index:99999;" +
+        "background:#fbfaf6;display:flex;" +
+        "align-items:center;justify-content:center;" +
+        "padding:25px;font-family:Arial,sans-serif;";
+
+      message.innerHTML =
+        '<div style="max-width:420px;text-align:center">' +
+        '<div style="font-size:45px">⚠️</div>' +
+        '<h2 style="color:#153A24">File Missing</h2>' +
+        '<p style="color:#6B7A72;line-height:1.6">' +
+        fileName +
+        ' could not be loaded.<br>' +
+        'Please keep it in the same folder as index.html.' +
+        '</p>' +
+        '</div>';
+
+      document.body.appendChild(message);
+
+    }
+
+
+    document.addEventListener("DOMContentLoaded", function () {
+
+      /* ===============================================
+         Mobile navigation
+      =============================================== */
+
+      const menuBtn =
+        document.getElementById("mobileMenuBtn");
+
+      const mobileNav =
+        document.getElementById("mobileNavigation");
+
+      if (menuBtn && mobileNav) {
+
+        menuBtn.addEventListener("click", function () {
+
+          const isOpen =
+            mobileNav.classList.toggle("open");
+
+          menuBtn.classList.toggle("open", isOpen);
+
+          menuBtn.setAttribute(
+            "aria-expanded",
+            String(isOpen)
+          );
+
+        });
+
+
+        mobileNav
+          .querySelectorAll("a")
+          .forEach(function (link) {
+
+            link.addEventListener("click", function () {
+
+              mobileNav.classList.remove("open");
+
+              menuBtn.classList.remove("open");
+
+              menuBtn.setAttribute(
+                "aria-expanded",
+                "false"
+              );
+
+            });
+
+          });
+
+      }
+
+
+      /* ===============================================
+         Search
+      =============================================== */
+
+      const searchBtn =
+        document.getElementById("searchBtn");
+
+      const searchPanel =
+        document.getElementById("searchPanel");
+
+      const closeSearchBtn =
+        document.getElementById("closeSearchBtn");
+
+      const globalSearch =
+        document.getElementById("globalSearch");
+
+
+      if (searchBtn && searchPanel) {
+
+        searchBtn.addEventListener("click", function () {
+
+          searchPanel.classList.toggle("open");
+
+          if (searchPanel.classList.contains("open")) {
+
+            setTimeout(function () {
+
+              if (globalSearch) {
+                globalSearch.focus();
+              }
+
+            }, 100);
+
+          }
+
+        });
+
+      }
+
+
+      if (closeSearchBtn) {
+
+        closeSearchBtn.addEventListener(
+          "click",
+          function () {
+
+            searchPanel.classList.remove("open");
+
+          }
+        );
+
+      }
+
+
+      /* ===============================================
+         Account modal
+      =============================================== */
+
+      const accountModal =
+        document.getElementById("accountModal");
+
+
+      function openAccountModal() {
+
+        if (!accountModal) return;
+
+        accountModal.classList.add("open");
+
+        accountModal.setAttribute(
+          "aria-hidden",
+          "false"
+        );
+
+      }
+
+
+      function closeModal(modal) {
+
+        if (!modal) return;
+
+        modal.classList.remove("open");
+
+        modal.setAttribute(
+          "aria-hidden",
+          "true"
+        );
+
+      }
+
+
+      [
+        "accountBtn",
+        "mobileAccountBtn",
+        "bottomAccountBtn"
+      ].forEach(function (id) {
+
+        const button =
+          document.getElementById(id);
+
+        if (button) {
+
+          button.addEventListener(
+            "click",
+            openAccountModal
+          );
+
+        }
+
+      });
+
+
+      /* ===============================================
+         Booking modal
+      =============================================== */
+
+      const bookingModal =
+        document.getElementById("bookingModal");
+
+      const openBookingBtn =
+        document.getElementById("openBookingBtn");
+
+
+      if (openBookingBtn) {
+
+        openBookingBtn.addEventListener(
+          "click",
+          function () {
+
+            bookingModal.classList.add("open");
+
+            bookingModal.setAttribute(
+              "aria-hidden",
+              "false"
+            );
+
+          }
+        );
+
+      }
+
+
+      document
+        .querySelectorAll("[data-close-modal]")
+        .forEach(function (button) {
+
+          button.addEventListener(
+            "click",
+            function () {
+
+              const modalId =
+                button.getAttribute(
+                  "data-close-modal"
+                );
+
+              closeModal(
+                document.getElementById(modalId)
+              );
+
+            }
+          );
+
+        });
+
+
+      /* ===============================================
+         Close modal by clicking outside
+      =============================================== */
+
+      document
+        .querySelectorAll(".modal-overlay")
+        .forEach(function (overlay) {
+
+          overlay.addEventListener(
+            "click",
+            function (event) {
+
+              if (event.target === overlay) {
+
+                closeModal(overlay);
+
+              }
+
+            }
+          );
+
+        });
+
+
+      /* ===============================================
+         Escape key
+      =============================================== */
+
+      document.addEventListener(
+        "keydown",
+        function (event) {
+
+          if (event.key !== "Escape") return;
+
+          document
+            .querySelectorAll(".modal-overlay.open")
+            .forEach(function (modal) {
+
+              closeModal(modal);
+
+            });
+
+          if (searchPanel) {
+            searchPanel.classList.remove("open");
+          }
+
+        }
+      );
+
+
+      /* ===============================================
+         Product buttons
+      =============================================== */
+
+      document
+        .querySelectorAll(".product-add-btn")
+        .forEach(function (button) {
+
+          button.addEventListener(
+            "click",
+            function () {
+
+              const id =
+                button.dataset.productId;
+
+              if (
+                window.MittiManorApp &&
+                typeof window.MittiManorApp.addToCart === "function"
+              ) {
+
+                window.MittiManorApp.addToCart(id);
+
+              } else {
+
+                showToast(
+                  "Product added to cart"
+                );
+
+              }
+
+            }
+          );
+
+        });
+
+
+      /* ===============================================
+         Wishlist buttons
+      =============================================== */
+
+      document
+        .querySelectorAll(".product-wishlist")
+        .forEach(function (button) {
+
+          button.addEventListener(
+            "click",
+            function () {
+
+              button.classList.toggle("active");
+
+              button.textContent =
+                button.classList.contains("active")
+                  ? "♥"
+                  : "♡";
+
+              showToast(
+                button.classList.contains("active")
+                  ? "Added to wishlist"
+                  : "Removed from wishlist"
+              );
+
+            }
+          );
+
+        });
+
+
+      /* ===============================================
+         Cart
+      =============================================== */
+
+      const cartDrawer =
+        document.getElementById("cartDrawer");
+
+      const drawerOverlay =
+        document.getElementById("drawerOverlay");
+
+
+      function openCart() {
+
+        if (!cartDrawer) return;
+
+        cartDrawer.classList.add("open");
+
+        if (drawerOverlay) {
+          drawerOverlay.classList.add("open");
+        }
+
+      }
+
+
+      function closeCart() {
+
+        if (!cartDrawer) return;
+
+        cartDrawer.classList.remove("open");
+
+        if (drawerOverlay) {
+          drawerOverlay.classList.remove("open");
+        }
+
+      }
+
+
+      [
+        "cartBtn",
+        "mobileCartBtn",
+        "bottomCartBtn"
+      ].forEach(function (id) {
+
+        const button =
+          document.getElementById(id);
+
+        if (button) {
+
+          button.addEventListener(
+            "click",
+            openCart
+          );
+
+        }
+
+      });
+
+
+      const closeCartBtn =
+        document.getElementById("closeCartBtn");
+
+      if (closeCartBtn) {
+
+        closeCartBtn.addEventListener(
+          "click",
+          closeCart
+        );
+
+      }
+
+
+      if (drawerOverlay) {
+
+        drawerOverlay.addEventListener(
+          "click",
+          closeCart
+        );
+
+      }
+
+
+      /* ===============================================
+         Booking form
+      =============================================== */
+
+      const bookingForm =
+        document.getElementById("bookingForm");
+
+
+      if (bookingForm) {
+
+        bookingForm.addEventListener(
+          "submit",
+          function (event) {
+
+            event.preventDefault();
+
+            const formData =
+              new FormData(bookingForm);
+
+            const name =
+              formData.get("name") || "";
+
+            const service =
+              formData.get("service") || "";
+
+            const location =
+              formData.get("location") || "";
+
+            const message =
+              formData.get("message") || "";
+
+            const whatsappText =
+              "Hello Mitti Manor,%0A%0A" +
+              "I want to book a landscaping service.%0A%0A" +
+              "Name: " +
+              encodeURIComponent(name) +
+              "%0AService: " +
+              encodeURIComponent(service) +
+              "%0ALocation: " +
+              encodeURIComponent(location) +
+              "%0ARequirement: " +
+              encodeURIComponent(message);
+
+            window.open(
+              "https://wa.me/919311649629?text=" +
+              whatsappText,
+              "_blank"
+            );
+
+            showToast(
+              "Booking details prepared for WhatsApp"
+            );
+
+          }
+        );
+
+      }
+
+
+      /* ===============================================
+         Smooth scrolling
+      =============================================== */
+
+      document
+        .querySelectorAll('a[href^="#"]')
+        .forEach(function (link) {
+
+          link.addEventListener(
+            "click",
+            function (event) {
+
+              const targetId =
+                link.getAttribute("href");
+
+              if (
+                !targetId ||
+                targetId === "#" ||
+                targetId === "#home"
+              ) {
+
+                if (targetId === "#home") {
+                  event.preventDefault();
+
+                  window.scrollTo({
+                    top: 0,
+                    behavior: "smooth"
+                  });
+                }
+
+                return;
+
+              }
+
+
+              const target =
+                document.querySelector(targetId);
+
+              if (!target) return;
+
+              event.preventDefault();
+
+              target.scrollIntoView({
+                behavior: "smooth",
+                block: "start"
+              });
+
+            }
+          );
+
+        });
+
+
+    });
+
+
+    /* ===============================================
+       Toast helper
+    =============================================== */
+
+    function showToast(message) {
+
+      const toast =
+        document.getElementById("toast");
+
+      if (!toast) return;
+
+      toast.textContent = message;
+
+      toast.classList.add("show");
+
+      clearTimeout(
+        window.__mittiToastTimer
+      );
+
+      window.__mittiToastTimer =
+        setTimeout(function () {
+
+          toast.classList.remove("show");
+
+        }, 2500);
+
+    }
+
+  </script></body>
 </html>
