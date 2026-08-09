@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mitti Manor — Plants for every home</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css" onerror="document.getElementById('app') && (document.getElementById('app').innerHTML='<div style=\'padding:50px 20px;text-align:center;font-family:sans-serif\'><div style=\'font-size:40px\'>&#9888;&#65039;</div><h2 style=\'color:#D6484A\'>style.css not found</h2><p style=\'font-size:13px;color:#555\'>Make sure style.css is saved in the exact same folder as index.html.</p></div>')">
+</head>
+<body>
+<div id="app"></div>
+<div id="toast" class="toast"></div>
+
+<script>
+  // Shows immediately so you know index.html itself is loading correctly.
+  document.getElementById('app').innerHTML = '<div style="padding:60px 20px;text-align:center;font-family:sans-serif;color:#888">Loading Mitti Manor…</div>';
+  // Catches ANY script error anywhere on the page and shows it on-screen
+  // (so you don't need to open browser dev-console on mobile to debug).
+  window.onerror = function(msg, url, line, col){
+    var app = document.getElementById('app');
+    if(app){
+      app.innerHTML = '<div style="padding:40px 20px;text-align:center;font-family:sans-serif;max-width:420px;margin:0 auto">'
+        + '<div style="font-size:40px;margin-bottom:8px">&#9888;&#65039;</div>'
+        + '<h2 style="color:#D6484A;font-size:17px;margin:0 0 8px">Page Error</h2>'
+        + '<p style="font-size:13px;color:#555;margin:0 0 10px">' + msg + '</p>'
+        + '<p style="font-size:11px;color:#999">at ' + (url ? url.split('/').pop() : '?') + ':' + line + '</p></div>';
+    }
+    return false;
+  };
+  function fileMissing(name){
+    var app = document.getElementById('app');
+    if(app){
+      app.innerHTML = '<div style="padding:50px 20px;text-align:center;font-family:sans-serif">'
+        + '<div style="font-size:40px">&#9888;&#65039;</div>'
+        + '<h2 style="color:#D6484A">' + name + ' not found</h2>'
+        + '<p style="font-size:13px;color:#555">Make sure ' + name + ' is saved in the exact same folder as index.html, with that exact file name.</p></div>';
+    }
+  }
+</script>
+
+<!-- Firebase (Phone OTP login) -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+
+<!-- Google Sign-In -->
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+
+<!-- Razorpay Checkout -->
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+<!-- App config (keys) + app logic -->
+<script src="config.js" onerror="fileMissing('config.js')"></script>
+<script src="app.js" onerror="fileMissing('app.js')"></script>
+</body>
+</html>
