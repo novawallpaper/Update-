@@ -29,7 +29,7 @@ h1, h2, h3, .brand-name { font-family: 'Fraunces', serif; }
 button { font-family: inherit; cursor: pointer; border: none; background: none; }
 input, select, textarea { font-family: inherit; }
 
-/* ---------------- HEADER ---------------- */
+/* ---------------- HEADER -------------- */
 .top-header {
   position: sticky;
   top: 0;
