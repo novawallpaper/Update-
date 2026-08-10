@@ -1,1193 +1,157 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
-
-    <meta name="description"
-          content="Mitti Manor — Premium plants, landscaping and garden solutions.">
-
-    <title>Mitti Manor | Plants & Landscaping</title>
-
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;1,500&display=swap"
-          rel="stylesheet">
-
-    <!-- Main CSS -->
-    <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mitti Manor — Plants, Garden & Landscaping</title>
+<link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
-<!-- =====================================================
-     HEADER
-===================================================== -->
-
-<header class="site-header">
-
-    <div class="container nav-container">
-
-        <a href="#" class="logo">
-            <span class="logo-main">MITTI</span>
-            <span class="logo-sub">MANOR</span>
-        </a>
-
-        <nav class="main-nav" id="mainNav">
-
-            <a href="#home">Home</a>
-            <a href="#plants">Plants</a>
-            <a href="#collections">Collections</a>
-            <a href="#landscaping">Landscaping</a>
-            <a href="#booking">Services</a>
-            <a href="#contact">Contact</a>
-
-        </nav>
-
-        <div class="nav-actions">
-
-            <button class="icon-btn"
-                    id="searchBtn"
-                    aria-label="Search">
-                🔍
-            </button>
-
-            <button class="icon-btn"
-                    id="wishlistBtn"
-                    aria-label="Wishlist">
-                ♡
-            </button>
-
-            <button class="icon-btn cart-btn"
-                    id="cartBtn"
-                    aria-label="Shopping cart">
-                🛒
-                <span class="cart-count" id="cartCount">0</span>
-            </button>
-
-            <button class="login-btn"
-                    id="loginBtn">
-                Login
-            </button>
-
-            <button class="mobile-menu-btn"
-                    id="mobileMenuBtn"
-                    aria-label="Menu">
-                ☰
-            </button>
-
-        </div>
-
+<!-- HEADER -->
+<header class="top-header">
+  <div class="header-row">
+    <div>
+      <h1 class="brand-name">Mitti Manor</h1>
+      <span class="brand-tagline">Plants · Garden · Landscaping</span>
     </div>
-
+    <div class="header-icons">
+      <button class="icon-btn" id="accountBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 5-6 8-6s6.5 2 8 6"/></svg>
+        <span>Login</span>
+      </button>
+      <button class="icon-btn" id="cartBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="9" cy="21" r="1.2"/><circle cx="18" cy="21" r="1.2"/><path d="M2 3h2l2.4 12.4a2 2 0 0 0 2 1.6h8.2a2 2 0 0 0 2-1.6L21 7H6"/></svg>
+        <span class="cart-badge" id="cartCount">0</span>
+      </button>
+    </div>
+  </div>
+  <div class="search-bar">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+    <input type="text" id="searchInput" placeholder="Search plants, pots, seeds...">
+  </div>
 </header>
 
+<!-- CATEGORY CHIPS -->
+<nav class="category-scroll" id="categoryChips"></nav>
 
-<!-- =====================================================
-     SEARCH OVERLAY
-===================================================== -->
-
-<div class="search-overlay" id="searchOverlay">
-
-    <div class="search-box">
-
-        <button class="close-search"
-                id="closeSearch">
-            ×
-        </button>
-
-        <span>Search Mitti Manor</span>
-
-        <input type="search"
-               id="searchInput"
-               placeholder="Search plants, pots, services...">
-
-        <button id="performSearch">
-            Search
-        </button>
-
-    </div>
-
+<!-- BANNER -->
+<div class="banner-wrap">
+  <div class="banner-track" id="bannerTrack"></div>
+  <div class="banner-dots" id="bannerDots"></div>
 </div>
 
+<!-- LANDSCAPING PROMO STRIP -->
+<div class="landscape-strip">
+  <div>
+    <h3>Need Landscaping?</h3>
+    <p>Get a free custom quote from our experts</p>
+  </div>
+  <button id="landscapeNavBtn">Get Quote</button>
+</div>
 
-<!-- =====================================================
-     HERO
-===================================================== -->
+<!-- PRODUCT GRID -->
+<h2 class="section-title">Handpicked For Your Garden</h2>
+<section class="product-grid" id="productGrid"></section>
 
-<main>
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav">
+  <button class="active-nav">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>
+    Home
+  </button>
+  <button id="bottomLandscapeBtn" onclick="openLandscapingModal()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 18l5-7 4 5 3-4 6 6"/><path d="M3 21h18"/></svg>
+    Landscaping
+  </button>
+  <button onclick="document.getElementById('cartBtn').click()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="9" cy="21" r="1.2"/><circle cx="18" cy="21" r="1.2"/><path d="M2 3h2l2.4 12.4a2 2 0 0 0 2 1.6h8.2a2 2 0 0 0 2-1.6L21 7H6"/></svg>
+    Cart
+  </button>
+  <button onclick="document.getElementById('accountBtn').click()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 5-6 8-6s6.5 2 8 6"/></svg>
+    Account
+  </button>
+</nav>
 
-<section class="hero" id="home">
+<!-- OVERLAY -->
+<div class="overlay" id="overlay"></div>
 
-    <div class="container hero-grid">
-
-        <div class="hero-content">
-
-            <div class="eyebrow">
-                PREMIUM PLANTS & LANDSCAPING
-            </div>
-
-            <h1>
-                Bring a little
-                <span>nature</span>
-                home.
-            </h1>
-
-            <p class="hero-description">
-                Discover beautiful plants, elegant planters
-                and professional landscaping solutions
-                designed to transform your spaces.
-            </p>
-
-            <div class="hero-buttons">
-
-                <a href="#plants"
-                   class="btn btn-primary">
-                    Explore Plants
-                    <span>→</span>
-                </a>
-
-                <a href="#booking"
-                   class="btn btn-outline">
-                    Book Landscaping
-                </a>
-
-            </div>
-
-            <div class="hero-trust">
-
-                <div class="trust-item">
-                    <strong>500+</strong>
-                    <span>Plants</span>
-                </div>
-
-                <div class="trust-line"></div>
-
-                <div class="trust-item">
-                    <strong>100+</strong>
-                    <span>Projects</span>
-                </div>
-
-                <div class="trust-line"></div>
-
-                <div class="trust-item">
-                    <strong>4.9★</strong>
-                    <span>Customer Rating</span>
-                </div>
-
-            </div>
-
-        </div>
-
-
-        <div class="hero-visual">
-
-            <div class="hero-image">
-
-                <img
-                    src="https://images.unsplash.com/photo-1497250681960-ef046c08a56e?auto=format&fit=crop&w=1000&q=85"
-                    alt="Beautiful green indoor plants">
-
-            </div>
-
-            <div class="hero-product-card">
-
-                <div>
-
-                    <span>FEATURED PLANT</span>
-
-                    <h3>
-                        Monstera Deliciosa
-                    </h3>
-
-                </div>
-
-                <strong>
-                    ₹1,299
-                </strong>
-
-            </div>
-
-        </div>
-
+<!-- CART DRAWER -->
+<aside class="drawer" id="cartDrawer">
+  <div class="drawer-header">
+    <h3>My Cart</h3>
+    <button id="closeCart" style="color:white;font-size:20px;">&times;</button>
+  </div>
+  <div class="drawer-body" id="cartDrawerBody"></div>
+  <div class="drawer-footer">
+    <div>
+      <div class="total-label">Total</div>
+      <div class="total-amount" id="cartTotal">₹0</div>
     </div>
-
-</section>
-
-
-<!-- =====================================================
-     CATEGORIES
-===================================================== -->
-
-<section class="section categories-section"
-         id="collections">
-
-    <div class="container">
-
-        <div class="section-heading">
-
-            <div>
-
-                <span class="section-label">
-                    EXPLORE COLLECTION
-                </span>
-
-                <h2>
-                    Find your green.
-                </h2>
-
-            </div>
-
-            <p>
-                Plants carefully selected for homes,
-                offices, balconies and outdoor spaces.
-            </p>
-
-        </div>
-
-
-        <div class="category-grid">
-
-            <a href="#plants"
-               class="category-card category-indoor">
-
-                <div class="category-overlay"></div>
-
-                <div class="category-info">
-
-                    <span>
-                        48 PRODUCTS
-                    </span>
-
-                    <h3>
-                        Indoor Plants
-                    </h3>
-
-                    <b>
-                        Explore →
-                    </b>
-
-                </div>
-
-            </a>
-
-
-            <a href="#plants"
-               class="category-card category-outdoor">
-
-                <div class="category-overlay"></div>
-
-                <div class="category-info">
-
-                    <span>
-                        32 PRODUCTS
-                    </span>
-
-                    <h3>
-                        Outdoor Plants
-                    </h3>
-
-                    <b>
-                        Explore →
-                    </b>
-
-                </div>
-
-            </a>
-
-
-            <a href="#plants"
-               class="category-card category-flowering">
-
-                <div class="category-overlay"></div>
-
-                <div class="category-info">
-
-                    <span>
-                        27 PRODUCTS
-                    </span>
-
-                    <h3>
-                        Flowering Plants
-                    </h3>
-
-                    <b>
-                        Explore →
-                    </b>
-
-                </div>
-
-            </a>
-
-
-            <a href="#plants"
-               class="category-card category-garden">
-
-                <div class="category-overlay"></div>
-
-                <div class="category-info">
-
-                    <span>
-                        35 PRODUCTS
-                    </span>
-
-                    <h3>
-                        Garden Plants
-                    </h3>
-
-                    <b>
-                        Explore →
-                    </b>
-
-                </div>
-
-            </a>
-
-        </div>
-
-    </div>
-
-</section>
-
-
-<!-- =====================================================
-     PRODUCTS
-===================================================== -->
-
-<section class="section products-section"
-         id="plants">
-
-    <div class="container">
-
-        <div class="section-heading">
-
-            <div>
-
-                <span class="section-label">
-                    MITTI MANOR FAVOURITES
-                </span>
-
-                <h2>
-                    Best sellers.
-                </h2>
-
-            </div>
-
-            <a href="#"
-               class="text-link">
-                View all plants →
-            </a>
-
-        </div>
-
-
-        <div class="product-grid"
-             id="productGrid">
-
-            <!-- Product 1 -->
-
-            <article class="product-card"
-                     data-product-id="1">
-
-                <div class="product-image">
-
-                    <button class="wishlist-product"
-                            data-id="1"
-                            aria-label="Add to wishlist">
-                        ♡
-                    </button>
-
-                    <span class="product-badge">
-                        BESTSELLER
-                    </span>
-
-                    <img
-                        src="https://images.unsplash.com/photo-1509423350716-97f9360b4e09?auto=format&fit=crop&w=700&q=85"
-                        alt="Fiddle Leaf Fig">
-
-                </div>
-
-                <div class="product-info">
-
-                    <span class="product-category">
-                        INDOOR PLANT
-                    </span>
-
-                    <h3>
-                        Fiddle Leaf Fig
-                    </h3>
-
-                    <p>
-                        Elegant • Medium
-                    </p>
-
-                    <div class="product-bottom">
-
-                        <strong>
-                            ₹899
-                        </strong>
-
-                        <button class="add-cart"
-                                data-id="1">
-                            Add +
-                        </button>
-
-                    </div>
-
-                </div>
-
-            </article>
-
-
-            <!-- Product 2 -->
-
-            <article class="product-card"
-                     data-product-id="2">
-
-                <div class="product-image">
-
-                    <button class="wishlist-product"
-                            data-id="2"
-                            aria-label="Add to wishlist">
-                        ♡
-                    </button>
-
-                    <img
-                        src="https://images.unsplash.com/photo-1593691509543-c55fb32e5cee?auto=format&fit=crop&w=700&q=85"
-                        alt="Snake Plant">
-
-                </div>
-
-                <div class="product-info">
-
-                    <span class="product-category">
-                        INDOOR PLANT
-                    </span>
-
-                    <h3>
-                        Snake Plant
-                    </h3>
-
-                    <p>
-                        Easy Care • Medium
-                    </p>
-
-                    <div class="product-bottom">
-
-                        <strong>
-                            ₹699
-                        </strong>
-
-                        <button class="add-cart"
-                                data-id="2">
-                            Add +
-                        </button>
-
-                    </div>
-
-                </div>
-
-            </article>
-
-
-            <!-- Product 3 -->
-
-            <article class="product-card"
-                     data-product-id="3">
-
-                <div class="product-image">
-
-                    <button class="wishlist-product"
-                            data-id="3"
-                            aria-label="Add to wishlist">
-                        ♡
-                    </button>
-
-                    <span class="product-badge premium">
-                        PREMIUM
-                    </span>
-
-                    <img
-                        src="https://images.unsplash.com/photo-1614594975525-e45190c55d0b?auto=format&fit=crop&w=700&q=85"
-                        alt="Monstera plant">
-
-                </div>
-
-                <div class="product-info">
-
-                    <span class="product-category">
-                        PREMIUM PLANT
-                    </span>
-
-                    <h3>
-                        Monstera Deliciosa
-                    </h3>
-
-                    <p>
-                        Statement • Large
-                    </p>
-
-                    <div class="product-bottom">
-
-                        <strong>
-                            ₹1,299
-                        </strong>
-
-                        <button class="add-cart"
-                                data-id="3">
-                            Add +
-                        </button>
-
-                    </div>
-
-                </div>
-
-            </article>
-
-
-            <!-- Product 4 -->
-
-            <article class="product-card"
-                     data-product-id="4">
-
-                <div class="product-image">
-
-                    <button class="wishlist-product"
-                            data-id="4"
-                            aria-label="Add to wishlist">
-                        ♡
-                    </button>
-
-                    <img
-                        src="https://images.unsplash.com/photo-1592150621744-aca64f48394a?auto=format&fit=crop&w=700&q=85"
-                        alt="Areca Palm">
-
-                </div>
-
-                <div class="product-info">
-
-                    <span class="product-category">
-                        OUTDOOR / INDOOR
-                    </span>
-
-                    <h3>
-                        Areca Palm
-                    </h3>
-
-                    <p>
-                        Air Purifying • Large
-                    </p>
-
-                    <div class="product-bottom">
-
-                        <strong>
-                            ₹1,499
-                        </strong>
-
-                        <button class="add-cart"
-                                data-id="4">
-                            Add +
-                        </button>
-
-                    </div>
-
-                </div>
-
-            </article>
-
-        </div>
-
-    </div>
-
-</section>
-
-
-<!-- =====================================================
-     LANDSCAPING
-===================================================== -->
-
-<section class="landscaping-section"
-         id="landscaping">
-
-    <div class="container landscaping-wrapper">
-
-        <div class="landscaping-image">
-
-            <img
-                src="https://images.unsplash.com/photo-1558904541-efa843a96f01?auto=format&fit=crop&w=1200&q=85"
-                alt="Professional garden landscaping">
-
-        </div>
-
-
-        <div class="landscaping-content">
-
-            <span class="section-label light">
-                PROFESSIONAL LANDSCAPING
-            </span>
-
-            <h2>
-                Turn empty spaces
-                into living spaces.
-            </h2>
-
-            <p>
-                From balcony gardens to luxury lawns,
-                Mitti Manor creates beautiful green spaces
-                designed around your lifestyle.
-            </p>
-
-
-            <div class="service-list">
-
-                <div>
-                    <span>01</span>
-                    Garden Design
-                </div>
-
-                <div>
-                    <span>02</span>
-                    Terrace Gardens
-                </div>
-
-                <div>
-                    <span>03</span>
-                    Lawn Installation
-                </div>
-
-                <div>
-                    <span>04</span>
-                    Garden Maintenance
-                </div>
-
-            </div>
-
-
-            <a href="#booking"
-               class="btn btn-light">
-                Book a Consultation
-                <span>→</span>
-            </a>
-
-        </div>
-
-    </div>
-
-</section>
-
-
-<!-- =====================================================
-     BOOKING
-===================================================== -->
-
-<section class="section booking-section"
-         id="booking">
-
-    <div class="container">
-
-        <div class="booking-card">
-
-            <div class="booking-content">
-
-                <span class="section-label">
-                    LET'S CREATE TOGETHER
-                </span>
-
-                <h2>
-                    Have a space
-                    that needs some green?
-                </h2>
-
-                <p>
-                    Tell us about your space and our
-                    landscaping team will help you
-                    create something beautiful.
-                </p>
-
-                <a href="https://wa.me/919311649629"
-                   target="_blank"
-                   class="btn btn-primary">
-                    WhatsApp Us →
-                </a>
-
-            </div>
-
-
-            <div class="booking-details">
-
-                <div class="contact-detail">
-
-                    <span>WHATSAPP</span>
-
-                    <strong>
-                        +91 93116 49629
-                    </strong>
-
-                </div>
-
-                <div class="contact-detail">
-
-                    <span>EMAIL</span>
-
-                    <strong>
-                        mittimanor@gmail.com
-                    </strong>
-
-                </div>
-
-                <div class="contact-detail">
-
-                    <span>AVAILABILITY</span>
-
-                    <strong>
-                        Mon — Sat
-                    </strong>
-
-                </div>
-
-            </div>
-
-        </div>
-
-    </div>
-
-</section>
-
-
-<!-- =====================================================
-     NEWSLETTER
-===================================================== -->
-
-<section class="newsletter">
-
-    <div class="container newsletter-inner">
-
-        <div>
-
-            <span class="section-label">
-                MITTI MANOR JOURNAL
-            </span>
-
-            <h2>
-                A little more green
-                in your inbox.
-            </h2>
-
-        </div>
-
-
-        <form id="newsletterForm"
-              class="newsletter-form">
-
-            <input
-                type="email"
-                id="newsletterEmail"
-                placeholder="Your email address"
-                required>
-
-            <button type="submit">
-                Subscribe →
-            </button>
-
-        </form>
-
-    </div>
-
-</section>
-
-
-<!-- =====================================================
-     CONTACT
-===================================================== -->
-
-<section class="section contact-section"
-         id="contact">
-
-    <div class="container">
-
-        <div class="section-heading">
-
-            <div>
-
-                <span class="section-label">
-                    GET IN TOUCH
-                </span>
-
-                <h2>
-                    Let's talk plants.
-                </h2>
-
-            </div>
-
-            <p>
-                Need help choosing a plant,
-                planning your garden or tracking
-                an order? We're here to help.
-            </p>
-
-        </div>
-
-
-        <div class="contact-grid">
-
-            <a href="https://wa.me/919311649629"
-               target="_blank"
-               class="contact-card">
-
-                <span class="contact-icon">
-                    ☎
-                </span>
-
-                <span>
-                    <small>WHATSAPP</small>
-                    <strong>+91 93116 49629</strong>
-                </span>
-
-            </a>
-
-
-            <a href="mailto:mittimanor@gmail.com"
-               class="contact-card">
-
-                <span class="contact-icon">
-                    ✉
-                </span>
-
-                <span>
-                    <small>EMAIL</small>
-                    <strong>mittimanor@gmail.com</strong>
-                </span>
-
-            </a>
-
-        </div>
-
-    </div>
-
-</section>
-
-</main>
-
-
-<!-- =====================================================
-     CART DRAWER
-===================================================== -->
-
-<aside class="cart-drawer"
-       id="cartDrawer">
-
-    <div class="drawer-header">
-
-        <h2>
-            Your Cart
-        </h2>
-
-        <button id="closeCart">
-            ×
-        </button>
-
-    </div>
-
-
-    <div class="cart-items"
-         id="cartItems">
-
-        <div class="empty-cart">
-
-            <span>🪴</span>
-
-            <h3>
-                Your cart is empty
-            </h3>
-
-            <p>
-                Add something green to your space.
-            </p>
-
-        </div>
-
-    </div>
-
-
-    <div class="cart-footer">
-
-        <div class="cart-total">
-
-            <span>
-                Subtotal
-            </span>
-
-            <strong id="cartTotal">
-                ₹0
-            </strong>
-
-        </div>
-
-        <button class="checkout-btn"
-                id="checkoutBtn">
-            Proceed to Checkout
-        </button>
-
-    </div>
-
+    <button class="checkout-btn" id="checkoutBtn">Checkout</button>
+  </div>
 </aside>
 
-<div class="drawer-backdrop"
-     id="drawerBackdrop">
+<!-- LOGIN MODAL -->
+<div class="modal" id="loginModal">
+  <button class="modal-close" id="closeLogin">&times;</button>
+  <h2>Login to Mitti Manor</h2>
+  <p class="sub">Plants aur garden essentials order karne ke liye login karo</p>
+
+  <label class="field-label">Mobile Number</label>
+  <div class="phone-input-row">
+    <span>+91</span>
+    <input type="tel" id="phoneInput" class="text-input" style="border:none;padding:0;" maxlength="10" placeholder="10 digit number">
+  </div>
+  <button class="primary-btn" id="sendOtpBtn">Send OTP</button>
+
+  <div id="otpSection" style="display:none;">
+    <label class="field-label">Enter OTP</label>
+    <input type="text" id="otpInput" class="text-input" maxlength="6" placeholder="6 digit OTP">
+    <button class="primary-btn" id="verifyOtpBtn">Verify & Login</button>
+  </div>
+
+  <div class="divider-or">OR</div>
+  <button class="google-btn" id="googleSignInBtn">
+    <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.9 32.9 29.4 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.1 8 3l6-6C34.6 5.1 29.6 3 24 3 12.4 3 3 12.4 3 24s9.4 21 21 21 21-9.4 21-21c0-1.4-.1-2.5-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 16 19 13 24 13c3.1 0 5.8 1.1 8 3l6-6C34.6 5.1 29.6 3 24 3c-7.4 0-13.7 4.2-16.9 10.3l-.8 1.4z"/><path fill="#4CAF50" d="M24 45c5.4 0 10.4-2.1 14.1-5.4l-6.5-5.5C29.5 35.6 26.9 36.5 24 36.5c-5.3 0-9.9-3.4-11.5-8.1l-6.6 5.1C9.3 40.6 16.1 45 24 45z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.7 2-2 3.7-3.7 5l6.5 5.5C41.5 35.9 45 30.3 45 24c0-1.4-.1-2.5-.4-3.5z"/></svg>
+    Continue with Google
+  </button>
+  <div id="recaptchaContainer"></div>
 </div>
 
+<!-- LANDSCAPING QUOTE MODAL -->
+<div class="modal" id="landscapeModal">
+  <button class="modal-close" id="closeLandscape">&times;</button>
+  <h2>Get a Landscaping Quote</h2>
+  <p class="sub">Form bharo, hum WhatsApp/Email par turant reply karenge</p>
+  <form id="landscapeForm">
+    <label class="field-label">Service Type</label>
+    <select id="landscapeService" class="text-input"></select>
 
-<!-- =====================================================
-     LOGIN MODAL
-===================================================== -->
+    <label class="field-label">Your Name</label>
+    <input type="text" id="landscapeName" class="text-input" placeholder="Full name" required>
 
-<div class="modal"
-     id="loginModal">
+    <label class="field-label">Phone Number</label>
+    <input type="tel" id="landscapePhone" class="text-input" placeholder="10 digit number" required>
 
-    <div class="modal-content">
+    <label class="field-label">Area / Size (approx)</label>
+    <input type="text" id="landscapeArea" class="text-input" placeholder="e.g. 500 sq. ft. terrace">
 
-        <button class="modal-close"
-                id="closeLogin">
-            ×
-        </button>
+    <label class="field-label">Additional Notes</label>
+    <textarea id="landscapeNotes" class="text-input" placeholder="Tell us more about your space..."></textarea>
 
-        <div class="modal-header">
-
-            <span class="section-label">
-                WELCOME TO MITTI MANOR
-            </span>
-
-            <h2>
-                Login to continue.
-            </h2>
-
-            <p>
-                Access your orders, wishlist and bookings.
-            </p>
-
-        </div>
-
-
-        <button class="google-login-btn"
-                id="googleLoginBtn">
-
-            <span>G</span>
-
-            Continue with Google
-
-        </button>
-
-
-        <div class="login-divider">
-            <span>or</span>
-        </div>
-
-
-        <form id="loginForm">
-
-            <label>
-                Email
-            </label>
-
-            <input
-                type="email"
-                id="loginEmail"
-                placeholder="you@example.com"
-                required>
-
-
-            <label>
-                Password
-            </label>
-
-            <input
-                type="password"
-                id="loginPassword"
-                placeholder="••••••••"
-                required>
-
-
-            <button type="submit"
-                    class="btn btn-primary full-btn">
-                Login
-            </button>
-
-        </form>
-
-
-        <p class="signup-text">
-            New to Mitti Manor?
-            <button id="signupBtn">
-                Create account
-            </button>
-        </p>
-
-    </div>
-
+    <button type="submit" class="primary-btn">Send Quote Request</button>
+  </form>
 </div>
 
+<!-- Firebase (compat SDK) -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<!-- Razorpay -->
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
-<!-- =====================================================
-     TOAST
-===================================================== -->
-
-<div class="toast"
-     id="toast">
-
-    <span id="toastMessage">
-        Added to cart
-    </span>
-
-</div>
-
-
-<!-- =====================================================
-     FOOTER
-===================================================== -->
-
-<footer class="site-footer"
-        id="footer">
-
-    <div class="container footer-grid">
-
-        <div class="footer-brand">
-
-            <a href="#" class="logo footer-logo">
-
-                <span class="logo-main">
-                    MITTI
-                </span>
-
-                <span class="logo-sub">
-                    MANOR
-                </span>
-
-            </a>
-
-            <p>
-                Premium plants, thoughtful spaces
-                and landscaping inspired by nature.
-            </p>
-
-            <div class="social-links">
-
-                <a href="#" aria-label="Instagram">
-                    Instagram
-                </a>
-
-                <a href="https://wa.me/919311649629"
-                   target="_blank">
-                    WhatsApp
-                </a>
-
-            </div>
-
-        </div>
-
-
-        <div class="footer-column">
-
-            <h4>
-                Shop
-            </h4>
-
-            <a href="#plants">
-                Indoor Plants
-            </a>
-
-            <a href="#plants">
-                Outdoor Plants
-            </a>
-
-            <a href="#plants">
-                Flowering Plants
-            </a>
-
-            <a href="#plants">
-                Pots & Planters
-            </a>
-
-        </div>
-
-
-        <div class="footer-column">
-
-            <h4>
-                Services
-            </h4>
-
-            <a href="#landscaping">
-                Garden Design
-            </a>
-
-            <a href="#landscaping">
-                Terrace Garden
-            </a>
-
-            <a href="#landscaping">
-                Maintenance
-            </a>
-
-            <a href="#booking">
-                Book Consultation
-            </a>
-
-        </div>
-
-
-        <div class="footer-column">
-
-            <h4>
-                Help
-            </h4>
-
-            <a href="#">
-                My Account
-            </a>
-
-            <a href="#">
-                Track Order
-            </a>
-
-            <a href="#">
-                Shipping
-            </a>
-
-            <a href="#">
-                Returns
-            </a>
-
-        </div>
-
-    </div>
-
-
-    <div class="container footer-bottom">
-
-        <span>
-            © 2026 Mitti Manor. All rights reserved.
-        </span>
-
-        <span>
-            Plants • Spaces • Life
-        </span>
-
-    </div>
-
-</footer>
-
-
-<!-- =====================================================
-     JAVASCRIPT
-===================================================== -->
-
-<script type="module"
-        src="script.js">
-</script>
-
+<script src="config.js"></script>
+<script src="app.js"></script>
 </body>
 </html>
