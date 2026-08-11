@@ -1,253 +1,877 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="theme-color" content="#1F3D2B">
-<title>Mitti Manor — Plants, Garden & Landscaping</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Mitti Manor — Plants, Garden & Landscaping</title>
+
+  <link rel="stylesheet" href="style.css">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
+
 <body>
 
-<!-- 3-second loading screen -->
-<div class="loading-screen" id="loadingScreen">
-  <div class="loading-inner">
-    <h1>Mitti Manor<span>.</span></h1>
-    <div class="loading-line"><span></span></div>
-  </div>
-</div>
+  <!-- =====================================================
+       LOADING SCREEN
+  ====================================================== -->
 
-<!-- PINCODE GATE -->
-<div class="pin-overlay" id="pinOverlay" aria-hidden="true">
-  <div class="pin-backdrop"></div>
-  <section class="pin-card" role="dialog" aria-modal="true" aria-labelledby="pinTitle">
-    <div class="pin-art">
-      <div class="leaf-art leaf-a">⌁</div><div class="leaf-art leaf-b">⌁</div>
-      <p class="pin-welcome">Welcome to</p>
-      <h2>Mitti Manor</h2>
-      <div class="art-leaves">✦ ❧ ✦ ❧ ✦</div>
-    </div>
-    <div class="pin-content">
-      <h3 id="pinTitle">Check delivery availability</h3>
-      <p>Enter your Delhi PIN code to see products and services available in your area.</p>
-      <div class="pin-input-row">
-        <input id="pinInput" inputmode="numeric" maxlength="6" autocomplete="postal-code" placeholder="Enter your PIN code">
-        <button id="pinGoBtn">Go</button>
+  <div id="loadingScreen" class="loading-screen">
+    <div class="loading-content">
+      <div class="loading-logo">Mitti Manor</div>
+      <div class="loading-line">
+        <div id="loadingProgress"></div>
       </div>
-      <div class="pin-message" id="pinMessage"></div>
-      <button class="pin-change-btn" id="pinChangeBtn" type="button">Change PIN code</button>
+      <p>Growing something beautiful...</p>
     </div>
-  </section>
-</div>
+  </div>
 
-<!-- HEADER -->
-<header class="top-header">
-  <div class="header-row">
-    <button class="brand-lockup" id="brandHomeBtn" aria-label="Mitti Manor home">
-      <h1 class="brand-name">Mitti Manor<span>.</span></h1>
-      <span class="brand-tagline">Plants · Garden · Landscaping</span>
-    </button>
-    <div class="header-icons">
-      <button class="icon-btn" id="accountBtn" aria-label="Account">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 5-6 8-6s6.5 2 8 6"/></svg>
-        <span id="accountLabel">Login</span>
+
+  <!-- =====================================================
+       PIN CODE SCREEN
+  ====================================================== -->
+
+  <div id="pincodeScreen" class="pincode-screen">
+
+    <div class="pincode-card">
+
+      <div class="pincode-logo">Mitti Manor</div>
+
+      <h2>Enter your PIN code</h2>
+
+      <p>
+        Enter your Delhi PIN code to check whether our services
+        are available in your area.
+      </p>
+
+      <div class="pincode-input-wrap">
+        <span>🇮🇳</span>
+        <input
+          type="tel"
+          id="pincodeInput"
+          maxlength="6"
+          placeholder="Enter 6-digit PIN code"
+          inputmode="numeric"
+        >
+      </div>
+
+      <button id="checkPincodeBtn" class="primary-btn">
+        Check Availability
       </button>
-      <button class="icon-btn cart-icon-btn" id="cartBtn" aria-label="Cart">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="9" cy="21" r="1.2"/><circle cx="18" cy="21" r="1.2"/><path d="M2 3h2l2.4 12.4a2 2 0 0 0 2 1.6h8.2a2 2 0 0 0 2-1.6L21 7H6"/></svg>
-        <span class="cart-badge" id="cartCount">0</span>
+
+      <div id="pincodeMessage"></div>
+
+    </div>
+
+  </div>
+
+
+  <!-- =====================================================
+       MAIN WEBSITE
+  ====================================================== -->
+
+  <div id="mainWebsite" style="display:none;">
+
+
+    <!-- ===================================================
+         HEADER
+    ==================================================== -->
+
+    <header class="top-header">
+
+      <div class="header-row">
+
+        <div class="brand-area">
+          <h1 class="brand-name">Mitti Manor</h1>
+          <span class="brand-tagline">
+            Plants · Garden · Landscaping
+          </span>
+        </div>
+
+
+        <div class="header-icons">
+
+          <button
+            class="icon-btn"
+            id="accountBtn"
+            aria-label="Account"
+          >
+
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.6"
+            >
+              <circle cx="12" cy="8" r="4"/>
+              <path d="M4 21c1.5-4 5-6 8-6s6.5 2 8 6"/>
+            </svg>
+
+            <span>Login</span>
+
+          </button>
+
+
+          <button
+            class="icon-btn"
+            id="cartBtn"
+            aria-label="Cart"
+          >
+
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.6"
+            >
+              <circle cx="9" cy="21" r="1.2"/>
+              <circle cx="18" cy="21" r="1.2"/>
+              <path d="M2 3h2l2.4 12.4a2 2 0 0 0 2 1.6h8.2a2 2 0 0 0 2-1.6L21 7H6"/>
+            </svg>
+
+            <span
+              class="cart-badge"
+              id="cartCount"
+            >0</span>
+
+          </button>
+
+        </div>
+
+      </div>
+
+
+      <!-- SEARCH -->
+
+      <div class="search-bar">
+
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.8"
+        >
+          <circle cx="11" cy="11" r="7"/>
+          <path d="M21 21l-4.3-4.3"/>
+        </svg>
+
+        <input
+          type="text"
+          id="searchInput"
+          placeholder="Search plants, pots, seeds..."
+        >
+
+      </div>
+
+    </header>
+
+
+
+    <!-- ===================================================
+         CATEGORY CHIPS
+    ==================================================== -->
+
+    <nav
+      class="category-scroll"
+      id="categoryChips"
+    ></nav>
+
+
+
+    <!-- ===================================================
+         BANNER
+    ==================================================== -->
+
+    <section class="banner-wrap">
+
+      <div
+        class="banner-track"
+        id="bannerTrack"
+      ></div>
+
+      <div
+        class="banner-dots"
+        id="bannerDots"
+      ></div>
+
+    </section>
+
+
+
+    <!-- ===================================================
+         LANDSCAPING PROMO
+    ==================================================== -->
+
+    <section class="landscape-strip">
+
+      <div>
+
+        <h3>Need Landscaping?</h3>
+
+        <p>
+          Get a free custom quote from our experts
+        </p>
+
+      </div>
+
+
+      <button id="landscapeNavBtn">
+        View Services
       </button>
+
+    </section>
+
+
+
+    <!-- ===================================================
+         PRODUCTS
+    ==================================================== -->
+
+    <h2 class="section-title">
+      Handpicked For Your Garden
+    </h2>
+
+    <section
+      class="product-grid"
+      id="productGrid"
+    ></section>
+
+
+
+    <!-- ===================================================
+         BOTTOM NAVIGATION
+    ==================================================== -->
+
+    <nav class="bottom-nav">
+
+      <button class="active-nav">
+
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.6"
+        >
+          <path d="M3 11l9-8 9 8"/>
+          <path d="M5 10v10h14V10"/>
+        </svg>
+
+        <span>Home</span>
+
+      </button>
+
+
+      <button id="bottomLandscapeBtn">
+
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.6"
+        >
+          <path d="M3 18l5-7 4 5 3-4 6 6"/>
+          <path d="M3 21h18"/>
+        </svg>
+
+        <span>Landscaping</span>
+
+      </button>
+
+
+      <button id="bottomCartBtn">
+
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.6"
+        >
+          <circle cx="9" cy="21" r="1.2"/>
+          <circle cx="18" cy="21" r="1.2"/>
+          <path d="M2 3h2l2.4 12.4a2 2 0 0 0 2 1.6h8.2a2 2 0 0 0 2-1.6L21 7H6"/>
+        </svg>
+
+        <span>Cart</span>
+
+      </button>
+
+
+      <button id="bottomAccountBtn">
+
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.6"
+        >
+          <circle cx="12" cy="8" r="4"/>
+          <path d="M4 21c1.5-4 5-6 8-6s6.5 2 8 6"/>
+        </svg>
+
+        <span>Account</span>
+
+      </button>
+
+    </nav>
+
+  </div>
+
+
+
+  <!-- =====================================================
+       GLOBAL OVERLAY
+  ====================================================== -->
+
+  <div
+    class="overlay"
+    id="overlay"
+  ></div>
+
+
+
+  <!-- =====================================================
+       FULL SCREEN CART
+  ====================================================== -->
+
+  <aside
+    class="drawer cart-fullscreen"
+    id="cartDrawer"
+  >
+
+    <div class="drawer-header">
+
+      <div>
+
+        <h3>My Cart</h3>
+
+        <span id="cartItemSummary">
+          Your selected products
+        </span>
+
+      </div>
+
+
+      <button
+        id="closeCart"
+        class="drawer-close"
+        aria-label="Close cart"
+      >
+        &times;
+      </button>
+
     </div>
-  </div>
-  <div class="search-bar">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
-    <input type="search" id="searchInput" placeholder="Search plants, pots, seeds..." autocomplete="off">
-  </div>
-</header>
 
-<!-- CATEGORY CHIPS -->
-<nav class="category-scroll" id="categoryChips"></nav>
 
-<!-- HOME -->
-<main id="homePage">
-  <section class="hero-card">
-    <div class="hero-copy">
-      <span class="eyebrow">Curated for your space</span>
-      <h2>Bring nature<br><em>home.</em></h2>
-      <p>Premium plants, planters and garden essentials for modern Indian homes.</p>
-      <button class="hero-btn" id="shopPlantsBtn">Shop plants</button>
+    <div
+      class="drawer-body"
+      id="cartDrawerBody"
+    ></div>
+
+
+    <div class="drawer-footer">
+
+      <div>
+
+        <div class="total-label">
+          Total
+        </div>
+
+        <div
+          class="total-amount"
+          id="cartTotal"
+        >
+          ₹0
+        </div>
+
+      </div>
+
+
+      <button
+        class="checkout-btn"
+        id="checkoutBtn"
+      >
+        Proceed to Checkout
+      </button>
+
     </div>
-    <div class="hero-visual"><span>🌿</span><span>🪴</span><span>🌱</span></div>
-  </section>
 
-  <div class="banner-wrap">
-    <div class="banner-track" id="bannerTrack"></div>
-    <div class="banner-dots" id="bannerDots"></div>
-  </div>
+  </aside>
 
-  <section class="service-grid">
-    <button class="service-card" data-service="plants">
-      <span class="service-icon">🌿</span><strong>Live plants</strong><small>Fresh & handpicked</small>
-    </button>
-    <button class="service-card" data-service="pots">
-      <span class="service-icon">🪴</span><strong>Planters</strong><small>Modern & earthy</small>
-    </button>
-    <button class="service-card" id="landscapeServiceCard">
-      <span class="service-icon">🌳</span><strong>Landscaping</strong><small>Designed for you</small>
-    </button>
-    <button class="service-card" data-service="tools">
-      <span class="service-icon">🧤</span><strong>Garden tools</strong><small>Everything you need</small>
-    </button>
-  </section>
 
-  <!-- LANDSCAPING PROMO -->
-  <section class="landscape-strip">
-    <div>
-      <span class="eyebrow light">Mitti Manor Landscaping</span>
-      <h3>Need a greener space?</h3>
-      <p>Explore our landscaping services and request a custom quote.</p>
+
+  <!-- =====================================================
+       LOGIN / PROFILE MODAL
+  ====================================================== -->
+
+  <div
+    class="modal account-modal"
+    id="loginModal"
+  >
+
+    <button
+      class="modal-close"
+      id="closeLogin"
+    >
+      &times;
+    </button>
+
+
+    <!-- LOGIN VIEW -->
+
+    <div id="loginView">
+
+      <div class="modal-icon">🌿</div>
+
+      <h2>Login to Mitti Manor</h2>
+
+      <p class="sub">
+        Sign in to manage your orders, wishlist and profile.
+      </p>
+
+
+      <!-- GOOGLE -->
+
+      <button
+        class="google-btn"
+        id="googleSignInBtn"
+      >
+
+        <svg
+          width="18"
+          height="18"
+          viewBox="0 0 48 48"
+        >
+          <path
+            fill="#FFC107"
+            d="M43.6 20.5H42V20H24v8h11.3C33.9 32.9 29.4 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.1 8 3l6-6C34.6 5.1 29.6 3 24 3 12.4 3 3 12.4 3 24s9.4 21 21 21 21-9.4 21-21c0-1.4-.1-2.5-.4-3.5z"
+          />
+
+          <path
+            fill="#FF3D00"
+            d="M6.3 14.7l6.6 4.8C14.7 16 19 13 24 13c3.1 0 5.8 1.1 8 3l6-6C34.6 5.1 29.6 3 24 3c-7.4 0-13.7 4.2-16.9 10.3l-.8 1.4z"
+          />
+
+          <path
+            fill="#4CAF50"
+            d="M24 45c5.4 0 10.4-2.1 14.1-5.4l-6.5-5.5C29.5 35.6 26.9 36.5 24 36.5c-5.3 0-9.9-3.4-11.5-8.1l-6.6 5.1C9.3 40.6 16.1 45 24 45z"
+          />
+
+          <path
+            fill="#1976D2"
+            d="M43.6 20.5H42V20H24v8h11.3c-.7 2-2 3.7-3.7 5l6.5 5.5C41.5 35.9 45 30.3 45 24c0-1.4-.1-2.5-.4-3.5z"
+          />
+
+        </svg>
+
+        Continue with Google
+
+      </button>
+
+
+      <div class="divider-or">
+        OR
+      </div>
+
+
+      <!-- PHONE -->
+
+      <label class="field-label">
+        Mobile Number
+      </label>
+
+
+      <div class="phone-input-row">
+
+        <span>+91</span>
+
+        <input
+          type="tel"
+          id="phoneInput"
+          maxlength="10"
+          placeholder="10 digit mobile number"
+          inputmode="numeric"
+        >
+
+      </div>
+
+
+      <button
+        class="primary-btn"
+        id="sendOtpBtn"
+      >
+        Send Verification Code
+      </button>
+
+
+      <!-- OTP -->
+
+      <div
+        id="otpSection"
+        style="display:none;"
+      >
+
+        <label class="field-label">
+          Verification Code
+        </label>
+
+        <input
+          type="text"
+          id="otpInput"
+          class="text-input"
+          maxlength="6"
+          placeholder="Enter 6-digit code"
+          inputmode="numeric"
+        >
+
+        <button
+          class="primary-btn"
+          id="verifyOtpBtn"
+        >
+          Verify & Login
+        </button>
+
+        <button
+          class="resend-btn"
+          id="resendOtpBtn"
+        >
+          Resend Code
+        </button>
+
+      </div>
+
+
+      <!-- Firebase reCAPTCHA -->
+
+      <div
+        id="recaptchaContainer"
+      ></div>
+
     </div>
-    <button id="landscapeNavBtn">Explore services</button>
-  </section>
 
-  <div class="section-heading">
-    <div><span class="eyebrow">Our selection</span><h2>Handpicked for your garden</h2></div>
-    <button class="text-link" id="viewAllBtn">View all</button>
-  </div>
-  <section class="product-grid" id="productGrid"></section>
-</main>
 
-<!-- LANDSCAPING FULL PAGE -->
-<section class="full-page" id="landscapePage" hidden>
-  <div class="page-topbar">
-    <button class="back-btn" data-close-page="landscapePage">←</button>
-    <div><span class="eyebrow">Mitti Manor</span><h2>Landscaping</h2></div>
-    <span class="page-icon">🌳</span>
-  </div>
-  <section class="landscape-hero">
-    <span class="eyebrow light">DESIGN · BUILD · MAINTAIN</span>
-    <h2>Spaces that feel<br><em>alive.</em></h2>
-    <p>From a small balcony to a complete garden, our team creates practical, beautiful green spaces tailored to your home.</p>
-    <button class="hero-btn light-btn" id="landscapeQuoteTop">Request a quote</button>
-  </section>
-  <div class="section-heading compact"><div><span class="eyebrow">What we offer</span><h2>Our landscaping services</h2></div></div>
-  <div class="landscape-services" id="landscapeServices"></div>
-  <section class="landscape-process">
-    <span class="eyebrow">Simple process</span><h2>From idea to green space</h2>
-    <div class="process-grid">
-      <div><b>01</b><h3>Tell us</h3><p>Share your space, size and vision.</p></div>
-      <div><b>02</b><h3>We design</h3><p>Get a tailored concept and quote.</p></div>
-      <div><b>03</b><h3>We build</h3><p>Our team turns the plan into reality.</p></div>
+
+    <!-- PROFILE VIEW -->
+
+    <div
+      id="profileView"
+      style="display:none;"
+    >
+
+      <div class="profile-header">
+
+        <div
+          class="profile-avatar"
+          id="profileAvatar"
+        >
+          U
+        </div>
+
+        <h2 id="profileName">
+          User
+        </h2>
+
+        <p id="profileContact">
+          —
+        </p>
+
+      </div>
+
+
+      <div class="profile-menu">
+
+        <button id="ordersBtn">
+          <span>📦</span>
+          <span>My Orders</span>
+        </button>
+
+        <button id="wishlistBtn">
+          <span>♡</span>
+          <span>Wishlist</span>
+        </button>
+
+        <button id="changePincodeBtn">
+          <span>📍</span>
+          <span>Change PIN Code</span>
+        </button>
+
+        <button id="logoutBtn">
+          <span>↪</span>
+          <span>Logout</span>
+        </button>
+
+      </div>
+
     </div>
-  </section>
-  <button class="floating-quote" id="landscapeQuoteBottom">Get a quote</button>
-</section>
 
-<!-- FULL SCREEN CART -->
-<section class="full-page cart-page" id="cartPage" hidden>
-  <div class="page-topbar">
-    <button class="back-btn" data-close-page="cartPage">←</button>
-    <div><span class="eyebrow">Mitti Manor</span><h2>Your cart</h2></div>
-    <span class="page-icon">🛒</span>
   </div>
-  <div class="cart-page-body" id="fullCartBody"></div>
-  <div class="cart-summary" id="cartSummary">
-    <div class="summary-line"><span>Subtotal</span><strong id="cartSubtotal">₹0</strong></div>
-    <div class="summary-line"><span>Delivery</span><strong id="cartDelivery">₹0</strong></div>
-    <div class="summary-line total"><span>Total</span><strong id="cartGrandTotal">₹0</strong></div>
-    <button class="checkout-btn" id="checkoutBtn">Proceed to checkout</button>
-  </div>
-</section>
 
-<!-- PROFILE PAGE -->
-<section class="full-page profile-page" id="profilePage" hidden>
-  <div class="page-topbar">
-    <button class="back-btn" data-close-page="profilePage">←</button>
-    <div><span class="eyebrow">Mitti Manor</span><h2>My account</h2></div>
-    <span class="page-icon">◉</span>
-  </div>
-  <div id="profileContent"></div>
-</section>
 
-<!-- LOGIN PAGE -->
-<div class="modal login-modal" id="loginModal" role="dialog" aria-modal="true">
-  <button class="modal-close" id="closeLogin">&times;</button>
-  <div class="login-mark">M</div>
-  <span class="eyebrow">Mitti Manor account</span>
-  <h2>Welcome back</h2>
-  <p class="sub">Log in to manage your orders, wishlist and delivery details.</p>
-  <div id="loginChoice">
-    <button class="login-option google-option" id="googleSignInBtn">
-      <svg width="19" height="19" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.9 32.9 29.4 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.1 8 3l6-6C34.6 5.1 29.6 3 24 3 12.4 3 3 12.4 3 24s9.4 21 21 21 21-9.4 21-21c0-1.4-.1-2.5-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 16 19 13 24 13c3.1 0 5.8 1.1 8 3l6-6C34.6 5.1 29.6 3 24 3c-7.4 0-13.7 4.2-16.9 10.3l-.8 1.4z"/><path fill="#4CAF50" d="M24 45c5.4 0 10.4-2.1 14.1-5.4l-6.5-5.5C29.5 35.6 26.9 36.5 24 36.5c-5.3 0-9.9-3.4-11.5-8.1l-6.6 5.1C9.3 40.6 16.1 45 24 45z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.7 2-2 3.7-3.7 5l6.5 5.5C41.5 35.9 45 30.3 45 24c0-1.4-.1-2.5-.4-3.5z"/></svg>
-      Continue with Google
+
+  <!-- =====================================================
+       LANDSCAPING PAGE
+  ====================================================== -->
+
+  <div
+    class="modal landscaping-page"
+    id="landscapeModal"
+  >
+
+    <button
+      class="modal-close"
+      id="closeLandscape"
+    >
+      &times;
     </button>
-    <div class="divider-or">OR</div>
-    <button class="login-option phone-option" id="phoneLoginBtn">Continue with mobile number</button>
-    <p class="login-note">New here? Your account is created automatically after a successful login.</p>
-  </div>
 
-  <div id="phoneLoginForm" hidden>
-    <button class="small-back" id="backToLoginChoice">← Back</button>
-    <h3>Continue with mobile</h3>
-    <p class="sub">We will send a one-time verification code to your number.</p>
-    <label class="field-label">Mobile number</label>
-    <div class="phone-input-row"><span>+91</span><input type="tel" id="phoneInput" maxlength="10" inputmode="numeric" placeholder="10 digit number"></div>
-    <div id="recaptchaContainer"></div>
-    <button class="primary-btn" id="sendOtpBtn">Send verification code</button>
-    <div id="otpSection" hidden>
-      <label class="field-label">Verification code</label>
-      <input type="text" id="otpInput" class="text-input" maxlength="6" inputmode="numeric" autocomplete="one-time-code" placeholder="6 digit code">
-      <button class="primary-btn" id="verifyOtpBtn">Verify and log in</button>
-      <button class="resend-btn" id="resendOtpBtn" type="button">Send code again</button>
+
+    <div class="landscape-hero">
+
+      <span class="landscape-label">
+        MITTI MANOR LANDSCAPING
+      </span>
+
+      <h2>
+        Turn Your Space Into a Living Garden
+      </h2>
+
+      <p>
+        Professional garden design, terrace gardens,
+        balcony makeovers and complete landscaping solutions.
+      </p>
+
     </div>
-    <p class="login-error" id="loginError"></p>
+
+
+    <div class="landscape-services">
+
+      <h3>
+        Our Landscaping Services
+      </h3>
+
+
+      <div
+        id="landscapeServicesGrid"
+        class="services-grid"
+      ></div>
+
+    </div>
+
+
+    <div class="landscape-cta">
+
+      <h3>
+        Ready to transform your space?
+      </h3>
+
+      <p>
+        Tell us about your garden and get a custom quote.
+      </p>
+
+      <button
+        id="openQuoteBtn"
+        class="primary-btn"
+      >
+        Get a Free Quote
+      </button>
+
+    </div>
+
   </div>
-</div>
 
-<!-- LANDSCAPING QUOTE MODAL -->
-<div class="modal quote-modal" id="landscapeModal" role="dialog" aria-modal="true">
-  <button class="modal-close" id="closeLandscape">&times;</button>
-  <span class="eyebrow">Mitti Manor Landscaping</span>
-  <h2>Request a quote</h2>
-  <p class="sub">Tell us about your space and we will get back to you.</p>
-  <form id="landscapeForm">
-    <label class="field-label">Service</label>
-    <select id="landscapeService" class="text-input"></select>
-    <label class="field-label">Your name</label>
-    <input type="text" id="landscapeName" class="text-input" placeholder="Full name" required>
-    <label class="field-label">Phone number</label>
-    <input type="tel" id="landscapePhone" class="text-input" maxlength="10" inputmode="numeric" placeholder="10 digit number" required>
-    <label class="field-label">Area / size</label>
-    <input type="text" id="landscapeArea" class="text-input" placeholder="e.g. 500 sq. ft. terrace">
-    <label class="field-label">Additional notes</label>
-    <textarea id="landscapeNotes" class="text-input" placeholder="Tell us more about your space..."></textarea>
-    <button type="submit" class="primary-btn">Request quote</button>
-    <p class="form-note">Your request will open WhatsApp and email with the details filled in.</p>
-  </form>
-</div>
 
-<!-- OVERLAY -->
-<div class="overlay" id="overlay"></div>
 
-<!-- TOAST -->
-<div class="toast" id="toast"></div>
+  <!-- =====================================================
+       LANDSCAPING QUOTE FORM
+  ====================================================== -->
 
-<!-- BOTTOM NAV -->
-<nav class="bottom-nav">
-  <button class="active-nav" id="bottomHomeBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>Home</button>
-  <button id="bottomLandscapeBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 18l5-7 4 5 3-4 6 6"/><path d="M3 21h18"/></svg>Landscaping</button>
-  <button id="bottomCartBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="9" cy="21" r="1.2"/><circle cx="18" cy="21" r="1.2"/><path d="M2 3h2l2.4 12.4a2 2 0 0 0 2 1.6h8.2a2 2 0 0 0 2-1.6L21 7H6"/></svg>Cart</button>
-  <button id="bottomAccountBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 5-6 8-6s6.5 2 8 6"/></svg>Account</button>
-</nav>
+  <div
+    class="modal quote-modal"
+    id="quoteModal"
+  >
 
-<!-- Firebase -->
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-<!-- Razorpay -->
-<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-<script src="config.js"></script>
-<script src="app.js"></script>
+    <button
+      class="modal-close"
+      id="closeQuote"
+    >
+      &times;
+    </button>
+
+
+    <h2>
+      Get a Landscaping Quote
+    </h2>
+
+    <p class="sub">
+      Fill in the details and our team will contact you.
+    </p>
+
+
+    <form id="landscapeForm">
+
+      <label class="field-label">
+        Service Type
+      </label>
+
+      <select
+        id="landscapeService"
+        class="text-input"
+        required
+      ></select>
+
+
+      <label class="field-label">
+        Your Name
+      </label>
+
+      <input
+        type="text"
+        id="landscapeName"
+        class="text-input"
+        placeholder="Full name"
+        required
+      >
+
+
+      <label class="field-label">
+        Phone Number
+      </label>
+
+      <input
+        type="tel"
+        id="landscapePhone"
+        class="text-input"
+        maxlength="10"
+        placeholder="10 digit number"
+        required
+      >
+
+
+      <label class="field-label">
+        Area / Size
+      </label>
+
+      <input
+        type="text"
+        id="landscapeArea"
+        class="text-input"
+        placeholder="Example: 500 sq. ft. terrace"
+      >
+
+
+      <label class="field-label">
+        Additional Notes
+      </label>
+
+      <textarea
+        id="landscapeNotes"
+        class="text-input"
+        placeholder="Tell us about your space..."
+      ></textarea>
+
+
+      <button
+        type="submit"
+        class="primary-btn"
+      >
+        Send Quote Request
+      </button>
+
+    </form>
+
+  </div>
+
+
+
+  <!-- =====================================================
+       ORDERS MODAL
+  ====================================================== -->
+
+  <div
+    class="modal"
+    id="ordersModal"
+  >
+
+    <button
+      class="modal-close"
+      id="closeOrders"
+    >
+      &times;
+    </button>
+
+    <h2>
+      My Orders
+    </h2>
+
+    <div
+      id="ordersBody"
+      class="orders-body"
+    ></div>
+
+  </div>
+
+
+
+  <!-- =====================================================
+       WISHLIST MODAL
+  ====================================================== -->
+
+  <div
+    class="modal"
+    id="wishlistModal"
+  >
+
+    <button
+      class="modal-close"
+      id="closeWishlist"
+    >
+      &times;
+    </button>
+
+    <h2>
+      My Wishlist
+    </h2>
+
+    <div
+      id="wishlistBody"
+      class="wishlist-body"
+    ></div>
+
+  </div>
+
+
+
+  <!-- =====================================================
+       FIREBASE COMPAT SDK
+  ====================================================== -->
+
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+
+
+  <!-- =====================================================
+       RAZORPAY
+  ====================================================== -->
+
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+
+  <!-- =====================================================
+       YOUR CONFIG
+  ====================================================== -->
+
+  <script src="config.js"></script>
+
+
+  <!-- =====================================================
+       YOUR APP
+  ====================================================== -->
+
+  <script src="app.js"></script>
+
 </body>
 </html>
