@@ -1,20 +1,21 @@
 // ============================================================
 // MITTI MANOR — CONFIG
-// Reused from the earlier Mitti Manor project.
-// If phone-OTP login doesn't work, it's because the Firebase
-// apiKey/appId below are placeholders — fill them from your
-// Firebase console (Project settings > General > Your apps).
-// Until then, login falls back to a DEMO OTP: 123456
+// Firebase project "mitti-manor" connected (Phone OTP + Google login).
+// Razorpay key reused from the earlier Mitti Manor project.
+// If login ever fails (e.g. Phone/Google not enabled in Firebase
+// Console > Authentication > Sign-in method), it falls back to
+// a DEMO OTP: 123456
 // ============================================================
 
 const CONFIG = {
   firebase: {
-    apiKey: "PASTE_YOUR_FIREBASE_API_KEY_HERE",
-    authDomain: "novawallpaper-f7cc8.firebaseapp.com",
-    projectId: "novawallpaper-f7cc8",
-    storageBucket: "novawallpaper-f7cc8.appspot.com",
-    messagingSenderId: "PASTE_SENDER_ID_HERE",
-    appId: "PASTE_APP_ID_HERE"
+    apiKey: "AIzaSyDBuaqeGPJRcKNjND69-E3W_g3gta3LpW4",
+    authDomain: "mitti-manor.firebaseapp.com",
+    projectId: "mitti-manor",
+    storageBucket: "mitti-manor.firebasestorage.app",
+    messagingSenderId: "321272334348",
+    appId: "1:321272334348:web:4ee71f475f0b586f2e4629",
+    measurementId: "G-K9H53GTB1Q"
   },
 
   googleClientId: "452456583028-1l86bibq60ggkl3o1h5j88sed7v04eof.apps.googleusercontent.com",
