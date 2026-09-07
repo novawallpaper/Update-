@@ -12,12 +12,12 @@ html,
 body {
   width: 100%;
   min-height: 100%;
-  font-family: Inter, Arial, sans-serif;
 }
 
 body {
-  background: #f5f6fa;
-  color: #171923;
+  font-family: Arial, Helvetica, sans-serif;
+  background: #f7f3ed;
+  color: #28231e;
 }
 
 
@@ -29,9 +29,9 @@ body {
   width: 100%;
   max-width: 700px;
   min-height: 100vh;
-  margin: auto;
-  background: #ffffff;
+  margin: 0 auto;
   position: relative;
+  background: #f7f3ed;
   overflow-x: hidden;
 }
 
@@ -42,8 +42,9 @@ body {
 
 .screen-content {
   display: none;
+  width: 100%;
   min-height: 100vh;
-  padding: 30px 20px 90px;
+  padding: 30px 20px 100px;
 }
 
 .screen-content.active {
@@ -51,37 +52,32 @@ body {
 }
 
 
-/* =====================================================
-   LOGIN
-===================================================== */
-
+/* Login needs flex centering */
 #login-gate {
   display: none;
   align-items: center;
   justify-content: center;
-  padding: 25px;
-  background:
-    radial-gradient(
-      circle at top,
-      #ffe9f0 0%,
-      #ffffff 50%
-    );
 }
 
 #login-gate.active {
   display: flex;
 }
 
+
+/* =====================================================
+   LOGIN SCREEN
+===================================================== */
+
 .login-box {
   width: 100%;
-  max-width: 430px;
+  max-width: 460px;
+  margin: auto;
   text-align: center;
-  padding: 35px 25px;
 }
 
 .login-icon {
-  width: 80px;
-  height: 80px;
+  width: 82px;
+  height: 82px;
   margin: 0 auto 25px;
 
   display: flex;
@@ -90,35 +86,49 @@ body {
 
   border-radius: 50%;
 
-  background: #ff4d73;
-  color: white;
+  background: #1e4934;
+  color: #ffffff;
 
-  font-size: 35px;
+  font-size: 36px;
 
-  box-shadow:
-    0 15px 35px rgba(255, 77, 115, 0.25);
+  box-shadow: 0 12px 30px rgba(30, 73, 52, 0.18);
 }
 
 .login-box h1 {
-  font-size: 32px;
   margin-bottom: 12px;
+
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 38px;
+  line-height: 1.15;
+
+  color: #28231e;
 }
 
 .login-description {
-  color: #737887;
-  line-height: 1.6;
   margin-bottom: 30px;
+
+  color: #706961;
+
+  font-size: 17px;
+  line-height: 1.6;
 }
 
 
 /* =====================================================
-   GOOGLE BUTTON
+   GOOGLE LOGIN
 ===================================================== */
 
 #google-signin-btn-gate {
+  width: 100%;
+
   display: flex;
   justify-content: center;
+
   margin-bottom: 15px;
+}
+
+#google-signin-btn-gate > div {
+  max-width: 100%;
 }
 
 #google-fallback-btn {
@@ -127,39 +137,33 @@ body {
 
 
 /* =====================================================
-   BUTTONS
+   GENERAL BUTTON
 ===================================================== */
 
 .primary-btn {
   width: 100%;
+
+  padding: 16px 20px;
+
   border: none;
-  outline: none;
+  border-radius: 15px;
 
-  padding: 15px 20px;
-
-  border-radius: 14px;
-
-  background: #ff4d73;
-  color: white;
+  background: #1e4934;
+  color: #ffffff;
 
   font-size: 16px;
   font-weight: 700;
 
   cursor: pointer;
 
-  transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease,
-    opacity 0.2s ease;
+  transition: 0.2s ease;
 
-  box-shadow:
-    0 10px 25px rgba(255, 77, 115, 0.20);
+  box-shadow: 0 8px 20px rgba(30, 73, 52, 0.15);
 }
 
 .primary-btn:hover {
-  transform: translateY(-2px);
-  box-shadow:
-    0 14px 30px rgba(255, 77, 115, 0.25);
+  background: #173b2a;
+  transform: translateY(-1px);
 }
 
 .primary-btn:active {
@@ -174,6 +178,20 @@ body {
 
 
 /* =====================================================
+   TERMS
+===================================================== */
+
+.terms-text {
+  margin-top: 20px;
+
+  color: #8a837b;
+
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+
+/* =====================================================
    FORM BOX
 ===================================================== */
 
@@ -181,50 +199,57 @@ body {
   width: 100%;
   max-width: 500px;
 
-  margin: 50px auto 0;
-
-  background: white;
+  margin: 40px auto 0;
 
   padding: 30px 25px;
 
+  background: #ffffff;
+
+  border: 1px solid #e9e2da;
   border-radius: 22px;
 
-  box-shadow:
-    0 15px 45px rgba(20, 25, 40, 0.08);
+  box-shadow: 0 12px 35px rgba(50, 40, 30, 0.07);
 }
 
 .step-icon {
   width: 65px;
   height: 65px;
 
+  margin-bottom: 20px;
+
   display: flex;
   align-items: center;
   justify-content: center;
 
-  margin-bottom: 20px;
-
   border-radius: 18px;
 
-  background: #fff0f4;
-  color: #ff4d73;
+  background: #eaf2ec;
+  color: #1e4934;
 
-  font-size: 28px;
+  font-size: 27px;
 }
 
 .form-box h2 {
-  font-size: 27px;
   margin-bottom: 10px;
+
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 30px;
+
+  color: #28231e;
 }
 
 .form-box > p {
-  color: #777d8c;
-  line-height: 1.6;
   margin-bottom: 25px;
+
+  color: #706961;
+
+  font-size: 15px;
+  line-height: 1.6;
 }
 
 
 /* =====================================================
-   INPUT
+   INPUT GROUP
 ===================================================== */
 
 .input-group {
@@ -236,48 +261,32 @@ body {
 
   margin-bottom: 9px;
 
+  color: #39332d;
+
   font-size: 14px;
   font-weight: 700;
 }
 
-.input-group input,
-.question-input,
-.question-select,
-.question-textarea {
+.input-group input {
   width: 100%;
 
   padding: 14px 15px;
 
-  border: 1px solid #e1e4eb;
-
+  border: 1px solid #dcd5cd;
   border-radius: 12px;
 
   outline: none;
 
-  background: #fafbfc;
-
-  color: #171923;
+  background: #faf9f7;
+  color: #28231e;
 
   font-size: 15px;
-
-  transition:
-    border-color 0.2s ease,
-    box-shadow 0.2s ease;
 }
 
-.input-group input:focus,
-.question-input:focus,
-.question-select:focus,
-.question-textarea:focus {
-  border-color: #ff4d73;
+.input-group input:focus {
+  border-color: #1e4934;
 
-  box-shadow:
-    0 0 0 3px rgba(255, 77, 115, 0.10);
-}
-
-.question-textarea {
-  min-height: 120px;
-  resize: vertical;
+  box-shadow: 0 0 0 3px rgba(30, 73, 52, 0.10);
 }
 
 
@@ -286,52 +295,101 @@ body {
 ===================================================== */
 
 .progress-area {
-  margin-bottom: 30px;
+  margin-bottom: 28px;
 }
 
 #question-counter {
   display: block;
 
+  margin-bottom: 10px;
+
+  color: #1e4934;
+
   font-size: 13px;
   font-weight: 700;
-
-  color: #ff4d73;
-
-  margin-bottom: 10px;
 }
 
 .progress-bar {
   width: 100%;
   height: 7px;
 
-  background: #eeeeF2;
+  overflow: hidden;
 
   border-radius: 20px;
 
-  overflow: hidden;
+  background: #e8e3dd;
 }
 
 .progress-fill {
   width: 0%;
   height: 100%;
 
-  background: #ff4d73;
-
   border-radius: 20px;
+
+  background: #1e4934;
 
   transition: width 0.3s ease;
 }
 
 .question-title {
-  font-size: 24px;
+  margin-bottom: 22px;
+
+  font-family: Georgia, "Times New Roman", serif;
+
+  font-size: 25px;
   line-height: 1.35;
 
-  margin-bottom: 22px;
+  color: #28231e;
 }
+
+
+/* =====================================================
+   QUESTION INPUTS
+===================================================== */
+
+.question-input,
+.question-textarea,
+.question-select {
+  width: 100%;
+
+  padding: 15px;
+
+  border: 1px solid #dcd5cd;
+  border-radius: 13px;
+
+  outline: none;
+
+  background: #faf9f7;
+
+  color: #28231e;
+
+  font-family: inherit;
+  font-size: 15px;
+}
+
+.question-input:focus,
+.question-textarea:focus,
+.question-select:focus {
+  border-color: #1e4934;
+
+  box-shadow: 0 0 0 3px rgba(30, 73, 52, 0.10);
+}
+
+.question-textarea {
+  min-height: 120px;
+
+  resize: vertical;
+}
+
+
+/* =====================================================
+   QUESTION OPTIONS
+===================================================== */
 
 .question-options {
   display: flex;
   flex-direction: column;
+
   gap: 12px;
 
   margin-bottom: 25px;
@@ -340,13 +398,13 @@ body {
 .question-option {
   width: 100%;
 
-  padding: 15px;
+  padding: 15px 16px;
 
-  border: 1px solid #e1e4eb;
-
-  background: white;
-
+  border: 1px solid #ddd6ce;
   border-radius: 13px;
+
+  background: #ffffff;
+  color: #38322c;
 
   text-align: left;
 
@@ -355,57 +413,45 @@ body {
 
   cursor: pointer;
 
-  transition:
-    background 0.2s ease,
-    border-color 0.2s ease,
-    transform 0.2s ease;
+  transition: 0.2s ease;
 }
 
 .question-option:hover {
-  transform: translateY(-1px);
+  border-color: #1e4934;
 }
 
 .question-option.selected {
-  border-color: #ff4d73;
-  background: #fff0f4;
-  color: #ff4d73;
+  border-color: #1e4934;
+
+  background: #eaf2ec;
+
+  color: #1e4934;
 }
 
 
 /* =====================================================
-   ERRORS / STATUS
+   ERROR / STATUS
 ===================================================== */
 
 .error-text {
-  color: #e53935 !important;
-
-  font-size: 13px !important;
+  min-height: 18px;
 
   margin-top: 12px;
 
-  margin-bottom: 0 !important;
+  color: #c62828 !important;
 
-  min-height: 18px;
+  font-size: 13px !important;
+  line-height: 1.4 !important;
 }
 
 .status-text {
   margin-top: 14px;
 
-  color: #777d8c;
+  color: #706961;
 
   font-size: 13px;
 
   text-align: center;
-}
-
-.terms-text {
-  margin-top: 20px;
-
-  color: #9297a3;
-
-  font-size: 11px;
-
-  line-height: 1.5;
 }
 
 
@@ -415,13 +461,13 @@ body {
 
 .payment-box {
   width: 100%;
-  max-width: 450px;
+  max-width: 470px;
 
-  margin: 70px auto 0;
-
-  text-align: center;
+  margin: 60px auto 0;
 
   padding: 30px 25px;
+
+  text-align: center;
 }
 
 .payment-icon {
@@ -436,71 +482,72 @@ body {
 
   border-radius: 50%;
 
-  background: #fff0f4;
-
-  color: #ff4d73;
+  background: #eaf2ec;
+  color: #1e4934;
 
   font-size: 38px;
 }
 
 .payment-box h2 {
-  font-size: 28px;
-
   margin-bottom: 12px;
+
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 30px;
 }
 
 .payment-box > p {
-  color: #777d8c;
+  margin-bottom: 25px;
+
+  color: #706961;
 
   line-height: 1.6;
-
-  margin-bottom: 25px;
 }
+
+
+/* =====================================================
+   PRICE CARD
+===================================================== */
 
 .price-card {
   width: 100%;
 
   display: flex;
-
   align-items: center;
-
   justify-content: space-between;
 
   padding: 20px;
 
   margin-bottom: 20px;
 
+  border: 1px solid #e5ded6;
   border-radius: 16px;
 
-  background: #fafbfc;
-
-  border: 1px solid #eeeeF2;
+  background: #ffffff;
 }
 
 .price-card span {
-  color: #555b69;
+  color: #625c55;
 
   font-size: 15px;
-
   font-weight: 600;
 }
 
 .price-card strong {
-  font-size: 26px;
+  color: #1e4934;
 
-  color: #ff4d73;
+  font-size: 27px;
 }
 
 
 /* =====================================================
-   SUCCESS
+   PROFILE CREATED
 ===================================================== */
 
 .success-box {
   width: 100%;
   max-width: 480px;
 
-  margin: 60px auto 0;
+  margin: 50px auto 0;
 
   text-align: center;
 
@@ -519,72 +566,86 @@ body {
 
   border-radius: 50%;
 
-  background: #e9f9ef;
-
-  color: #25a55f;
+  background: #eaf2ec;
+  color: #1e4934;
 
   font-size: 40px;
 }
 
 .success-box h2 {
-  font-size: 28px;
-
   margin-bottom: 12px;
+
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 30px;
 }
 
 .success-box > p {
-  color: #777d8c;
+  margin-bottom: 25px;
+
+  color: #706961;
 
   line-height: 1.6;
-
-  margin-bottom: 25px;
 }
 
 
 /* =====================================================
-   PROFILE CARD
+   CREATED PROFILE CARD
 ===================================================== */
 
 .created-profile-card,
 .my-profile-card {
-  background: white;
-
-  border: 1px solid #eeeeF2;
-
-  border-radius: 20px;
+  width: 100%;
 
   padding: 22px;
 
   margin-bottom: 25px;
 
-  box-shadow:
-    0 10px 35px rgba(20, 25, 40, 0.06);
+  border: 1px solid #e5ded6;
+  border-radius: 20px;
+
+  background: #ffffff;
+
+  box-shadow: 0 10px 30px rgba(50, 40, 30, 0.06);
 
   text-align: left;
 }
 
 .profile-name {
-  font-size: 23px;
-
-  font-weight: 800;
-
   margin-bottom: 8px;
+
+  color: #28231e;
+
+  font-family: Georgia, "Times New Roman", serif;
+
+  font-size: 24px;
+  font-weight: 700;
 }
 
 .profile-info {
-  color: #777d8c;
+  margin-bottom: 8px;
+
+  color: #706961;
 
   font-size: 14px;
+  line-height: 1.5;
+}
 
-  margin-bottom: 7px;
+.profile-info i {
+  width: 20px;
+
+  color: #1e4934;
 }
 
 .profile-bio {
-  color: #555b69;
-
-  line-height: 1.6;
-
   margin-top: 15px;
+  padding-top: 15px;
+
+  border-top: 1px solid #eee8e1;
+
+  color: #554e47;
+
+  font-size: 14px;
+  line-height: 1.6;
 }
 
 
@@ -594,153 +655,147 @@ body {
 
 .dating-header {
   display: flex;
-
   align-items: center;
-
   justify-content: space-between;
 
   padding: 5px 0 25px;
 }
 
 .dating-header h2 {
-  font-size: 27px;
+  margin-top: 4px;
 
-  margin-top: 3px;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 29px;
 }
 
 .small-text {
-  color: #9297a3;
+  color: #8a837b;
 
   font-size: 13px;
 }
 
 .header-heart {
-  width: 45px;
-  height: 45px;
+  width: 46px;
+  height: 46px;
 
   display: flex;
-
   align-items: center;
-
   justify-content: center;
 
   border-radius: 50%;
 
-  background: #fff0f4;
-
-  color: #ff4d73;
+  background: #eaf2ec;
+  color: #1e4934;
 
   font-size: 20px;
 }
 
 
 /* =====================================================
-   DATING PROFILES
+   PROFILE LIST
 ===================================================== */
 
 .profiles-container {
   display: flex;
-
   flex-direction: column;
 
   gap: 18px;
 }
 
 .profile-card {
-  position: relative;
+  width: 100%;
 
   overflow: hidden;
 
-  background: white;
-
+  border: 1px solid #e5ded6;
   border-radius: 20px;
 
-  border: 1px solid #eeeeF2;
+  background: #ffffff;
 
-  box-shadow:
-    0 10px 30px rgba(20, 25, 40, 0.07);
+  box-shadow: 0 10px 30px rgba(50, 40, 30, 0.07);
 }
 
 .profile-card-content {
-  padding: 20px;
+  padding: 22px;
 }
 
 .profile-card h3 {
-  font-size: 22px;
-
   margin-bottom: 7px;
+
+  font-family: Georgia, "Times New Roman", serif;
+
+  font-size: 23px;
 }
 
 .profile-card p {
-  color: #777d8c;
+  margin-bottom: 7px;
+
+  color: #706961;
 
   font-size: 14px;
-
   line-height: 1.5;
-
-  margin-bottom: 7px;
 }
 
 
 /* =====================================================
-   BOTTOM NAV
+   BOTTOM NAVIGATION
 ===================================================== */
 
 .bottom-nav {
   position: fixed;
 
-  bottom: 0;
-
   left: 50%;
+  bottom: 0;
 
   transform: translateX(-50%);
 
   width: 100%;
-
   max-width: 700px;
 
   height: 70px;
 
   display: flex;
-
   align-items: center;
-
   justify-content: space-around;
 
-  background: rgba(255, 255, 255, 0.96);
+  background: rgba(255, 255, 255, 0.97);
 
-  border-top: 1px solid #eeeeF2;
+  border-top: 1px solid #e4ddd5;
+
+  box-shadow: 0 -5px 20px rgba(50, 40, 30, 0.05);
 
   z-index: 100;
 }
 
 .nav-btn {
-  width: 50px;
-  height: 50px;
+  width: 48px;
+  height: 48px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   border: none;
+  border-radius: 14px;
 
   background: transparent;
 
-  color: #9297a3;
+  color: #8a837b;
 
   font-size: 21px;
 
   cursor: pointer;
 
-  border-radius: 14px;
-
   transition: 0.2s ease;
 }
 
 .nav-btn.active {
-  color: #ff4d73;
-
-  background: #fff0f4;
+  background: #eaf2ec;
+  color: #1e4934;
 }
 
 .nav-btn:hover {
-  color: #ff4d73;
+  color: #1e4934;
 }
 
 
@@ -752,33 +807,28 @@ body {
   position: fixed;
 
   left: 50%;
-
   bottom: 90px;
 
-  transform:
-    translate(-50%, 20px);
-
-  opacity: 0;
-
-  pointer-events: none;
-
-  z-index: 1000;
+  transform: translate(-50%, 20px);
 
   min-width: 220px;
-
   max-width: 90%;
 
   padding: 13px 18px;
 
   border-radius: 12px;
 
-  background: #171923;
-
-  color: white;
+  background: #28231e;
+  color: #ffffff;
 
   text-align: center;
 
   font-size: 14px;
+
+  opacity: 0;
+  pointer-events: none;
+
+  z-index: 1000;
 
   transition:
     opacity 0.25s ease,
@@ -788,8 +838,7 @@ body {
 .app-toast.show {
   opacity: 1;
 
-  transform:
-    translate(-50%, 0);
+  transform: translate(-50%, 0);
 }
 
 
@@ -797,18 +846,22 @@ body {
    MOBILE
 ===================================================== */
 
-@media (max-width: 450px) {
+@media (max-width: 600px) {
 
   .screen-content {
-    padding: 22px 16px 90px;
+    padding: 25px 16px 95px;
   }
 
   .login-box {
-    padding: 20px 10px;
+    max-width: 100%;
   }
 
   .login-box h1 {
-    font-size: 28px;
+    font-size: 34px;
+  }
+
+  .login-description {
+    font-size: 16px;
   }
 
   .form-box {
@@ -820,47 +873,56 @@ body {
   }
 
   .form-box h2 {
-    font-size: 24px;
+    font-size: 27px;
+  }
+
+  .question-title {
+    font-size: 23px;
+  }
+
+  .payment-box {
+    margin-top: 35px;
+
+    padding: 25px 10px;
+  }
+
+  .success-box {
+    margin-top: 30px;
+
+    padding: 25px 10px;
+  }
+
+  .dating-header h2 {
+    font-size: 26px;
+  }
+}
+
+
+/* =====================================================
+   SMALL MOBILE
+===================================================== */
+
+@media (max-width: 380px) {
+
+  .screen-content {
+    padding-left: 13px;
+    padding-right: 13px;
+  }
+
+  .login-box h1 {
+    font-size: 30px;
+  }
+
+  .form-box {
+    padding: 22px 17px;
   }
 
   .question-title {
     font-size: 21px;
   }
 
-  .payment-box {
-    margin-top: 40px;
-  }
-
-  .success-box {
-    margin-top: 35px;
-  }
-
-  .dating-header h2 {
-    font-size: 24px;
-  }
-}
-
-
-/* =====================================================
-   VERY SMALL DEVICES
-===================================================== */
-
-@media (max-width: 340px) {
-
-  .screen-content {
-    padding-left: 12px;
-    padding-right: 12px;
-  }
-
-  .form-box {
-    padding: 20px 16px;
-  }
-
   .primary-btn {
-    padding: 13px 16px;
+    padding: 14px 16px;
   }
 
-  .question-title {
-    font-size: 19px;
-  }
 }
